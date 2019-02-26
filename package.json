@@ -1,0 +1,29 @@
+{
+  "name": "husky-api",
+  "version": "1.0.0",
+  "description": "husky rest api",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org/codermu/mid_swaps_api/src"
+  },
+  "keywords": [
+    "swaps",
+    "hyperledger",
+    "point",
+    "blockchain"
+  ],
+  "author": "fuadsuyudi",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "fastify": "^1.14.1",
+    "fastify-jwt": "^0.9.2",
+    "mysql2": "^1.6.5",
+    "sequelize": "^4.42.0",
+    "uid-generator": "^1.0.0"
+  }
+}
