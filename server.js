@@ -18,13 +18,7 @@ fastify.get('/', function (request, reply) {
 	reply.send({ hello: 'fuad' })
 })
 
-// fastify.post('/login', function (request, reply) {
-// 	reply.jwtSign(request.body, function (err, token) {
-// 		return reply.send(err || { 'token': token })
-// 	})
-// })
-
-// Register your plugin
+// Register your version plugin
 fastify.register(require('./routes/version-1'), { prefix: '/v1' })
 
 // Run the server!
