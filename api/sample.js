@@ -1,4 +1,4 @@
-const schema = require('../schema/sample');
+const schema = require('../schema/sampleSchema');
 const sampleController = require('../controller/sampleController');
 
 async function routes(fastify, options) {
