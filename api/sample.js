@@ -1,13 +1,10 @@
-async function routes(fastify, options) {
-    fastify.get('/', async (request, reply) => {
-        reply.code(200).send({ hello: 'guest' })
-    })
+const schema = require('../schema/sample');
+const sampleController = require('../controller/sampleController');
 
-    fastify.get('/screet', async (request, reply) => {
-        request.jwtVerify(function (err, decoded) {
-            return reply.code(200).send(err || { hello: 'fuad' })
-        })
-    })
+async function routes(fastify, options) {
+    fastify.get('/', schema.sampleSchema, sampleController.getSampleMessage);
+
+    fastify.get('/screet', sampleController.getSampleScreet)
 }
 
 module.exports = routes
