@@ -1,8 +1,8 @@
-const model = require('../models');
-const helper = require('../helper');
+const model = require('../../models');
+const helper = require('../../helper');
 const bcrypt = require('bcrypt');
 
-const conn = require('../models/conn/sequelize');
+const conn = require('../../models/conn/sequelize');
 const sequelize = conn.sequelize;
 
 const Members = model.Members.Get;

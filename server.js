@@ -25,9 +25,7 @@ fastify.get('/', function (request, reply) {
 // })
 
 // Register your plugin
-fastify.register(require('./api/sample'), { prefix: '/sample' })
-fastify.register(require('./api/auth'), { prefix: '/auth' })
-fastify.register(require('./api/members'), { prefix: '/members' })
+fastify.register(require('./routes/version-1'), { prefix: '/v1' })
 
 // Run the server!
 fastify.listen(3000, function (err, address) {
