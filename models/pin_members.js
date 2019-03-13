@@ -13,6 +13,9 @@ const PinMembers = model.define('pin_members', {
             key: "id"
         }
     },
+    members_id: {
+        type: Sequelize.INTEGER
+    },
     pin: {
         type: Sequelize.INTEGER,
         validate: {
