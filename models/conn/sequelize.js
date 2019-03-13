@@ -1,7 +1,9 @@
 const Sequelize = require('sequelize');
-exports.sequelize = new Sequelize('db_husky', 'root', 'root', {
-  host: '127.0.0.1',
-  dialect: 'mysql',
+const config = require("../../config").get
+
+exports.sequelize = new Sequelize(config.db.database, config.db.username, config.db.password, {
+  host: config.db.host,
+  dialect: config.db.driver,
 
   pool: {
     max: 5,
