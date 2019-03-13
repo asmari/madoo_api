@@ -1,7 +1,11 @@
 'use strict'
 //import fastify-formbody and fastify-multipart for parsing body request post
 const fastifyFormBody = require("fastify-formbody")
-const fastifyMultipart = require("fastify-multipart")
+// const fastifyMultipart = require("fastify-multipart")
+
+//import fastify-file-upload for uploading image
+const fastifyFileUpload = require("fastify-file-upload")
+
 const config = require("./config").get
 
 // Require the framework and instantiate it
@@ -17,9 +21,12 @@ fastify.register(jwt, {
 	}
 })
 
+//register upload file plugin
+fastify.register(fastifyFileUpload)
+
 //register formbody and multipart parsing body post
 fastify.register(fastifyFormBody)
-fastify.register(fastifyMultipart)
+// fastify.register(fastifyMultipart)
 
 // Declare a route
 fastify.get('/', function (request, reply) {
