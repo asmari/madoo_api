@@ -1,5 +1,8 @@
 const authController = require("../../controller/version-1/authController")
+const googleAuthController  = require("../../controller/version-1/googleAuthController")
+
 const authSchema = require("../../schema/authSchema")
+const googleAuthSchema = require("../../schema/googleAuthSchema")
 
 async function routes(fastify, options) {
     // get members
@@ -10,6 +13,9 @@ async function routes(fastify, options) {
 
     // check member
     fastify.post("/check", authSchema.authCheckSchema, authController.doCheckMember)
+
+    // check login data from google oauth
+    fastify.post("/google", googleAuthSchema.googleLoginSchema, googleAuthController.doLoginGoogle)
 }
 
 module.exports = routes
