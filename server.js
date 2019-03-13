@@ -1,4 +1,7 @@
 'use strict'
+//import fastify-formbody and fastify-multipart for parsing body request post
+const fastifyFormBody = require("fastify-formbody")
+const fastifyMultipart = require("fastify-multipart")
 
 // Require the framework and instantiate it
 const fastify = require('fastify')({
@@ -12,6 +15,10 @@ fastify.register(jwt, {
 		callback(null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
 	}
 })
+
+//register formbody and multipart parsing body post
+fastify.register(fastifyFormBody)
+fastify.register(fastifyMultipart)
 
 // Declare a route
 fastify.get('/', function (request, reply) {

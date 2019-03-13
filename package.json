@@ -21,7 +21,9 @@
   "dependencies": {
     "bcrypt": "^3.0.4",
     "fastify": "^1.14.1",
+    "fastify-formbody": "^2.0.0",
     "fastify-jwt": "^0.9.2",
+    "fastify-multipart": "^0.7.0",
     "mysql2": "^1.6.5",
     "sequelize": "^4.42.0",
     "uid-generator": "^1.0.0"

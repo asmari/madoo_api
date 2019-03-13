@@ -56,6 +56,16 @@ const Members = model.define('members', {
             msg: 'Mobile phone already in use!'
         }
     },
+    finggerprint: {
+        type:Sequelize.INTEGER,
+        allowNull:false,
+        validate:{
+            notEmpty: {
+                msg: "Fingerprint is required"
+            },
+            isNumeric: true
+        }
+    },
     image: {
         type: Sequelize.STRING
     }
