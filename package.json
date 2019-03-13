@@ -4,7 +4,7 @@
   "description": "husky rest api",
   "main": "server.js",
   "scripts": {
-    "start":"node -r dotenv/config server.js",
+    "start": "node -r dotenv/config server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -23,6 +23,7 @@
     "bcrypt": "^3.0.4",
     "dotenv": "^7.0.0",
     "fastify": "^1.14.1",
+    "fastify-file-upload": "^1.0.0",
     "fastify-formbody": "^2.0.0",
     "fastify-jwt": "^0.9.2",
     "fastify-multipart": "^0.7.0",
