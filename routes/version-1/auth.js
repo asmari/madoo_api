@@ -6,6 +6,9 @@ async function routes(fastify, options) {
 
     // login members
     fastify.post('/login', authController.doLogin)
+
+    // check member
+    fastify.post("/check", authController.doCheckMember)
 }
 
 module.exports = routes

@@ -13,6 +13,47 @@ exports.authIndex = async (request, reply) => {
     return reply.send({ status: true });
 }
 
+//Procss check member if exists by phone number and country code
+exports.doCheckMember = (request, reply) => {
+    try{
+
+        const params = request.body;
+
+        if(!params.hasOwnProperty("mobile_phone")){
+            throw {
+                message: "Field mobile_phone is required"
+            }
+        }
+
+        if(!params.hasOwnProperty("country_code")){
+            throw {
+                message: "Field country_code is required"
+            }
+        }
+
+        Members.findOne({ where : {mobile_phone: params.mobile_phone, country_code: params.country_code}}).then(member => {
+
+            if(member != null){
+                return reply.send(helper.Success({
+                    user_exist:true
+                }))
+            }else{
+                return reply.send(helper.Success({
+                    user_exist:false
+                }))
+            }
+            
+
+        })
+        .catch((err) => {
+            throw err;
+        })
+
+    }catch(err){
+        return reply.code(500).send(helper.Fail(err, 500))
+    }
+}
+
 //Process login member
 exports.doLogin = (request, reply) => {
     try {
