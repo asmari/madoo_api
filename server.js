@@ -2,6 +2,7 @@
 //import fastify-formbody and fastify-multipart for parsing body request post
 const fastifyFormBody = require("fastify-formbody")
 const fastifyMultipart = require("fastify-multipart")
+const config = require("./config").get
 
 // Require the framework and instantiate it
 const fastify = require('fastify')({
@@ -29,7 +30,7 @@ fastify.get('/', function (request, reply) {
 fastify.register(require('./routes/version-1'), { prefix: '/v1' })
 
 // Run the server!
-fastify.listen(3000, function (err, address) {
+fastify.listen(config.serverPort , function (err, address) {
 	if (err) {
 		fastify.log.error(err)
 		process.exit(1)
