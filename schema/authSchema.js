@@ -11,3 +11,15 @@ exports.authLoginSchema = {
         }
     }
 }
+
+exports.authCheckSchema = {
+    schema:{
+        body:{
+            required: [ "mobile_phone", "country_code" ],
+            properties:{
+                mobile_phone:{ type:"string" },
+                country_code:{ type:"string" }
+            }
+        }
+    }
+}
