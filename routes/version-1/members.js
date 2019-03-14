@@ -14,45 +14,14 @@ const facebookAuthController = require("../../controller/version-1/facebookAuthC
 const googleAuthSchema = require("../../schema/googleAuthSchema")
 const facebookAuthSchema = require("../../schema/facebookAuthSchema")
 
+const registerSchema = require("../../schema/registerSchema")
+const memberController = require('../../controller/version-1/memberController');
 async function routes(fastify, options) {
     // get members
-    fastify.get('/', async (request, reply) => {
-        request.jwtVerify(function (err, decoded) {
-            if (err) {
-                return reply.code(200).send(helper.Fail(err))
-            } else {
-                return reply.code(200).send(helper.Success(decoded))
-            }
-        })
-    })
+    fastify.get('/', memberController.memberIndex)
 
     // register members
-    fastify.post('/register', async (request, reply) => {
-        try {
-            let params = request.body;
-            const hash = bcrypt.hashSync(params.pin, 10);
-
-            return sequelize.transaction(function (t) {
-                return Promise.all([ 
-                    Members.create({
-                        full_name: params.full_name,
-                        email: params.email,
-                        country_code: params.country_code,
-                        mobile_phone: params.mobile_phone,
-                        image: '/path'
-                    })
-                ]).then(([members]) => Pins.create({member_id: members.id, pin: hash}, { transaction: t }).then(pins => {
-                    return Members.findByPk(pins.member_id);
-                }));
-            }).then(async function (member) {
-                return reply.code(200).send(helper.Success(member))
-            }).catch(function (err) {
-                return reply.code(200).send(helper.Fail(err))
-            });
-        } catch (err) {
-            return reply.code(200).send(helper.Fail(err))
-        }
-    })
+    fastify.post('/register',registerSchema.registerSchema, memberController.doRegisterPhone)
 
     // register using google oauth data
     fastify.post('/register/google', googleAuthSchema.googleRegisterSchema, googleAuthController.doRegisterGoogle)
