@@ -8,6 +8,10 @@ const sequelize = conn.sequelize;
 const Members = model.Members.Get;
 const Pins = model.Pins.Get;
 
+const googleAuthController = require("../../controller/version-1/googleAuthController")
+
+const googleAuthSchema = require("../../schema/googleAuthSchema")
+
 async function routes(fastify, options) {
     // get members
     fastify.get('/', async (request, reply) => {
@@ -47,6 +51,8 @@ async function routes(fastify, options) {
             return reply.code(200).send(helper.Fail(err))
         }
     })
+
+    fastify.post('/register/google', googleAuthSchema.googleRegisterSchema, googleAuthController.doRegisterGoogle)
 }
 
 module.exports = routes

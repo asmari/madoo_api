@@ -12,7 +12,6 @@ const Members = model.define('members', {
             notEmpty: {
                 msg: "Full name is required"
             },
-            // isAlpha: true,
         }
     },
     email: {
@@ -27,20 +26,12 @@ const Members = model.define('members', {
             },
             isEmail: true,
         },
-        unique: {
-            args: true,
-            msg: 'Email address already in use!'
-        }
+        unique: "test"
     },
     country_code: {
         type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: "Country Code is required"
-            },
-            isNumeric: true,
-        }
+        allowNull: true,
+        validate: {}
     },
     mobile_phone: {
         type: Sequelize.STRING,
@@ -53,12 +44,12 @@ const Members = model.define('members', {
         },
         unique: {
             args: true,
-            msg: 'Mobile phone already in use!'
+            message: 'Mobile phone already in use!'
         }
     },
     finggerprint: {
         type:Sequelize.INTEGER,
-        allowNull:false,
+        allowNull:true,
         validate:{
             notEmpty: {
                 msg: "Fingerprint is required"
@@ -68,6 +59,14 @@ const Members = model.define('members', {
     },
     image: {
         type: Sequelize.STRING
+    },
+    g_id:{
+        type:Sequelize.STRING,
+        allowNull: true
+    },
+    g_token:{
+        type:Sequelize.STRING,
+        allowNull: true
     }
 }, {
     timestamps: true,
