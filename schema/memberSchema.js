@@ -14,3 +14,16 @@ exports.registerSchema = {
         }
     }
 }
+exports.otpSchema = {
+    schema: {
+        body: {
+            //Required body paramter for register
+            required:[ "mobile_phone","otp" ],
+            properties:{
+                mobile_phone:{ type:"string",maxLength: 12 ,minLength:11 },
+                otp:{ type:"string",maxLength: 6 ,minLength:6 },
+
+            }
+        }
+    }
+}

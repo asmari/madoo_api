@@ -12,21 +12,21 @@ const Otp = model.Otp.Get;
 
 //Index Auth member
 exports.memberIndex = async (request, reply) => {
-    MembersRegister.all({include: [Otp]}).then(members_register=>{
-        return reply.code(200).send(helper.Success(members_register))
+    MembersRegister.all({include: [Otp]}).then(memberRegister=>{
+        return reply.code(200).send(helper.Success(memberRegister))
     });
 
 }
 
-//process to member_register with phone
+//process to memberRegister with phone
 exports.doRegisterPhone = (request, reply) => {
     try {
         const params = request.body;
 
         const date =new Date();
         date.setHours(date.getHours()+24);
-        MembersRegister.findOne({ where: {mobile_phone: params.mobile_phone, country_code: params.country_code}}).then(members_register => {
-            if (!members_register) {
+        MembersRegister.findOne({ where: {mobile_phone: params.mobile_phone, country_code: params.country_code}},{}).then(memberRegister => {
+            if (!memberRegister) {
                 let payload = {
                     full_name: params.full_name,
                     email: params.email,
@@ -34,24 +34,26 @@ exports.doRegisterPhone = (request, reply) => {
                     mobile_phone: params.mobile_phone,
                     status: "pending",
                 };
+
+                // insert into temporary member_register table
                 MembersRegister.create(payload).then(registered=>{
-                    createOrUpdateOtp({members_register_id:registered.id,otp: Math.floor(100000 + Math.random() * 900000),expired:date.getTime()},{members_register_id:registered.id}).
-                    then(reply.code(200).send(helper.Success(registered))).
-                    catch(err=>{
-                        reply.code(500).send(helper.Fail(err));
+                    createOrUpdateOtp({members_register_id:registered.id,otp: Math.floor(100000 + Math.random() * 900000),expired:date.getTime()},{members_register_id:registered.id})
+                        .then(reply.code(200).send(helper.Success(registered)))
+                        .catch(err=>{
+                        return reply.code(500).send(helper.Fail(err));
                     });
                 }).catch(err=>{
-                    reply.code(500).send(helper.Fail(err));
+                    return reply.code(500).send(helper.Fail(err));
                 });
             }else{
-                if (members_register.status=="pending"){
-                    createOrUpdateOtp({members_register_id:members_register.id,otp: Math.floor(100000 + Math.random() * 900000),expired:date.getTime()},{members_register_id:members_register.id}).
-                    then(reply.code(200).send(helper.Success(members_register))).
-                    catch(err=>{
-                        reply.code(500).send(helper.Fail(err));
-                    });
+                if (memberRegister.status!="regitered"){
+                    createOrUpdateOtp({members_register_id:memberRegister.id,otp: Math.floor(100000 + Math.random() * 900000),expired:date.getTime()},{members_register_id:memberRegister.id})
+                        .then(reply.code(200).send(helper.Success(memberRegister)))
+                        .catch(err=>{
+                            return reply.code(500).send(helper.Fail(err));
+                        });
                 }else {
-                    reply.code(500).send(helper.Fail({
+                    return reply.code(500).send(helper.Fail({
                         message: "Member already registered! Please login"
                     }, 500))
                 }
@@ -63,6 +65,36 @@ exports.doRegisterPhone = (request, reply) => {
 
 }
 
+exports.doOtpValidation= (request, reply) => {
+    try{
+        const params = request.body;
+        const date =new Date();
+        MembersRegister.findOne({include: [Otp] ,where: {mobile_phone: params.mobile_phone, status: "pending"}})
+            .then(memberRegister=>{
+                if(memberRegister == null){
+                    return reply.code(200).send(helper.Fail({
+                        message: "Member not found",
+                    }))
+                }
+
+                if (date.getTime()>=memberRegister.otp_member.expired){
+                    return reply.code(200).send(helper.Fail({message:"OTP has been expired!"}))
+                }
+                if (params.otp == memberRegister.otp_member.otp) {
+                    return reply.code(200).send(helper.Success(memberRegister))
+                }else {
+                    return reply.code(200).send(helper.Fail({message:"OTP not match!"}))
+                }
+
+            })
+
+    } catch (err) {
+        return reply.code(200).send(helper.Fail(err))
+    }
+}
+
+
+// Create Or Update Otp
 createOrUpdateOtp = (values, condition)=> {
     return Otp
         .findOne({ where: condition })
