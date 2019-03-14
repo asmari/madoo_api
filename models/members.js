@@ -67,6 +67,14 @@ const Members = model.define('members', {
     g_token:{
         type:Sequelize.STRING,
         allowNull: true
+    },
+    fb_id:{
+        type:Sequelize.STRING,
+        allowNull: true
+    },
+    fb_token:{
+        type:Sequelize.STRING,
+        allowNull: true
     }
 }, {
     timestamps: true,

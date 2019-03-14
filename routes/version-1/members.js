@@ -9,8 +9,10 @@ const Members = model.Members.Get;
 const Pins = model.Pins.Get;
 
 const googleAuthController = require("../../controller/version-1/googleAuthController")
+const facebookAuthController = require("../../controller/version-1/facebookAuthController")
 
 const googleAuthSchema = require("../../schema/googleAuthSchema")
+const facebookAuthSchema = require("../../schema/facebookAuthSchema")
 
 async function routes(fastify, options) {
     // get members
@@ -52,7 +54,11 @@ async function routes(fastify, options) {
         }
     })
 
+    // register using google oauth data
     fastify.post('/register/google', googleAuthSchema.googleRegisterSchema, googleAuthController.doRegisterGoogle)
+
+    // register using facebook oauth data
+    fastify.post("/register/facebook", facebookAuthSchema.facebookRegisterSchema, facebookAuthController.doRegisterFacebook)
 }
 
 module.exports = routes
