@@ -1,5 +1,12 @@
-const memberController = require('../../controller/version-1/memberController');
+const model = require('../../models');
+const helper = require('../../helper');
+const bcrypt = require('bcrypt');
 
+const conn = require('../../models/conn/sequelize');
+const sequelize = conn.sequelize;
+
+const Members = model.Members.Get;
+const Pins = model.Pins.Get;
 
 const googleAuthController = require("../../controller/version-1/googleAuthController")
 const facebookAuthController = require("../../controller/version-1/facebookAuthController")

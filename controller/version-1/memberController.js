@@ -1,3 +1,22 @@
+const model = require('../../models');
+const helper = require('../../helper');
+const bcrypt = require('bcrypt');
+
+const conn = require('../../models/conn/sequelize');
+const sequelize = conn.sequelize;
+
+const Members = model.Members.Get;
+const MembersRegister = model.MembersRegister.Get;
+const Pins = model.Pins.Get;
+const Otp = model.Otp.Get;
+
+//Index Auth member
+exports.memberIndex = async (request, reply) => {
+    MembersRegister.all({include: [Otp]}).then(members_register=>{
+        return reply.code(200).send(helper.Success(members_register))
+    });
+
+}
 
 //process to member_register with phone
 exports.doRegisterPhone = (request, reply) => {
