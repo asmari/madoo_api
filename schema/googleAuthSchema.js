@@ -16,18 +16,20 @@ exports.googleRegisterSchema = {
     schema:{
         consumes:["multipart/form-data"],
         body:{
-            required:["full_name", "email", "g_id", "g_token", "mobile_number", "pin"],
+            required:["full_name", "email", "g_id", "g_token", "mobile_phone","country_code", "pin"],
             properties:{
                 full_name:{type:"string"},
                 email:{type:"string"},
                 image:{
-                    isFileType:true,
-                    type:"object"
+                    type:"string",
+                    // isFileType:true,
+                    // type:"object"
                 },
                 g_id:{
                     type:"integer"},
                 g_token:{type:"integer"},
-                mobile_number:{type:"integer"},
+                country_code:{type:"string"},
+                mobile_phone:{type:"integer"},
                 pin:{type:"integer"},
                 fingerprint:{type:"integer"}
             }
