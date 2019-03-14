@@ -14,8 +14,11 @@ exports.doRegisterGoogle = (request, reply) => {
 
     try{
 
-        let params = request.raw.body
-        let raws = request.raw.files || {}
+        let params = request.raw.body || request.body
+
+        params = params || {}
+
+        // let raws = request.raw.files || {}
         
 
         if(!params.hasOwnProperty("full_name")){
@@ -55,9 +58,17 @@ exports.doRegisterGoogle = (request, reply) => {
         }
 
 
-        let fingerprint = params.hasOwnProperty("fingerprint") ? params.fingerprint:0
+        if(!params.hasOwnProperty("country_code")){
+            return reply.send(helper.Fail({
+                message:"Field country_code is required"
+            }))
+        }
 
-        const hash = bcrypt.hashSync(params.pin, 10);
+
+        let fingerprint = params.hasOwnProperty("fingerprint") ? params.fingerprint:0
+        let image = params.hasOwnProperty("image") ? params.image: null
+
+        const hash = bcrypt.hashSync(params.pin.toString(), 10);
 
         // start transaction
         sequelize.transaction((t) => {
@@ -97,7 +108,8 @@ exports.doRegisterGoogle = (request, reply) => {
                     g_token : params.g_token,
                     mobile_phone:params.mobile_phone,
                     pin:params.pin,
-                    finggerprint:fingerprint
+                    finggerprint:fingerprint,
+                    image:image
                 })
             }).then((members) => {
 
@@ -117,37 +129,38 @@ exports.doRegisterGoogle = (request, reply) => {
         }).then(async (member) =>{
 
             let payload = params
-            payload.image = null
+            payload.image = image
             payload.fingerprint = fingerprint
 
             //if image exist, upload to file
-            if(raws.hasOwnProperty("image")){
+            /* upload system disabled until further notice */
+            // if(raws.hasOwnProperty("image")){
 
-                let _imageTemp = raws.image
+            //     let _imageTemp = raws.image
 
-                const ext = _imageTemp.name.split('.').pop()
-                const imageName = Math.random().toString(13).replace('0.', '') + "." + ext
+            //     const ext = _imageTemp.name.split('.').pop()
+            //     const imageName = Math.random().toString(13).replace('0.', '') + "." + ext
 
-                _imageTemp.mv(resolve("upload/" + imageName), (err) => {
+            //     _imageTemp.mv(resolve("upload/" + imageName), (err) => {
                     
-                    if(err){
-                        reply.send(helper.Fail({
-                            message:"Image upload failed"
-                        }))
-                    }else{
+            //         if(err){
+            //             reply.send(helper.Fail({
+            //                 message:"Image upload failed"
+            //             }))
+            //         }else{
 
-                        member.update({
-                            image: imageName
-                        })
+            //             member.update({
+            //                 image: imageName
+            //             })
 
-                        payload.image = imageName
-                        reply.send(helper.Success(payload))
-                    }
+            //             payload.image = imageName
+            //             reply.send(helper.Success(payload))
+            //         }
 
-                })
+            //     })
 
-                return
-            }
+            //     return
+            // }
             
             reply.send(helper.Success(payload))
 
