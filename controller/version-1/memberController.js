@@ -40,8 +40,8 @@ exports.doRegisterPhone = (request, reply) => {
                     createOrUpdateOtp({members_register_id:registered.id,otp: Math.floor(100000 + Math.random() * 900000),expired:date.getTime()},{members_register_id:registered.id})
                         .then(reply.code(200).send(helper.Success(registered)))
                         .catch(err=>{
-                        return reply.code(500).send(helper.Fail(err));
-                    });
+                            return reply.code(500).send(helper.Fail(err));
+                        });
                 }).catch(err=>{
                     return reply.code(500).send(helper.Fail(err));
                 });
@@ -63,7 +63,7 @@ exports.doRegisterPhone = (request, reply) => {
         return reply.code(200).send(helper.Fail(err))
     }
 
-}
+};
 
 exports.doOtpValidation= (request, reply) => {
     try{
@@ -91,9 +91,52 @@ exports.doOtpValidation= (request, reply) => {
     } catch (err) {
         return reply.code(200).send(helper.Fail(err))
     }
-}
+};
+exports.doSaveMember= (request, reply) => {
+    try{
+        const params = request.body;
 
+        const date =new Date();
+        date.setHours(date.getHours()+24);
+        params.pin = bcrypt.hashSync(params.pin.toString(), 10);
+        // return reply.code(200).send(helper.Success(params))
 
+        Members.create(params).then((member)=>{
+            MembersRegister.findOne({where:{mobile_phone: params.mobile_phone, status: "pending"}}).then(
+                (memberRegister)=>{
+                    if (memberRegister) {
+                        memberRegister.update({status: "registered"})
+                        let payload = {
+                            id: member.id,
+                            oauth: false
+                        };
+
+                        reply.jwtSign(payload, function (err, token) {
+                            if (err) {
+                                return reply.code(200).send(helper.Fail(err))
+                            } else {
+
+                                Pins.create({pin:params.pin,members_id:member.id,token:token,expired:date.getTime()})
+                                let res = {
+                                    token_type: 'Bearer',
+                                    access_token: token,
+                                    fingerprint: member.finggerprint
+                                };
+                                return reply.code(200).send(helper.Success(res))
+                            }
+                        })
+                    }else {
+                        return reply.code(200).send(helper.Fail({message:"Member Not Found"}))
+                    }
+
+                }
+            )
+        })
+
+    } catch (err) {
+        return reply.code(200).send(helper.Fail(err))
+    }
+};
 // Create Or Update Otp
 createOrUpdateOtp = (values, condition)=> {
     return Otp

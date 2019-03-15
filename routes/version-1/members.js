@@ -21,6 +21,9 @@ async function routes(fastify, options) {
 
     // OTP validation
     fastify.post('/otp/validation',memberSchema.otpSchema, memberController.doOtpValidation)
+
+    // Save Member
+    fastify.post('/register/save',memberSchema.memberSchema, memberController.doSaveMember)
 }
 
 module.exports = routes
