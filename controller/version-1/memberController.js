@@ -27,23 +27,25 @@ exports.doRegisterPhone = (request, reply) => {
         date.setHours(date.getHours()+24);
         MembersRegister.findOne({ where: {mobile_phone: params.mobile_phone, country_code: params.country_code}},{}).then(memberRegister => {
             if (!memberRegister) {
-                let payload = {
-                    full_name: params.full_name,
-                    email: params.email,
-                    country_code: params.country_code,
-                    mobile_phone: params.mobile_phone,
-                    status: "pending",
-                };
-
-                // insert into temporary member_register table
-                MembersRegister.create(payload).then(registered=>{
-                    createOrUpdateOtp({members_register_id:registered.id,otp: Math.floor(100000 + Math.random() * 900000),expired:date.getTime()},{members_register_id:registered.id})
-                        .then(reply.code(200).send(helper.Success(registered)))
-                        .catch(err=>{
-                            return reply.code(500).send(helper.Fail(err));
-                        });
-                }).catch(err=>{
-                    return reply.code(500).send(helper.Fail(err));
+                return sequelize.transaction().then(t => {
+                    let payload = {
+                        full_name: params.full_name,
+                        email: params.email,
+                        country_code: params.country_code,
+                        mobile_phone: params.mobile_phone,
+                        status: "pending",
+                    };
+                    return MembersRegister.create(payload, {transaction: t}).then(registered => {
+                        return createOrUpdateOtp({
+                            otp: Math.floor(100000 + Math.random() * 900000),
+                            expired:date.getTime()},{members_register_id:registered.id})
+                            .then(reply.code(200).send(helper.Success(registered)));
+                    }).then(() => {
+                        return t.commit();
+                    }).catch((err) => {
+                        t.rollback();
+                        reply.code(500).send(helper.Fail(err))
+                    });
                 });
             }else{
                 if (memberRegister.status!="regitered"){
@@ -101,37 +103,51 @@ exports.doSaveMember= (request, reply) => {
         params.pin = bcrypt.hashSync(params.pin.toString(), 10);
         // return reply.code(200).send(helper.Success(params))
 
-        Members.create(params).then((member)=>{
-            MembersRegister.findOne({where:{mobile_phone: params.mobile_phone, status: "pending"}}).then(
-                (memberRegister)=>{
-                    if (memberRegister) {
-                        memberRegister.update({status: "registered"})
-                        let payload = {
-                            id: member.id,
-                            oauth: false
-                        };
+        MembersRegister.findOne({where:{mobile_phone: params.mobile_phone, status: "pending"}}).then(
+            (memberRegister)=>{
 
-                        reply.jwtSign(payload, function (err, token) {
-                            if (err) {
-                                return reply.code(200).send(helper.Fail(err))
-                            } else {
+                if (memberRegister) {
+                    return sequelize.transaction().then(t => {
+                        return Members.create(params, {transaction: t})
+                            .then((member)=> {
+                                return Pins.create({pin:params.pin,members_id:member.id,expired:date.getTime()}, {transaction: t})
+                                    .then((pin)=>{
+                                        return memberRegister.update({status: "registered"}, {transaction: t})
+                                            .then((registered)=> {
+                                                let payload = {
+                                                    id: member.id,
+                                                    oatuth:false
+                                                };
+                                                Members.findOne({where:{id:member.id}}).then((registeredMember)=>{
+                                                    reply.jwtSign(payload, function (err, token) {
+                                                        if (err) {
+                                                            return reply.code(200).send(helper.Fail(err))
+                                                        } else {
+                                                            let res = {
+                                                                token_type: 'Bearer',
+                                                                access_token: token,
+                                                                fingerprint: registeredMember.finggerprint
+                                                            };
+                                                            return reply.code(200).send(helper.Success(res))
+                                                        }
+                                                    })
+                                                })
+                                            })
+                                    })
+                            }).then(() => {
+                                return t.commit();
+                            }).catch((err) => {
+                                t.rollback();
+                                reply.code(500).send(helper.Fail(err))
+                            });
 
-                                Pins.create({pin:params.pin,members_id:member.id,token:token,expired:date.getTime()})
-                                let res = {
-                                    token_type: 'Bearer',
-                                    access_token: token,
-                                    fingerprint: member.finggerprint
-                                };
-                                return reply.code(200).send(helper.Success(res))
-                            }
-                        })
-                    }else {
-                        return reply.code(200).send(helper.Fail({message:"Member Not Found"}))
-                    }
-
+                    })
+                }else {
+                    return reply.code(200).send(helper.Fail({message:"Member Not Found"}))
                 }
-            )
-        })
+
+            }
+        )
 
     } catch (err) {
         return reply.code(200).send(helper.Fail(err))
