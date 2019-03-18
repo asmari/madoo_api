@@ -9,6 +9,8 @@ const fastifyFormBody = require("fastify-formbody")
 //import fastify-file-upload for uploading image
 const fastifyFileUpload = require("fastify-file-upload")
 
+require('dotenv').config()
+
 const config = require("./config").get
 
 // Require the framework and instantiate it
