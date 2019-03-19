@@ -47,3 +47,16 @@ exports.loyaltyDetailSchema = {
         }
     }
 }
+
+exports.loyaltyDeleteMembercard = {
+    schema:{
+        required:["member_card_id"],
+        body:{
+            properties:{
+                member_card_id:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
