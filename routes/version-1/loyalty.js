@@ -7,10 +7,15 @@ async function routes (fastify, options) {
 
     //list member
     fastify.get("/list/member", {
-        ...loyaltySchema,
+        ...loyaltySchema.loyaltyMemberListSchema,
         beforeHandler:[fastify.authenticate]
     }, loyaltyController.getLoyaltyMember)
 
+    //detail member
+    fastify.get("/detail/member",{
+        ...loyaltySchema.loyaltyMemberDetailSchema,
+        beforeHandler:[fastify.authenticate]
+    }, loyaltyController.getDetailMember)
     
 }
 
