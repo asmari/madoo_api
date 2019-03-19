@@ -7,11 +7,7 @@ const Loyalty = require("./loyalty")
 const LoyaltyType = model.define("type_loyalty",{
     id:{
         type:Sequelize.INTEGER,
-        primaryKey:true,
-        references: {
-            model: Loyalty.Get,
-            key: "type_loyalty_id"
-        }
+        primaryKey:true
     },
     title:{
         type:Sequelize.STRING,
@@ -21,8 +17,14 @@ const LoyaltyType = model.define("type_loyalty",{
     timestamps:true,
     underscored: true,
     deletedAt: "deleted_at",
-    paranoid: true
+    paranoid: true,
+    tableName:"type_loyalty",
+    freezeTableName:true
 })
 
+LoyaltyType.hasMany(Loyalty.Get, {
+    foreignKey:"type_loyalty_id",
+    sourceKey:"id"
+})
 
 exports.Get = LoyaltyType
