@@ -50,9 +50,9 @@ Loyalty.hasOne(LoyaltyType.Get, {
     sourceKey:"type_loyalty_id"
 })
 
-// Promo.Get.belongsTo(Loyalty, {
-//     sourceKey:"loyalty_id"
-// })
+Promo.Get.belongsTo(Loyalty, {
+    sourceKey:"loyalty_id"
+})
 
 Loyalty.hasMany(Promo.Get, {
     sourceKey:"Loyalty.id",
