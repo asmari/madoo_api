@@ -31,3 +31,9 @@ exports.loyaltyMemberDetailSchema = {
         
     }
 }
+
+exports.loyaltyListSchema = {
+    schema:{
+        
+    }
+}

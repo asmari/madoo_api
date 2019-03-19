@@ -6,6 +6,7 @@ const Op = sequelize.Op
 
 const Loyalty = model.Loyalty.Get
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get
+const LoyaltyType = model.LoyaltyType.Get
 const MemberCards = model.MembersCards.Get
 const Promo = model.Promo.Get
 
@@ -235,3 +236,21 @@ exports.getLoyaltyMember = async (request, reply) => {
         reply.send(helper.Fail(err))
     }
 } 
+
+//list loyalty
+exports.getListLoyalty = async (request, reply) => {
+    try{
+
+        let data = await LoyaltyType.findAll({
+            order:[
+                ["id", "ASC"]
+            ],
+            include:[Loyalty]
+        })
+
+        reply.send(helper.Success(data))
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+}

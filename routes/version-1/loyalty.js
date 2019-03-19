@@ -16,6 +16,12 @@ async function routes (fastify, options) {
         ...loyaltySchema.loyaltyMemberDetailSchema,
         beforeHandler:[fastify.authenticate]
     }, loyaltyController.getDetailMember)
+
+    //list loyalty with type
+    fastify.get("/list",{
+        ...loyaltySchema.loyaltyListSchema,
+        beforeHandler:[fastify.authenticate]
+    }, loyaltyController.getListLoyalty)
     
 }
 

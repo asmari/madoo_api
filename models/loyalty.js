@@ -3,17 +3,13 @@ const connect = require("./conn/sequelize")
 const sequelizePaginate = require("sequelize-paginate")
 const model = connect.sequelize
 
-const LoyaltyType = require("./type_loyalty")
 const LoyaltyMemberCards = require("./loyalty_member_cards")
 const Promo = require("./promo")
 
 const Loyalty = model.define("loyalty",{
     type_loyalty_id:{
         type:Sequelize.INTEGER,
-        references: {
-            model: LoyaltyType.Get,
-            key: "id"
-        }
+        allowNull:false
     },
     name:{
         type:Sequelize.STRING,
@@ -45,14 +41,9 @@ const Loyalty = model.define("loyalty",{
     }
 })
 
-Loyalty.hasOne(LoyaltyType.Get, {
-    foreignKey: "id",
-    sourceKey:"type_loyalty_id"
-})
-
-Promo.Get.belongsTo(Loyalty, {
-    sourceKey:"loyalty_id"
-})
+// Promo.Get.belongsTo(Loyalty, {
+//     sourceKey:"loyalty_id"
+// })
 
 Loyalty.hasMany(Promo.Get, {
     sourceKey:"Loyalty.id",
