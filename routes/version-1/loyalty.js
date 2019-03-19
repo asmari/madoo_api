@@ -28,6 +28,12 @@ async function routes (fastify, options) {
         ...loyaltySchema.loyaltyDetailSchema,
         beforeHandler:[fastify.authenticate]
     }, loyaltyController.getDetailLoyalty)
+
+
+    fastify.post("/delete/member", {
+        ...loyaltySchema.loyaltyDeleteMembercard,
+        beforeHandler:[fastify.authenticate]
+    }, loyaltyController.doDeleteLoyaltyMemberCard)
     
 }
 
