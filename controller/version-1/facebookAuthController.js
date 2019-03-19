@@ -54,13 +54,6 @@ exports.doRegisterFacebook = (request, reply) => {
         }
 
 
-        if(!params.hasOwnProperty("country_code")){
-            return reply.send(helper.Fail({
-                message:"Field country_code is required"
-            }))
-        }
-
-
         let fingerprint = params.hasOwnProperty("fingerprint") ? params.fingerprint:0
         let image = params.hasOwnProperty("image") ? params.image: null
 
@@ -191,14 +184,7 @@ exports.doLoginFacebook = (request, reply) => {
 
                 let payload = {
                     id: member.id,
-                    full_name: member.full_name,
-                    email: member.email,
-                    country_code: member.country_code,
-                    mobile_phone: member.mobile_phone,
-                    image: member.image,
-                    created_at: member.created_at,
-                    updated_at: member.updated_at,
-                    fingerprint: member.finggerprint
+                    oauth:true
                 };
     
                 reply.jwtSign(payload, (err, token) => {
