@@ -37,3 +37,13 @@ exports.loyaltyListSchema = {
         
     }
 }
+
+exports.loyaltyDetailSchema = {
+    schema:{
+        querystring:{
+            loyalty_id:{
+                type:"integer"
+            }
+        }
+    }
+}
