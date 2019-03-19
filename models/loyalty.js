@@ -41,9 +41,9 @@ const Loyalty = model.define("loyalty",{
     }
 })
 
-// Promo.Get.belongsTo(Loyalty, {
-//     sourceKey:"loyalty_id"
-// })
+Promo.Get.belongsTo(Loyalty, {
+    sourceKey:"loyalty_id"
+})
 
 Loyalty.hasMany(Promo.Get, {
     sourceKey:"Loyalty.id",
