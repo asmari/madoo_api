@@ -3,6 +3,7 @@ const connect = require("./conn/sequelize")
 const model = connect.sequelize
 
 
+const Loyalty = require('./loyalty');
 const Promo = model.define("promo",{
     loyalty_id:{
         type:sequelize.STRING,
@@ -11,6 +12,10 @@ const Promo = model.define("promo",{
             notEmpty:{
                 msg: "Loyalty id is required"
             }
+        },
+        references: {
+            model: Loyalty.Get,
+            key: "id"
         }
     },
     title:{
@@ -37,5 +42,4 @@ const Promo = model.define("promo",{
     freezeTableName:true,
     tableName:"promo",
 })
-
 exports.Get = Promo
