@@ -7,7 +7,91 @@ const Op = sequelize.Op
 const Loyalty = model.Loyalty.Get
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get
 const MemberCards = model.MembersCards.Get
+const Promo = model.Promo.Get
 
+//Get Detail Member Card with loyalty
+exports.getDetailMember = async (request, reply) => {
+
+    try{
+
+        const params = JSON.parse(JSON.stringify(request.query)) || {}
+        const user = request.user
+
+        console.log(params)
+
+        if(request.validationError){
+            throw(request.validationError)
+        }
+
+        if(!params.hasOwnProperty("loyalty_id")){
+            throw({
+                message:"Field loyalty_id not found"
+            })
+        }
+
+        MemberCards.findOne({
+            where:{
+                members_id:user.id
+            },
+            include:[{
+                model:LoyaltyMemberCards,
+                
+                include:[{
+                    model:Loyalty,
+                    required:true,
+                    where:{
+                        id:params.loyalty_id
+                    }
+                }]
+            }]
+        })
+        .then( async (memberCards) => {
+            if(memberCards != null){
+
+                let loyaltyCards = memberCards.loyalty_has_member_cards[0];
+
+                if(loyaltyCards != null){
+                    let loyalty = loyaltyCards.loyalty
+
+                    if(loyalty != null){
+                        let promo = await Promo.findAll({
+                            raw:true,
+                            where:{
+                                loyalty_id:loyalty.id
+                            }
+                        })
+
+                        if(promo != null){
+                            loyalty.dataValues.promo = promo;
+                        }else{
+                            loyalty.dataValues.promo = [];
+                        }
+
+                        loyaltyCards.dataValues.loyalty = loyalty
+                        memberCards.loyalty_has_member_cards[0] = loyaltyCards  
+                    }
+                }
+
+                reply.send(helper.Success(memberCards))
+            }else{
+                reply.send(helper.Fail({
+                    message:"Member cards with loyalty not found!",
+                    statusCode:404
+                }))
+            }
+            
+        })
+        .catch((err) => {
+            reply.send(helper.Fail(err))
+        })
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+    
+}
+
+//List Detail Member Card
 exports.getLoyaltyMember = async (request, reply) => {
     try{
 
