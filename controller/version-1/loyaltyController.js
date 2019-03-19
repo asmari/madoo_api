@@ -10,6 +10,43 @@ const LoyaltyType = model.LoyaltyType.Get
 const MemberCards = model.MembersCards.Get
 const Promo = model.Promo.Get
 
+//Delete Membercard loyalty
+exports.doDeleteLoyaltyMemberCard = async (request, reply) => {
+    try{
+
+        const user = request.user
+        const params = request.body || {};
+
+        if(!params.hasOwnProperty("member_cards_id")){
+            throw({
+                message:"Field member_cards_id is required"
+            })
+        }
+
+        let memberCard = await MemberCards.findOne({
+            where:{
+                members_id:user.id,
+                id:params.member_cards_id
+            },
+            include:[LoyaltyMemberCards]
+        })
+
+        if(memberCard != null){
+            memberCard.destroy();
+            reply.send(helper.Success({
+                delete:true
+            }))
+        }
+
+        reply.send(helper.Success({
+            delete:false
+        }))
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+}
+
 //Get Detail Member Card with loyalty
 exports.getDetailMember = async (request, reply) => {
 
