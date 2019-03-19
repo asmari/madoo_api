@@ -254,3 +254,26 @@ exports.getListLoyalty = async (request, reply) => {
         reply.send(helper.Fail(err))
     }
 }
+
+//get detail loyalty
+exports.getDetailLoyalty = async (request, reply) => {
+
+    try{
+
+        const query = JSON.parse(JSON.stringify(request.query))
+
+        const loyalty = await Loyalty.findOne({
+            where:{
+                id:query.loyalty_id
+            },
+            include:[Promo]
+        })
+        
+
+        reply.send(helper.Success(loyalty))
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+
+}
