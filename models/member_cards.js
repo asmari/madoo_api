@@ -88,7 +88,8 @@ const MemberCards = model.define('member_cards',{
 // MemberCards.hasOne(Members.Get, {foreignKey: "id"})
 MemberCards.hasMany(LoyaltyMemberCards.Get, {
     foreignKey: "member_cards_id",
-    sourceKey: "id"
+    sourceKey: "id",
+    onDelete:"CASCADE"
 })
 
 sequelizePaginate.paginate(MemberCards)
