@@ -19,3 +19,15 @@ exports.loyaltyMemberListSchema = {
         }
     }
 }
+
+
+exports.loyaltyMemberDetailSchema = {
+    schema:{
+        querystring:{
+            loyalty_id:{
+                type:"integer"
+            }
+        }
+        
+    }
+}
