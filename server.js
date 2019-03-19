@@ -11,6 +11,8 @@ const fastifyFileUpload = require("fastify-file-upload")
 
 require('dotenv').config()
 
+const security = require("./security") 
+
 const config = require("./config").get
 
 // Require the framework and instantiate it
@@ -20,11 +22,8 @@ const fastify = require('fastify')({
 })
 const jwt = require('fastify-jwt')
 
-fastify.register(jwt, {
-	secret: function (request, reply, callback) {
-		callback(null, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
-	}
-})
+//register jwt security 
+fastify.register(security)
 
 //register upload file plugin
 fastify.register(fastifyFileUpload)
@@ -49,7 +48,8 @@ if(!fs.existsSync("./upload")){
 // Run the server!
 fastify.listen(config.serverPort , function (err, address) {
 	if (err) {
-		fastify.log.error(err)
+		console.log(err)
+		// fastify.log.error(err)
 		process.exit(1)
 	}
 })

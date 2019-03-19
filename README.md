@@ -13,5 +13,21 @@ copy the `.env.sample` file to `.env` and put the configuration for DB and serve
 - DB_PASSWORD=password for database
 - SERVER_PORT=port for running server (default : 3000)
 
+## Security
+Security for api is using JWT. To add security for each route, you can add `fastify.authenticate` with `beforeHandler` options. Example : 
+
+```Javascript
+
+    //Example Routing to index
+    /* if jwt not included on header, the route will redirect to 401 not authorized, else will print Hello World! */
+
+    fastify.get("/", {
+        beforeHandler:fastify.authenticate
+    },(request, reply) => {
+        reply.send("Hello World!")
+    })
+
+```
+
 ## run at localhost:3000
 npm start

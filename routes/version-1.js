@@ -8,6 +8,8 @@ async function routes(fastify, options) {
     fastify.register(require('./version-1/auth'), { prefix: '/auth' })
 
     fastify.register(require('./version-1/members'), { prefix: '/members' })
+
+    fastify.register(require("./version-1/loyalty"), { prefix: '/loyalty' })
 }
 
 module.exports = routes
