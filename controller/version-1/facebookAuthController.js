@@ -1,4 +1,5 @@
 const model = require('../../models');
+const otpHelper = require("../../helper/otpHelper");
 const helper = require('../../helper');
 const bcrypt = require('bcrypt');
 
@@ -6,10 +7,11 @@ const conn = require('../../models/conn/sequelize');
 const sequelize = conn.sequelize;
 
 const Members = model.Members.Get;
+const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 
 //register fb oauth
-exports.doRegisterFacebook = (request, reply) => {
+exports.doRegisterFacebook = async (request, reply) => {
 
     try{
 
@@ -57,10 +59,8 @@ exports.doRegisterFacebook = (request, reply) => {
         let fingerprint = params.hasOwnProperty("fingerprint") ? params.fingerprint:0
         let image = params.hasOwnProperty("image") ? params.image: null
 
-        const hash = bcrypt.hashSync(params.pin.toString(), 10);
-
         // start transaction
-        sequelize.transaction((t) => {
+        sequelize.transaction( async (t) => {
             
             //find email unique
             return Members.findOne({
@@ -80,7 +80,7 @@ exports.doRegisterFacebook = (request, reply) => {
                         mobile_phone:params.mobile_phone
                     }
                 })
-            }).then((member) => {
+            }).then( async (member) => {
 
 
                 if(member != null){
@@ -90,27 +90,52 @@ exports.doRegisterFacebook = (request, reply) => {
                 }
 
                 //create member
-                return Members.create({
-                    full_name:params.full_name,
-                    email: params.email,
-                    fb_id: params.fb_id,
-                    fb_token : params.fb_token,
-                    mobile_phone:params.mobile_phone,
-                    pin:params.pin,
-                    finggerprint:fingerprint,
-                    image:image
+                const exists = await MembersRegister
+                .findOne({
+                    where:
+                    {
+                        mobile_phone: params.mobile_phone, 
+                        status: "pending"
+                    }
                 })
-            }).then((members) => {
 
-                //create pin for member
-                return Pins.create({
-                    members_id: members.id,
-                    token:0,
-                    expired:new Date(),
-                    wrong:0,
-                    pin: hash}, { transaction: t }).then(pins => {
-                        return Members.findByPk(pins.member_id);
+                if(exists != null){
+                    return exists
+                }else{
+
+                    return MembersRegister.create({
+                        full_name:params.full_name,
+                        email: params.email,
+                        fb_id: params.fb_id,
+                        fb_token : params.fb_token,
+                        mobile_phone:params.mobile_phone,
+                        pin:params.pin,
+                        finggerprint:fingerprint,
+                        image:image,
+                        status:"pending"
                     })
+                }
+            })
+            .then((members) => {
+
+                return otpHelper.sendOtp({
+                    members_register_id:members.id
+                })
+                .then((otp) => {
+
+                    return members
+
+                })
+
+            //     //create pin for member
+            //     return Pins.create({
+            //         members_id: members.id,
+            //         token:0,
+            //         expired:new Date(),
+            //         wrong:0,
+            //         pin: hash}, { transaction: t }).then(pins => {
+            //             return Members.findByPk(pins.member_id);
+            //         })
             })
 
             
@@ -131,6 +156,52 @@ exports.doRegisterFacebook = (request, reply) => {
         reply.code(500).send(helper.Fail(err))
     }
 
+
+}
+
+// check otp facebook oauth
+exports.doCheckOtp = async (request, reply) => {
+
+    try{
+
+        const body = request.body
+
+        const member = await MembersRegister.findOne({
+            where:{
+                mobile_phone:body.mobile_phone,
+                email:body.email,
+                fb_id:body.fb_id
+            }
+        })
+
+        if(member != null){
+
+            const { status, message } = await otpHelper.checkOtp(body.otp, {
+                members_register_id:member.id
+            })
+            
+            if(status){
+                reply.send(helper.Success({
+                    otp_status: status
+                }, message))
+            }else{
+                reply.send(helper.Fail({
+                    message:message
+                }))
+            }
+
+        }else{
+
+            throw({
+                message:"Member not found",
+                statusCode:404
+            })
+
+        }
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
 
 }
 
