@@ -128,6 +128,7 @@ exports.doSaveMember= (request, reply) => {
                                                                 access_token: token,
                                                                 fingerprint: registeredMember.finggerprint
                                                             };
+                                                            pin.update({token:token});
                                                             return reply.code(200).send(helper.Success(res))
                                                         }
                                                     })

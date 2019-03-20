@@ -1,0 +1,21 @@
+exports.promoListSchema = {
+    schema:{
+        querystring:{
+            page:{
+                type:"integer"
+            },
+            item:{
+                type:"integer"
+            },
+            search:{
+                type:"string"
+            },
+            sort:{
+                type:"string"
+            },
+            filter:{
+                type:"array"
+            }
+        }
+    }
+}
