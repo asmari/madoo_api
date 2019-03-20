@@ -21,6 +21,9 @@ async function routes(fastify, options) {
 
     // check login data from facebook oauth
     fastify.post("/facebook", facebookAuthSchema.facebookLoginSchema, facebookAuthController.doLoginFacebook)
+
+    // check otp sms facebook 
+    fastify.post("/facebook/otp", facebookAuthSchema.facebookOtpSchema, facebookAuthController.doCheckOtp)
 }
 
 module.exports = routes

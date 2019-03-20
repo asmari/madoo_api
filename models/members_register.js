@@ -5,6 +5,10 @@ const model = connet.sequelize;
 const Otp = require('./otp_members');
 
 const MembersRegister = model.define('members_register', {
+    id:{
+        type:Sequelize.INTEGER,
+        primaryKey:true
+    },
     full_name: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -29,16 +33,16 @@ const MembersRegister = model.define('members_register', {
             msg: 'Email address already in use!'
         }
     },
-    country_code: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: "Country Code is required"
-            },
-            isNumeric: true,
-        }
-    },
+    // country_code: {
+    //     type: Sequelize.STRING,
+    //     allowNull: false,
+    //     validate: {
+    //         notEmpty: {
+    //             msg: "Country Code is required"
+    //         },
+    //         isNumeric: true,
+    //     }
+    // },
     mobile_phone: {
         type: Sequelize.STRING,
         allowNull: false,

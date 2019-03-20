@@ -12,6 +12,32 @@ exports.facebookLoginSchema = {
     }
 }
 
+exports.facebookOtpSchema = {
+    schema:{
+        body:{
+            type:"object",
+            required:["otp", "mobile_phone", "fb_id", "fb_token", "email"],
+            properties:{
+                email:{
+                    type:"string"
+                },
+                fb_id:{
+                    type:"string"
+                },
+                fb_token:{
+                    type:"string"
+                },
+                otp:{
+                    type:"integer"
+                },
+                mobile_phone:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
+
 exports.facebookRegisterSchema = {
     schema:{
         consumes:["multipart/form-data"],
