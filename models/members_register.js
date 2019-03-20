@@ -61,6 +61,22 @@ const MembersRegister = model.define('members_register', {
                 msg: "Status name is required"
             },
         }
+    },
+    fb_id:{
+        type:Sequelize.STRING,
+        allowNull:true
+    },
+    fb_token:{
+        type:Sequelize.STRING,
+        allowNull:true
+    },
+    g_id:{
+        type:Sequelize.STRING,
+        allowNull:true
+    },
+    g_token:{
+        type:Sequelize.STRING,
+        allowNull:true
     }
 }, {
     timestamps: true,

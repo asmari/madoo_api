@@ -26,6 +26,19 @@ const Loyalty = model.define("loyalty",{
     bg_color:{
         type:Sequelize.STRING,
         allowNull:true
+    },
+    api_user_detail:{
+        type:Sequelize.TEXT,
+        allowNull:true
+    },
+    api_user_point:{
+        type:Sequelize.TEXT
+    },
+    api_point_plus:{
+        type:Sequelize.TEXT
+    },
+    api_point_minus:{
+        type:Sequelize.TEXT
     }
 },{
     timestamps:true,

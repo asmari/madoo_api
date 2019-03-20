@@ -6,13 +6,6 @@ const model = connet.sequelize;
 const Members = require('./members');
 
 const PinMembers = model.define('pin_members', {
-    member_id: {
-        type: Sequelize.INTEGER,
-        references: {
-            model: Members.Get,
-            key: "id"
-        }
-    },
     members_id: {
         type: Sequelize.INTEGER
     },

@@ -29,7 +29,7 @@ const MemberCards = model.define('member_cards',{
             }
         }
     },
-    member_type:{
+    type_id:{
         type:Sequelize.STRING,
         allowNull:false,
         validate:{
@@ -62,10 +62,10 @@ const MemberCards = model.define('member_cards',{
         type:Sequelize.STRING,
         allowNull:true
     },
-    cvv:{
-        type:Sequelize.STRING,
-        allowNull:true
-    },
+    // cvv:{
+    //     type:Sequelize.STRING,
+    //     allowNull:true
+    // },
     signup_date:{
         type:Sequelize.DATE,
         allowNull:false
@@ -74,7 +74,7 @@ const MemberCards = model.define('member_cards',{
         type:Sequelize.DATE,
         allowNull:false
     },
-    point:{
+    point_balance:{
         type:Sequelize.INTEGER,
         allowNull:false
     }
