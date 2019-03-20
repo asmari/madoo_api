@@ -1,5 +1,5 @@
 async function routes(fastify, options) {
-    fastify.get('/', async function(request, reply) {
+    fastify.get('/', { schema: {hide: true}}, async function(request, reply) {
         return reply.code(200).send({ hello: 'fuad' });
     });
 
