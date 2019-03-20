@@ -83,6 +83,6 @@ const Members = model.define('members', {
     paranoid: true
 });
 
-Members.hasOne(Pins.Get, {foreignKey: 'member_id'})
+Members.hasOne(Pins.Get, {foreignKey: 'members_id'})
 
 exports.Get = Members;

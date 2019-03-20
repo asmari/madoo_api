@@ -22,9 +22,9 @@ const OtpMembers = model.define('otp_members', {
         }
     },
     expired: {
-        type: Sequelize.INTEGER
+        type: Sequelize.DATE
     },
-    type_message: {
+    error_message: {
         type: Sequelize.STRING
     },
 }, {
