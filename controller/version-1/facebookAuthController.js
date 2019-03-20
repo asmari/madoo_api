@@ -104,10 +104,9 @@ exports.doRegisterFacebook = (request, reply) => {
 
                 //create pin for member
                 return Pins.create({
-                    member_id: members.id,
                     members_id: members.id,
                     token:0,
-                    expired:0,
+                    expired:new Date(),
                     wrong:0,
                     pin: hash}, { transaction: t }).then(pins => {
                         return Members.findByPk(pins.member_id);
