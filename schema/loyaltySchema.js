@@ -1,32 +1,51 @@
 exports.loyaltyMemberListSchema = {
     schema:{
-        properties:{
-            page:{
-                type:"integer"
-            },
-            item:{
-                type:"integer"
-            },
-            search:{
-                type:"string"
-            },
-            sort:{
-                type:"string"
-            },
-            filter:{
-                type:"array"
+        security: [
+            {
+              "BearerAuth": []
             }
-        }
+        ],
+        querystring:{
+            type:"object",
+            properties:{
+                page:{
+                    type:"integer"
+                },
+                item:{
+                    type:"integer"
+                },
+                search:{
+                    type:"string"
+                },
+                sort:{
+                    type:"string"
+                },
+                filter:{
+                    type:"array"
+                }
+            }
+        },
+        
     }
+    
 }
 
 
 exports.loyaltyMemberDetailSchema = {
     schema:{
-        querystring:{
-            loyalty_id:{
-                type:"integer"
+        security: [
+            {
+              "BearerAuth": []
             }
+        ],
+        querystring:{
+            type:"object",
+            properties:{
+                loyalty_id:{
+                    type:"integer"
+                }
+            },
+            required:["loyalty_id"]
         }
         
     }
@@ -34,29 +53,47 @@ exports.loyaltyMemberDetailSchema = {
 
 exports.loyaltyListSchema = {
     schema:{
-        
+        security: [
+            {
+              "BearerAuth": []
+            }
+        ]    
     }
 }
 
 exports.loyaltyDetailSchema = {
     schema:{
-        querystring:{
-            loyalty_id:{
-                type:"integer"
+        security: [
+            {
+              "BearerAuth": []
             }
+        ],
+        querystring:{
+            type:"object",
+            properties:{
+                loyalty_id:{
+                    type:"integer"
+                }
+            },
+            required:["loyalty_id"]    
         }
     }
 }
 
 exports.loyaltyDeleteMembercard = {
     schema:{
-        required:["member_card_id"],
+        security: [
+            {
+              "BearerAuth": []
+            }
+        ],
         body:{
             properties:{
-                member_card_id:{
+                member_cards_id:{
                     type:"string"
                 }
-            }
+            },
+            required:["member_cards_id"]
         }
     }
 }
