@@ -8,7 +8,7 @@ const facebookAuthSchema = require("../../schema/facebookAuthSchema")
 
 async function routes(fastify, options) {
     // get members
-    fastify.get('/', authController.authIndex)
+    fastify.get('/', { schema: {hide: true}}, authController.authIndex)
 
     // login members
     fastify.post('/login',authSchema.authLoginSchema, authController.doLogin)

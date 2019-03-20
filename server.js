@@ -36,7 +36,7 @@ fastify.register(fastifyFormBody)
 // fastify.register(fastifyMultipart)
 
 // Declare a route
-fastify.get('/', function (request, reply) {
+fastify.get('/', { schema: {hide: true}}, function (request, reply) {
 	reply.send({ hello: 'fuad' })
 })
 
