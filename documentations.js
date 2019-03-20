@@ -8,11 +8,11 @@ module.exports = fp(async (fastify, options) => {
         exposeRoute:true,
         swagger:{
             info:{
-                title: "Husky Swagger",
+                title: "Husky Rest API Swagger",
                 description : "Documentations for Husky",
                 version: "1.0.0"
             },
-            host:"localhost:" + config.get.serverPort,
+            host:process.env.BASE_URL || "localhost:" + config.get.serverPort,
             schemes:["http"],
             consumes:["application/json"],
             produces:["application/json"],
