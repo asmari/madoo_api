@@ -16,9 +16,6 @@ async function routes(fastify, options) {
     // register using google oauth data
     fastify.post('/register/google', googleAuthSchema.googleRegisterSchema, googleAuthController.doRegisterGoogle)
 
-    // register using facebook oauth data
-    fastify.post("/register/facebook", facebookAuthSchema.facebookRegisterSchema, facebookAuthController.doRegisterFacebook)
-
     // OTP validation
     fastify.post('/otp/validation',memberSchema.otpSchema, memberController.doOtpValidation)
 

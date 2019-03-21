@@ -120,7 +120,7 @@ exports.doRegisterFacebook = async (request, reply) => {
 
                 return otpHelper.sendOtp({
                     members_register_id:members.id
-                })
+                }, params.mobile_phone)
                 .then((otp) => {
 
                     return members
@@ -198,6 +198,90 @@ exports.doCheckOtp = async (request, reply) => {
             })
 
         }
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+
+}
+
+//do save member with facebook
+exports.doSaveMember = async (request, reply) => {
+
+    try{
+
+        const params = request.body
+        const date = new Date()
+
+        const pin = bcrypt.hashSync(params.pin.toString(), 10)
+
+        const memberRegister = await MembersRegister.findOne({
+            where:{
+                email:params.email,
+                mobile_phone:params.mobile_phone,
+                status:"pending"
+            }
+        })
+
+        if(memberRegister != null){
+
+            const member = await Members.create({
+                ...params,
+                fb_id:memberRegister.fb_id,
+                fb_token:memberRegister.fb_token
+            })
+
+            await Pins.create({
+                pin,
+                members_id:member.id,
+                expired:date
+            })
+
+            await memberRegister.update({
+                status:"registered"
+            })
+
+            let payload = {
+                id:member.id,
+                oauth:true
+            }
+
+            console.log(payload)
+
+            let token = await new Promise((resolve, reject) => {
+                reply.jwtSign(payload, (err, token) => {
+
+                  if(err){
+                      reject(err)
+                  }else{
+                      resolve(token)
+                  }
+
+                })
+            })
+
+            if(token != null){
+
+                return reply.send(helper.Success({
+                    token_type: "Bearer",
+                    access_token:token,
+                    fingerprint: member.finggerprint || 0
+                }))
+
+            }else{
+                throw({
+                    message:"Token is null",
+                    statusCode:5000
+                })
+            }
+
+
+        }
+
+        throw({
+            message:"Member register not found",
+            statusCode:404
+        })
 
     }catch(err){
         reply.send(helper.Fail(err))
