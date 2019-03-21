@@ -5,10 +5,6 @@ const model = connet.sequelize;
 const Otp = require('./otp_members');
 
 const MembersRegister = model.define('members_register', {
-    id:{
-        type:Sequelize.INTEGER,
-        primaryKey:true
-    },
     full_name: {
         type: Sequelize.STRING,
         allowNull: false,
