@@ -14,6 +14,8 @@ async function routes(fastify, options) {
     fastify.register(require("./version-1/promo"), { prefix: '/promo' })
 
     fastify.register(require("./version-1/facebook"), { prefix: "/facebook" })
+
+    fastify.register(require("./version-1/google"), { prefix: '/google' })
 }
 
 module.exports = routes
