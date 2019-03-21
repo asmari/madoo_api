@@ -7,6 +7,7 @@ const sequelize = conn.sequelize;
 const resolve = require("path").resolve
 
 const Members = model.Members.Get;
+const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 
 //register google oauth
