@@ -85,7 +85,7 @@ exports.doRegisterGoogle = (request, reply) => {
                         mobile_phone:params.mobile_phone
                     }
                 })
-            }).then((member) => {
+            }).then(async (member) => {
 
 
                 if(member != null){
