@@ -15,9 +15,6 @@ async function routes(fastify, options) {
 
     // check member
     fastify.post("/check", authSchema.authCheckSchema, authController.doCheckMember)
-
-    // check login data from google oauth
-    fastify.post("/google", googleAuthSchema.googleLoginSchema, googleAuthController.doLoginGoogle)
 }
 
 module.exports = routes

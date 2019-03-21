@@ -94,27 +94,51 @@ exports.doRegisterGoogle = (request, reply) => {
                 }
 
                 //create member
-                return Members.create({
-                    full_name:params.full_name,
-                    email: params.email,
-                    g_id: params.g_id,
-                    g_token : params.g_token,
-                    mobile_phone:params.mobile_phone,
-                    pin:params.pin,
-                    finggerprint:fingerprint,
-                    image:image
+                const exists = await MembersRegister
+                .findOne({
+                    where:
+                    {
+                        mobile_phone: params.mobile_phone, 
+                        status: "pending"
+                    }
                 })
+
+                if(exists != null){
+                    return exists
+                }else{
+
+                    return MembersRegister.create({
+                        full_name:params.full_name,
+                        email: params.email,
+                        g_id: params.g_id,
+                        g_token : params.g_token,
+                        mobile_phone:params.mobile_phone,
+                        pin:params.pin,
+                        finggerprint:fingerprint,
+                        image:image,
+                        status:"pending"
+                    })
+                }
             }).then((members) => {
 
+                return otpHelper.sendOtp({
+                    members_register_id:members.id
+                }, params.mobile_phone)
+                .then((otp) => {
+
+                    return members
+
+                })
+
                 //create pin for member
-                return Pins.create({
-                    members_id: members.id,
-                    token:0,
-                    expired:new Date(),
-                    wrong:0,
-                    pin: hash}, { transaction: t }).then(pins => {
-                        return Members.findByPk(pins.member_id);
-                    })
+                // return Pins.create({
+                //     members_id: members.id,
+                //     token:0,
+                //     expired:new Date(),
+                //     wrong:0,
+                //     pin: hash}, { transaction: t }).then(pins => {
+                //         return Members.findByPk(pins.member_id);
+                //     })
             })
 
             
@@ -167,6 +191,136 @@ exports.doRegisterGoogle = (request, reply) => {
         reply.code(500).send(helper.Fail(err))
     }
 
+
+}
+
+// check otp facebook oauth
+exports.doCheckOtp = async (request, reply) => {
+
+    try{
+
+        const body = request.body
+
+        const member = await MembersRegister.findOne({
+            where:{
+                mobile_phone:body.mobile_phone,
+                email:body.email,
+                g_id:body.g_id
+            }
+        })
+
+        if(member != null){
+
+            const { status, message } = await otpHelper.checkOtp(body.otp, {
+                members_register_id:member.id
+            })
+            
+            if(status){
+                reply.send(helper.Success({
+                    otp_status: status
+                }, message))
+            }else{
+                reply.send(helper.Fail({
+                    message:message
+                }))
+            }
+
+        }else{
+
+            throw({
+                message:"Member not found",
+                statusCode:404
+            })
+
+        }
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+
+}
+
+//do save member with google
+exports.doSaveMember = async (request, reply) => {
+
+    try{
+
+        const params = request.body
+        const date = new Date()
+
+        const pin = bcrypt.hashSync(params.pin.toString(), 10)
+
+        const memberRegister = await MembersRegister.findOne({
+            where:{
+                email:params.email,
+                mobile_phone:params.mobile_phone,
+                status:"pending"
+            }
+        })
+
+        if(memberRegister != null){
+
+            const member = await Members.create({
+                ...params,
+                g_id:memberRegister.g_id,
+                g_token:memberRegister.g_token
+            })
+
+            await Pins.create({
+                pin,
+                members_id:member.id,
+                expired:date
+            })
+
+            await memberRegister.update({
+                status:"registered"
+            })
+
+            let payload = {
+                id:member.id,
+                oauth:true
+            }
+
+            console.log(payload)
+
+            let token = await new Promise((resolve, reject) => {
+                reply.jwtSign(payload, (err, token) => {
+
+                  if(err){
+                      reject(err)
+                  }else{
+                      resolve(token)
+                  }
+
+                })
+            })
+
+            if(token != null){
+
+                return reply.send(helper.Success({
+                    token_type: "Bearer",
+                    access_token:token,
+                    fingerprint: member.finggerprint || 0
+                }))
+
+            }else{
+                throw({
+                    message:"Token is null",
+                    statusCode:5000
+                })
+            }
+
+
+        }
+
+        throw({
+            message:"Member register not found",
+            statusCode:404
+        })
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
 
 }
 
