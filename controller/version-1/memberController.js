@@ -79,7 +79,6 @@ exports.doSaveMember= async (request, reply) => {
 
         const expired =moment().add(1,'month').format('YYYY-MM-DD HH:mm:ss');
         params.pin = bcrypt.hashSync(params.pin.toString(), 10);
-        params.finggerprint =1;
 
 
         const memberRegister = await MembersRegister.findOne({where:{mobile_phone: params.mobile_phone, status: "pending"}})
