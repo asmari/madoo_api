@@ -68,10 +68,9 @@ exports.authChangePin = {
 exports.authCheckSchema = {
     schema:{
         body:{
-            required: [ "mobile_phone", "country_code" ],
+            required: [ "mobile_phone" ],
             properties:{
-                mobile_phone:{ type:"string" },
-                country_code:{ type:"string" }
+                mobile_phone:{ type:"string" }
             }
         }
     }
