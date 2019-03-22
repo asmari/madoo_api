@@ -10,5 +10,6 @@ exports.get = {
     sms:{
         subAccount:process.env.SMS_SUB_ACCOUNTS,
         token:process.env.SMS_TOKEN
-    }
+    },
+    url:process.env.BASE_URL
 }
