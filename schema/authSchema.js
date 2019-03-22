@@ -5,7 +5,6 @@ exports.authLoginSchema = {
             required:[ "mobile_phone", "pin" ],
             properties:{
                 mobile_phone:{ type:"string" },
-                country_code:{ type:"string" },
                 pin:{ type:"string" }
             }
         }
