@@ -41,6 +41,31 @@ exports.authForgotPinOtpCheck = {
     }
 }
 
+exports.authChangePin = {
+    schema:{
+        body:{
+            required:["mobile_phone", "pin", "confirm_pin"],
+            properties:{
+                mobile_phone:{
+                    type:"string",
+                    minLength:11,
+                    maxLength:15
+                },
+                pin:{
+                    type:"integer",
+                    min:6,
+                    max:6
+                },
+                confirm_pin:{
+                    type:"integer",
+                    min:6,
+                    max:6
+                }
+            }
+        }
+    }
+}
+
 exports.authCheckSchema = {
     schema:{
         body:{
