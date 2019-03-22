@@ -1,4 +1,3 @@
-
 const Sequelize = require('sequelize');
 const connet = require('./conn/sequelize');
 const model = connet.sequelize;
@@ -8,21 +7,42 @@ const MembersRegister = require('./members_register');
 const OtpMembers = model.define('otp_members', {
     members_register_id: {
         type: Sequelize.INTEGER,
+        allowNull:false,
         references: {
             model: MembersRegister.Get,
             key: "id"
         }
     },
-    otp: {
-        type: Sequelize.INTEGER,
+    uid: {
+        type: Sequelize.STRING,
+        allowNull:false,
         validate: {
             notEmpty: {
-                msg: "Otp is required"
+                msg: "Uid is required"
             },
         }
     },
-    expired: {
-        type: Sequelize.DATE
+    resourceUri: {
+        type: Sequelize.STRING,
+        allowNull:false
+    },
+    msisdn: {
+        type: Sequelize.STRING,
+        allowNull:false
+    },
+    status: {
+        type: Sequelize.STRING,
+        allowNull:false
+    },
+    attempt: {
+        type: Sequelize.INTEGER,
+        allowNull:false
+    },
+    expiresAt: {
+        type: Sequelize.STRING
+    },
+    nextSmsAfter: {
+        type: Sequelize.STRING
     },
     error_message: {
         type: Sequelize.STRING
