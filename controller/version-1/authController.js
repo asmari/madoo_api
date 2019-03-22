@@ -191,3 +191,95 @@ exports.checkForgotPinOtp = async (request, reply) => {
         reply.send(helper.Fail(err))
     }
 }
+
+
+//change forgot pin 
+exports.doChangePin = async (request, reply) => {
+    try{
+
+        const params = request.body
+
+        if(params.pin != params.confirm_pin){
+            return reply.send(helper.Fail({
+                message:"Pin not same with confirm pin",
+                statusCode:500
+            }))
+        }
+
+        if(params.pin.toString().length > 6 || params.pin.toString().length < 6){
+            return reply.send(helper.Fail({
+                message:"Pin length must be 6",
+                statusCode:500
+            }))
+        }
+
+        const member = await Members.findOne({
+            where:{
+                mobile_phone:params.mobile_phone
+            }
+        })
+
+        if(member){
+
+            const pin = await Pins.findOne({
+                where:{
+                    members_id:member.id
+                }
+            })
+
+            let newPin = null
+
+            const pinHash = bcrypt.hashSync(params.pin.toString(), 10)
+
+            if(pin == null){
+                newPin = await Pins.create({
+                    pin:pinHash,
+                    members_id:member.id,
+                    token:"",
+                    expired:new Date(),
+                    wrong:0
+                })
+            }else{
+                pin.update({
+                    pin:pinHash,
+                    members_id:member.id
+                })
+
+                newPin = pin
+            }
+
+            const isOauth = member.fb_id != null || member.g_id != null ? true:false
+
+            const payload = {
+                id:member.id,
+                oauth:isOauth
+            }
+
+            reply.jwtSign(payload, function (err, token) {
+                if (err) {
+                    return reply.code(200).send(helper.Fail(err))
+                } else {
+                    let res = {
+                        token_type: 'Bearer',
+                        access_token: token,
+                        fingerprint: member.finggerprint
+                    };
+                    return reply.code(200).send(helper.Success(res))
+                }
+            })
+
+        }else{
+            throw({
+                message:"Member not found",
+                statusCode:404
+            })
+        }
+
+        
+
+    }catch(err){
+
+        reply.send(helper.Fail(err))
+
+    }
+}
