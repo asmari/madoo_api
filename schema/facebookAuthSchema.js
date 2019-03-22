@@ -15,7 +15,7 @@ exports.facebookLoginSchema = {
 exports.facebookSaveMemberSchema = {
     schema:{
         body:{
-            required:[ "full_name", "email", "country_code","mobile_phone" ,"pin"],
+            required:[ "full_name", "email","mobile_phone" ,"pin"],
             properties:{
                 full_name:{ 
                     type:"string",
@@ -26,11 +26,6 @@ exports.facebookSaveMemberSchema = {
                     type:"string", 
                     maxLength:50 ,
                     minLength:3
-                },
-                country_code:{ 
-                    type:"string",
-                    maxLength:4,
-                    minLength:2 
                 },
                 mobile_phone:{ 
                     type:"integer",
