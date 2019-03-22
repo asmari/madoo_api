@@ -1,5 +1,6 @@
 const model = require('../../models');
 const helper = require('../../helper');
+const otpHelper = require("../../helper/otpHelper")
 const bcrypt = require('bcrypt');
 
 const conn = require('../../models/conn/sequelize');
@@ -122,5 +123,71 @@ exports.doLogin = (request, reply) => {
         });
     } catch (err) {
         return reply.code(200).send(helper.Fail(err))
+    }
+}
+
+// forgot pin otp
+exports.setForgotPinOtp = async (request, reply) => {
+    try{
+
+        const params = request.body
+
+        const member = await Members.findOne({
+            where:{
+                mobile_phone:params.mobile_phone
+            }
+        })
+
+
+        if(member){
+
+            const resOtp = await otpHelper.forgotPinOtp({
+                members_id:member.id
+            }, params.mobile_phone)
+
+            reply.send(helper.Success(resOtp))
+
+        }
+
+        throw({
+            message:"Member not found"
+        })
+
+    }catch(err){
+        console.error(err)
+        reply.send(helper.Fail(err))
+    }
+}
+
+// check forgot pin otp
+exports.checkForgotPinOtp = async (request, reply) => {
+    try{
+
+        const params = request.body
+
+        const member = await Members.findOne({
+            where:{
+                mobile_phone:params.mobile_phone
+            }
+        })
+
+
+        if(member){
+
+            const resOtp = await otpHelper.forgotCheckOtp({
+                members_id:member.id
+            }, params.otp)
+
+            reply.send(helper.Success(resOtp))
+
+        }
+
+        throw({
+            message:"Member not found"
+        })
+
+    }catch(err){
+        console.error(err)
+        reply.send(helper.Fail(err))
     }
 }

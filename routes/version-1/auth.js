@@ -15,6 +15,12 @@ async function routes(fastify, options) {
 
     // check member
     fastify.post("/check", authSchema.authCheckSchema, authController.doCheckMember)
+
+    // send otp forgot pin
+    fastify.post("/forgot/pin/otp", authSchema.authForgotPinOtp, authController.setForgotPinOtp)
+
+    // check otp forgot pin
+    fastify.post("/forgot/pin/otp/check", authSchema.authForgotPinOtpCheck, authController.checkForgotPinOtp)
 }
 
 module.exports = routes
