@@ -21,6 +21,9 @@ async function routes(fastify, options) {
 
     // check otp forgot pin
     fastify.post("/forgot/pin/otp/check", authSchema.authForgotPinOtpCheck, authController.checkForgotPinOtp)
+
+    // change pin and login
+    fastify.post("/forgot/pin/change", authSchema.authChangePin, authController.doChangePin)
 }
 
 module.exports = routes
