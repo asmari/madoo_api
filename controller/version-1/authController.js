@@ -26,13 +26,7 @@ exports.doCheckMember = (request, reply) => {
             }
         }
 
-        if(!params.hasOwnProperty("country_code")){
-            throw {
-                message: "Field country_code is required"
-            }
-        }
-
-        Members.findOne({ where : {mobile_phone: params.mobile_phone, country_code: params.country_code}}).then(member => {
+        Members.findOne({ where : {mobile_phone: params.mobile_phone}}).then(member => {
 
             if(member != null){
                 return reply.send(helper.Success({
