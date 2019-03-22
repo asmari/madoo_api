@@ -12,6 +12,75 @@ exports.facebookLoginSchema = {
     }
 }
 
+exports.facebookSaveMemberSchema = {
+    schema:{
+        body:{
+            required:[ "full_name", "email", "country_code","mobile_phone" ,"pin"],
+            properties:{
+                full_name:{ 
+                    type:"string",
+                    maxLength: 50 ,
+                    minLength:3 
+                },
+                email:{ 
+                    type:"string", 
+                    maxLength:50 ,
+                    minLength:3
+                },
+                country_code:{ 
+                    type:"string",
+                    maxLength:4,
+                    minLength:2 
+                },
+                mobile_phone:{ 
+                    type:"integer",
+                    maxLength:12,
+                    minLength:11 
+                },
+                pin:{ 
+                    type:"integer",
+                    maxLength:6,
+                    minLength:6 
+                },
+                image:{
+                    type:"string",
+                    // isFileType:true,
+                    // type:"object"
+                },
+                fingerprint:{
+                    type:"integer"
+                }
+            }
+        }
+    }
+}
+
+exports.facebookOtpSchema = {
+    schema:{
+        body:{
+            type:"object",
+            required:["otp", "mobile_phone", "fb_id", "fb_token", "email"],
+            properties:{
+                email:{
+                    type:"string"
+                },
+                fb_id:{
+                    type:"string"
+                },
+                fb_token:{
+                    type:"string"
+                },
+                otp:{
+                    type:"integer"
+                },
+                mobile_phone:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
+
 exports.facebookRegisterSchema = {
     schema:{
         consumes:["multipart/form-data"],

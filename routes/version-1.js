@@ -1,5 +1,5 @@
 async function routes(fastify, options) {
-    fastify.get('/', async function(request, reply) {
+    fastify.get('/', { schema: {hide: true}}, async function(request, reply) {
         return reply.code(200).send({ hello: 'fuad' });
     });
 
@@ -12,6 +12,10 @@ async function routes(fastify, options) {
     fastify.register(require("./version-1/loyalty"), { prefix: '/loyalty' })
 
     fastify.register(require("./version-1/promo"), { prefix: '/promo' })
+
+    fastify.register(require("./version-1/facebook"), { prefix: "/facebook" })
+
+    fastify.register(require("./version-1/google"), { prefix: '/google' })
 }
 
 module.exports = routes

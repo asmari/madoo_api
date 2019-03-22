@@ -29,16 +29,16 @@ const MembersRegister = model.define('members_register', {
             msg: 'Email address already in use!'
         }
     },
-    country_code: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        validate: {
-            notEmpty: {
-                msg: "Country Code is required"
-            },
-            isNumeric: true,
-        }
-    },
+    // country_code: {
+    //     type: Sequelize.STRING,
+    //     allowNull: false,
+    //     validate: {
+    //         notEmpty: {
+    //             msg: "Country Code is required"
+    //         },
+    //         isNumeric: true,
+    //     }
+    // },
     mobile_phone: {
         type: Sequelize.STRING,
         allowNull: false,
@@ -61,6 +61,22 @@ const MembersRegister = model.define('members_register', {
                 msg: "Status name is required"
             },
         }
+    },
+    fb_id:{
+        type:Sequelize.STRING,
+        allowNull:true
+    },
+    fb_token:{
+        type:Sequelize.STRING,
+        allowNull:true
+    },
+    g_id:{
+        type:Sequelize.STRING,
+        allowNull:true
+    },
+    g_token:{
+        type:Sequelize.STRING,
+        allowNull:true
     }
 }, {
     timestamps: true,

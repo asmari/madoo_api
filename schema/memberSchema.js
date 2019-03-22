@@ -2,7 +2,7 @@ exports.registerSchema = {
     schema: {
         body: {
             //Required body paramter for register
-            required:[ "full_name", "email", "country_code","mobile_phone" ],
+            required:[ "full_name", "country_code","mobile_phone" ],
             properties:{
                 full_name:{ type:"string",maxLength: 50 ,minLength:3 },
                 email:{ type:"string" , maxLength: 50 ,minLength:3},
@@ -32,7 +32,7 @@ exports.memberSchema = {
     schema: {
         body: {
             //Required body paramter for save member
-            required:[ "full_name", "email", "country_code","mobile_phone" ,"pin"],
+            required:[ "full_name", "country_code","mobile_phone" ,"pin"],
             properties:{
                 full_name:{ type:"string",maxLength: 50 ,minLength:3 },
                 email:{ type:"string" , maxLength: 50 ,minLength:3},

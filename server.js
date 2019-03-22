@@ -12,7 +12,7 @@ const fastifyFileUpload = require("fastify-file-upload")
 require('dotenv').config()
 
 const security = require("./security") 
-
+const documentations = require("./documentations")
 const config = require("./config").get
 
 // Require the framework and instantiate it
@@ -25,6 +25,9 @@ const jwt = require('fastify-jwt')
 //register jwt security 
 fastify.register(security)
 
+//register fastify swagger
+fastify.register(documentations)
+
 //register upload file plugin
 fastify.register(fastifyFileUpload)
 
@@ -33,7 +36,7 @@ fastify.register(fastifyFormBody)
 // fastify.register(fastifyMultipart)
 
 // Declare a route
-fastify.get('/', function (request, reply) {
+fastify.get('/', { schema: {hide: true}}, function (request, reply) {
 	reply.send({ hello: 'fuad' })
 })
 

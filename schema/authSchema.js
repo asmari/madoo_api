@@ -12,6 +12,60 @@ exports.authLoginSchema = {
     }
 }
 
+exports.authForgotPinOtp = {
+    schema:{
+        body:{
+            required:[ "mobile_phone"],
+            properties:{
+                mobile_phone:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
+
+exports.authForgotPinOtpCheck = {
+    schema:{
+        body:{
+            required:[ "mobile_phone", "otp"],
+            properties:{
+                mobile_phone:{
+                    type:"string"
+                },
+                otp:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
+
+exports.authChangePin = {
+    schema:{
+        body:{
+            required:["mobile_phone", "pin", "confirm_pin"],
+            properties:{
+                mobile_phone:{
+                    type:"string",
+                    minLength:11,
+                    maxLength:15
+                },
+                pin:{
+                    type:"integer",
+                    min:6,
+                    max:6
+                },
+                confirm_pin:{
+                    type:"integer",
+                    min:6,
+                    max:6
+                }
+            }
+        }
+    }
+}
+
 exports.authCheckSchema = {
     schema:{
         body:{

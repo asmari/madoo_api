@@ -8,7 +8,7 @@ const facebookAuthSchema = require("../../schema/facebookAuthSchema")
 
 async function routes(fastify, options) {
     // get members
-    fastify.get('/', authController.authIndex)
+    fastify.get('/', { schema: {hide: true}}, authController.authIndex)
 
     // login members
     fastify.post('/login',authSchema.authLoginSchema, authController.doLogin)
@@ -16,11 +16,14 @@ async function routes(fastify, options) {
     // check member
     fastify.post("/check", authSchema.authCheckSchema, authController.doCheckMember)
 
-    // check login data from google oauth
-    fastify.post("/google", googleAuthSchema.googleLoginSchema, googleAuthController.doLoginGoogle)
+    // send otp forgot pin
+    fastify.post("/forgot/pin/otp", authSchema.authForgotPinOtp, authController.setForgotPinOtp)
 
-    // check login data from facebook oauth
-    fastify.post("/facebook", facebookAuthSchema.facebookLoginSchema, facebookAuthController.doLoginFacebook)
+    // check otp forgot pin
+    fastify.post("/forgot/pin/otp/check", authSchema.authForgotPinOtpCheck, authController.checkForgotPinOtp)
+
+    // change pin and login
+    fastify.post("/forgot/pin/change", authSchema.authChangePin, authController.doChangePin)
 }
 
 module.exports = routes
