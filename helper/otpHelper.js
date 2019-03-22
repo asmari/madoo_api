@@ -80,90 +80,73 @@ exports.forgotPinOtp = (condition, phoneNumber = null) => {
 
 exports.sendOtp = (condition, phoneNumber = null) => {
 
-    let values = {
-        otp:createOtp(),
-        expired:createExpireDate(2)
-    }
-
     return Otp.findOne({
         where:condition,
     }).then(async (otp) => {
 
-        if(otp != null){
-            otp.update({
-                ...values,
-                ...condition
-            })
-        }else{
-            Otp.create({
-                ...values,
-                ...condition
-            })
-        }
-
-        if(phoneNumber != null){
-
+        if (phoneNumber != null) {
             const waveSender = new WaveCellSender()
-            
-            waveSender.send(phoneNumber, "Kode OTP " + values.otp)
-            .then((response) => {
 
-                console.log(response)
+            const responseOtp = await waveSender.sendOtp(phoneNumber)
 
-            })
-            .catch((err) => {
-                console.error(err)
-            })
+            const values = {
+                ...responseOtp,
+                ...condition
+            }
+
+            let otpMember = null
+
+            if (otp != null) {
+                otp.update(values)
+
+                otpMember = otp
+            } else {
+
+                otpMember = await Otp.create(values)
+            }
+
+            return otpMember
         }
+
 
         return otp
     })
     
 }
 
-exports.checkOtp = (otpNumber, condition) => {
-
+exports.checkOtp = (condition, otpNumber = null) => {
     return Otp.findOne({
-        where:condition
-    })
-    .then((otp) => {
+        where:condition,
+    }).then(async (otp) => {
 
-        if(otp != null){
-            if(otp.otp == otpNumber){
-                
-                const date1 = otp.expired
-                const date2 = new Date()
+        if(otpNumber != null){
 
-                if(date1.getTime() > date2.getTime()){
-                    return {
-                        status:true,
-                        message:"Ok"
-                    }
-                }else{
-                    return {
-                        status:false,
-                        message:"Otp Expired"
-                    }
-                } 
-            }else{
-                return {
-                    status:false,
-                    message:"Otp mismatch"
-                }
+            const waveSender = new WaveCellSender()
+
+            const responseOtp = await waveSender.checkOtp(otpNumber, otp.uid)
+
+            const values = {
+                ...responseOtp,
+                ...condition
             }
+
+            let otpMember = null
+
+            if(otp != null){
+                otp.update(values)
+
+                otpMember = otp
+            }else{
+
+                otpMember = await Otp.create(values)
+            }
+
+            return otpMember
+
         }
 
-        return {
-            status:false,
-            message:"Otp not found"
-        }
+        return otp
 
-    })
-    .catch((err) => {
-        return {
-            status:false,
-            message:err
-        }
     })
 
 }
