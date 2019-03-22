@@ -5,7 +5,7 @@ const facebookController = require("../../controller/version-1/facebookAuthContr
 async function routes(fastify, options){
 
     // check sms otp facebook
-    fastify.post("otp", facebookSchema.facebookOtpSchema, facebookController.doCheckOtp)
+    fastify.post("/otp", facebookSchema.facebookOtpSchema, facebookController.doCheckOtp)
 
     // login facebook
     fastify.post("/login", facebookSchema.facebookLoginSchema, facebookController.doLoginFacebook)
