@@ -3,7 +3,10 @@ const fp = require("fastify-plugin")
 module.exports = fp(async (fastify, options) => {
 
     fastify.register(require("fastify-jwt"), {
-        secret:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+        secret:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+        sign:{
+            expiresIn:"30d"
+        }
     })
 
     fastify.decorate("authenticate", async (request, reply) => {
