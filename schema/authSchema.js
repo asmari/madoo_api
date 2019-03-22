@@ -12,6 +12,35 @@ exports.authLoginSchema = {
     }
 }
 
+exports.authForgotPinOtp = {
+    schema:{
+        body:{
+            required:[ "mobile_phone"],
+            properties:{
+                mobile_phone:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
+
+exports.authForgotPinOtpCheck = {
+    schema:{
+        body:{
+            required:[ "mobile_phone", "otp"],
+            properties:{
+                mobile_phone:{
+                    type:"string"
+                },
+                otp:{
+                    type:"string"
+                }
+            }
+        }
+    }
+}
+
 exports.authCheckSchema = {
     schema:{
         body:{
