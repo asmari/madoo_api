@@ -9,15 +9,10 @@ const MemberCards = require("./member_cards")
 const LoyaltyMemberCards = model.define("loyalty_has_member_cards", {
     loyalty_id:{
         type:Sequelize.INTEGER,
-        primaryKey:true,
-        unique:true
+        // primaryKey:true,
     },
     member_cards_id:{
-        type:Sequelize.INTEGER,
-        references: {
-            model: MemberCards.Get,
-            key: "id"
-        }
+        type:Sequelize.INTEGER
     }
 },{
     timestamps: true,
@@ -26,9 +21,18 @@ const LoyaltyMemberCards = model.define("loyalty_has_member_cards", {
     underscored: true
 })
 
-LoyaltyMemberCards.hasOne(Loyalty.Get, { foreignKey: "id" })
+LoyaltyMemberCards.hasMany(Loyalty.Get, { 
+    foreignKey: "id",
+    sourceKey:"loyalty_id",
+    targetKey:"loyalty_id"
+ })
 
-// LoyaltyMemberCards.hasOne(MemberCards.Get, {
+LoyaltyMemberCards.hasMany(MemberCards.Get, {
+    foreignKey:"id",
+    sourceKey:"member_cards_id"
+})
+
+// MemberCards.Get.belongsTo(LoyaltyMemberCards,{
 //     foreignKey:"id",
 //     sourceKey:"member_cards_id"
 // })
