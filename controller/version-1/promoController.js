@@ -33,7 +33,7 @@ exports.getPromo = async (request, reply) => {
 
         const currentDate= moment().format('YYYY-MM-DD');
         const whereLoyalty = {};
-        const whereSearch = {};
+        const whereCondition = {};
 
         // return reply.code(200).send(helper.Success(request.query.filter))
         const params = {
@@ -64,41 +64,41 @@ exports.getPromo = async (request, reply) => {
                 }
             }
         }
+        whereCondition["valid_until"]={[Op.gte]:currentDate};
 
         if(params.search != null && typeof(params.search) == "string"){
-            whereLoyalty["name"] = {
-                [Op.like]: "%" + params.search + "%"
+
+            whereCondition[Op.or]={
+                "title": {
+                    [Op.like]: "%" + params.search + "%"
+                },
+                "$loyalty.name$":{
+                    [Op.like]: "%" + params.search + "%"
+                },
             }
         }
+
         const dataOptions = {
             page:params.page,
             paginate:params.item,
-            where:{
-                "valid_until": {
-                    [Op.gte]: currentDate
-                },[Op.or]: {
-                    "title": {
-                        [Op.like]: "%" + params.search + "%"
-                    }
-                }
-
-            },
+            where:whereCondition,
             order:[
                 orderLoyalty
             ],
             include:[{
                 model:Loyalty, as: 'loyalty',
-                where:{[Op.or]:{"name":{[Op.like]: "%" + params.search + "%"}}}
+                required: true
             }]
         }
-        Promo.paginate(dataOptions)
-            .then(promos=>{
-                reply.send(helper.Paginate({
-                    item:params.item,
-                    pages:params.page,
-                    // total:count
-                }, promos))
-            });
+
+        const promos = await  Promo.findAndCountAll(dataOptions)
+        let data = promos.rows;
+        // reply.send(helper.Success(promos))
+        reply.send(helper.Paginate({
+            item:params.item,
+            pages:params.page,
+            total:promos.count
+        }, data))
 
 
     }catch(err){
