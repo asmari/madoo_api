@@ -53,7 +53,7 @@ exports.googleSaveMemberSchema = {
                 },
                 mobile_phone:{ 
                     type:"integer",
-                    maxLength:12,
+                    maxLength:18,
                     minLength:11 
                 },
                 pin:{ 
