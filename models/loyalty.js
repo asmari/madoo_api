@@ -3,7 +3,7 @@ const connect = require("./conn/sequelize")
 const sequelizePaginate = require("sequelize-paginate")
 const model = connect.sequelize
 
-const LoyaltyMemberCards = require("./loyalty_member_cards")
+// const LoyaltyMemberCards = require("./loyalty_member_cards")
 const Promo = require("./promo")
 
 const Loyalty = model.define("loyalty",{
