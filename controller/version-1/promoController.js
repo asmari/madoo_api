@@ -7,7 +7,7 @@ const Op = sequelize.Op
 
 const Loyalty = model.Loyalty.Get
 const Promo = model.Promo.Get
-
+// get random promo
 exports.getRandomPromo = async (request, reply) => {
     try{
 
@@ -28,6 +28,7 @@ exports.getRandomPromo = async (request, reply) => {
         reply.send(helper.Fail(err))
     }
 }
+// get list promo
 exports.getPromo = async (request, reply) => {
     try{
 
@@ -104,4 +105,26 @@ exports.getPromo = async (request, reply) => {
     }catch(err){
         reply.send(helper.Fail(err))
     }
+}
+//get detail promo
+exports.getDetailPromo = async (request, reply) => {
+
+    try{
+
+        const query = JSON.parse(JSON.stringify(request.query))
+
+        const promo = await Promo.findOne({
+            where:{
+                id:query.promo_id
+            },
+            include:[Loyalty]
+        })
+
+
+        reply.send(helper.Success(promo))
+
+    }catch(err){
+        reply.send(helper.Fail(err))
+    }
+
 }

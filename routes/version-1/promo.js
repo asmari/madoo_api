@@ -6,12 +6,19 @@ async function routes (fastify, options) {
 
 
     //list random promo
-    fastify.get("/list/random", promoController.getRandomPromo)
+    fastify.get("/list/random",{ ...promoListschema.promoRandomSchema,beforeHandler:[fastify.authenticate]}, promoController.getRandomPromo)
+
     //list promo
     fastify.get("/list",{
         ...promoListschema.promoListSchema,
         beforeHandler:[fastify.authenticate]
     }, promoController.getPromo)
+
+    //detail promo
+    fastify.get("/detail",{
+        ...promoListschema.promoDetailSchema,
+        beforeHandler:[fastify.authenticate]
+    }, promoController.getDetailPromo)
 
 
 }
