@@ -2,10 +2,9 @@ exports.authLoginSchema = {
     schema:{
         body:{
             //Required body paramter for login
-            required:[ "mobile_phone", "country_code", "pin" ],
+            required:[ "mobile_phone", "pin" ],
             properties:{
                 mobile_phone:{ type:"string" },
-                country_code:{ type:"string" },
                 pin:{ type:"string" }
             }
         }
@@ -49,7 +48,7 @@ exports.authChangePin = {
                 mobile_phone:{
                     type:"string",
                     minLength:11,
-                    maxLength:15
+                    maxLength:18
                 },
                 pin:{
                     type:"integer",
@@ -69,10 +68,9 @@ exports.authChangePin = {
 exports.authCheckSchema = {
     schema:{
         body:{
-            required: [ "mobile_phone", "country_code" ],
+            required: [ "mobile_phone" ],
             properties:{
-                mobile_phone:{ type:"string" },
-                country_code:{ type:"string" }
+                mobile_phone:{ type:"string" }
             }
         }
     }

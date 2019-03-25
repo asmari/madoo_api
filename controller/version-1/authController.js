@@ -26,13 +26,7 @@ exports.doCheckMember = (request, reply) => {
             }
         }
 
-        if(!params.hasOwnProperty("country_code")){
-            throw {
-                message: "Field country_code is required"
-            }
-        }
-
-        Members.findOne({ where : {mobile_phone: params.mobile_phone, country_code: params.country_code}}).then(member => {
+        Members.findOne({ where : {mobile_phone: params.mobile_phone}}).then(member => {
 
             if(member != null){
                 return reply.send(helper.Success({
@@ -66,19 +60,13 @@ exports.doLogin = (request, reply) => {
             }
         }
 
-        if(!params.hasOwnProperty("country_code")){
-            throw {
-                message : "Field country_code is required"
-            }
-        }
-
         if(!params.hasOwnProperty("pin")){
             throw {
                 message : "Field pin is required"
             }
         }
 
-        Members.findOne({ where: {mobile_phone: params.mobile_phone, country_code: params.country_code}, include: [Pins] }).then(member => {
+        Members.findOne({ where: {mobile_phone: params.mobile_phone}, include: [Pins] }).then(member => {
             
             if(member == null){
                 return reply.send(helper.Fail({
@@ -95,7 +83,6 @@ exports.doLogin = (request, reply) => {
                     id: member.id,
                     full_name: member.full_name,
                     email: member.email,
-                    country_code: member.country_code,
                     mobile_phone: member.mobile_phone,
                     image: member.image,
                     created_at: member.created_at,
