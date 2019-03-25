@@ -4,17 +4,17 @@ const sequelizePaginate = require("sequelize-paginate")
 const model = connect.sequelize
 
 const Members = require("./members")
-const LoyaltyMemberCards = require("./loyalty_member_cards")
+// const LoyaltyMemberCards = require("./loyalty_member_cards")
 
 const MemberCards = model.define('member_cards',{
     id:{
         type:Sequelize.INTEGER,
         allowNull:false,
         primaryKey:true,
-        references:{
-            model:LoyaltyMemberCards.Get,
-            key:"member_cards_id"
-        }
+        // references:{
+        //     model:LoyaltyMemberCards.Get,
+        //     key:"member_cards_id"
+        // }
     },
     members_id: {
         type:Sequelize.INTEGER,
