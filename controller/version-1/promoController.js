@@ -32,11 +32,10 @@ exports.getRandomPromo = async (request, reply) => {
 
 
         const currentDate = moment().format('YYYY-MM-DD');
-        // return reply.code(200).send(helper.Success(currentDate))
+
         Promo.findAll({
             where:{
                 ...filterPromo,
-                // sequelize.where(sequelize.fn('date', sequelize.col('valid_until')), '>=', currentDate)
                 valid_until:{
                     [Op.gte]:currentDate
                 }
@@ -61,7 +60,6 @@ exports.getPromo = async (request, reply) => {
         const whereLoyalty = {};
         const whereCondition = {};
 
-        // return reply.code(200).send(helper.Success(request.query.filter))
         const params = {
             page: parseInt(request.query.page) || 1,
             item: parseInt(request.query.item) || 10,
