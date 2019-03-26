@@ -43,9 +43,9 @@ exports.getRandomPromo = async (request, reply) => {
             include: [Loyalty],
             limit: 10 ,
             order: sequelize.literal('rand()')})
-        .then(promos=>{
-            return reply.code(200).send(helper.Success(promos))
-        });
+            .then(promos=>{
+                return reply.code(200).send(helper.Success(promos))
+            });
 
 
     }catch(err){
@@ -57,7 +57,6 @@ exports.getPromo = async (request, reply) => {
     try{
 
         const currentDate= moment().format('YYYY-MM-DD');
-        const whereLoyalty = {};
         const whereCondition = {};
 
         const params = {
@@ -68,26 +67,28 @@ exports.getPromo = async (request, reply) => {
             filter: request.query.filter || [],
             total:0
         }
+
+        const paramsFilter = JSON.parse(JSON.stringify(request.query))
+
+
+        if(paramsFilter.hasOwnProperty("filter")){
+
+            let filter = paramsFilter.filter
+
+            if(typeof(params.filter) == "number"){
+                filter = [paramsFilter.filter]
+            }
+
+            whereCondition["loyalty_id"]={
+                [Op.in]:filter
+
+            }
+        }
+
         let orderLoyalty = [
             "id", "ASC"
         ]
-        if(typeof(params.filter) != "string" && params.filter.length > 0){
 
-            let loyaltyId = params.filter.map((value) => {
-                return parseInt(value)
-            })
-
-            whereLoyalty["id"] = {
-                [Op.in]: loyaltyId
-            }
-        }else if(typeof params.filter != "undefined"){
-
-            if(!isNaN(parseInt(params.filter))){
-                whereLoyalty["id"] = {
-                    [Op.in]: [parseInt(params.filter)]
-                }
-            }
-        }
         whereCondition["valid_until"]={[Op.gte]:currentDate};
 
         if(params.search != null && typeof(params.search) == "string"){
@@ -96,32 +97,35 @@ exports.getPromo = async (request, reply) => {
                 "title": {
                     [Op.like]: "%" + params.search + "%"
                 },
-                "$loyalty.name$":{
-                    [Op.like]: "%" + params.search + "%"
-                },
+                // "$loyalty.name$":{
+                //     [Op.like]: "%" + params.search + "%"
+                // },
             }
         }
 
         const dataOptions = {
-            page:params.page,
-            paginate:params.item,
-            where:whereCondition,
-            order:[
-                orderLoyalty
-            ],
+
             include:[{
                 model:Loyalty, as: 'loyalty',
                 required: true
-            }]
+            }],
+            page:params.page,
+            paginate:params.item,
+            where:
+            whereCondition,
+            order:[
+                orderLoyalty
+            ]
         }
 
-        const promos = await  Promo.findAndCountAll(dataOptions)
-        let data = promos.rows;
-        // reply.send(helper.Success(promos))
+        const promos = await  Promo.paginate(dataOptions)
+
+        let data = promos.docs;
+
         reply.send(helper.Paginate({
             item:params.item,
             pages:params.page,
-            total:promos.count
+            total:promos.total
         }, data))
 
 
