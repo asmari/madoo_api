@@ -21,7 +21,7 @@ exports.loyaltyMemberListSchema = {
                     type:"string"
                 },
                 filter:{
-                    type:"string"
+                    type:"array"
                 }
             }
         },
