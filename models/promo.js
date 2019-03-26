@@ -1,5 +1,6 @@
 const sequelize = require("sequelize")
 const connect = require("./conn/sequelize")
+const sequelizePaginate = require("sequelize-paginate")
 const model = connect.sequelize
 
 
@@ -42,4 +43,5 @@ const Promo = model.define("promo",{
     freezeTableName:true,
     tableName:"promo",
 })
+sequelizePaginate.paginate(Promo)
 exports.Get = Promo
