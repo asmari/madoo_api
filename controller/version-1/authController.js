@@ -81,13 +81,7 @@ exports.doLogin = (request, reply) => {
             if (bcrypt.compareSync(params.pin, pin.pin)) {
                 let payload = {
                     id: member.id,
-                    full_name: member.full_name,
-                    email: member.email,
-                    mobile_phone: member.mobile_phone,
-                    image: member.image,
-                    created_at: member.created_at,
-                    updated_at: member.updated_at,
-                    fingerprint: member.finggerprint
+                    oauth:false
                 };
 
                 reply.jwtSign(payload, function (err, token) {

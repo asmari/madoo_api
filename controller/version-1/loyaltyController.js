@@ -176,8 +176,7 @@ exports.getLoyaltyMember = async (request, reply) => {
             },
             order:[
                 orderCards
-            ],
-            include:[LoyaltyMemberCards]
+            ]
         })
         .then((cards) => {
 
@@ -229,7 +228,9 @@ exports.getLoyaltyMember = async (request, reply) => {
                 ],
                 include:[{
                     model:Loyalty,
-                    where:whereLoyalty
+                    where:whereLoyalty,
+                },{
+                    model:MemberCards
                 }]
             }
 
@@ -250,16 +251,14 @@ exports.getLoyaltyMember = async (request, reply) => {
             // })
 
         })
-        .then((loyaltyCards) => {
+        .then(async (loyaltyCards) => {
 
-            let data = loyaltyCards.docs.map((value) => {
-                return value.loyalty
-            })
+            let data = loyaltyCards.docs
 
             reply.send(helper.Paginate({
                 item:params.item,
                 pages:params.page,
-                // total:count
+                total:loyaltyCards.total
             }, data))
             
             
