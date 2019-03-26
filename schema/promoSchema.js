@@ -8,6 +8,18 @@ exports.promoListSchema = {
         querystring:{
             type:"object",
             properties:{
+                page:{
+                    type:"integer"
+                },
+                item:{
+                    type:"integer"
+                },
+                search:{
+                    type:"string"
+                },
+                sort:{
+                    type:"string"
+                },
                 filter:{
                     type:["array", "integer"],
                     items:{
