@@ -39,6 +39,26 @@ const Loyalty = model.define("loyalty",{
     },
     api_point_minus:{
         type:Sequelize.TEXT
+    },
+    company:{
+        type:Sequelize.STRING,
+        len:100
+    },
+    min_convertion:{
+        type:Sequelize.INTEGER,
+        len:11
+    },
+    multiple:{
+        type:Sequelize.INTEGER,
+        len:11
+    },
+    type_id:{
+        type:Sequelize.STRING,
+        len:20
+    },
+    manage:{
+        type:Sequelize.INTEGER,
+        len:11
     }
 },{
     timestamps:true,
