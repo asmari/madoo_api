@@ -5,14 +5,12 @@ exports.getSampleMessage = async (request, reply) => {
 	} catch (err) {
 		throw err;
 	}
-}
+};
 
 exports.getSampleScreet = async (request, reply) => {
 	try {
-		request.jwtVerify(function (err, decoded) {
-		    return reply.code(200).send(err || { hello: 'fuad' })
-		})
+		request.jwtVerify(err => reply.code(200).send(err || { hello: 'fuad' }));
 	} catch (err) {
 		throw err;
 	}
-}
+};
