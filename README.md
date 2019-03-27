@@ -28,6 +28,9 @@ Security for api is using JWT. To add security for each route, you can add `fast
     })
 
 ```
+## Eslint
+This project support using ESLint with `airbnb-base` and `babel-eslint`. Install eslint module on your favorite IDE, restart it and the Eslint will be detected automatically. [AirBnb Style Guide](https://github.com/airbnb/javascript)
+
 
 ## run at localhost:3000
 npm start
