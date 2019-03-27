@@ -86,14 +86,14 @@ exports.doLogin = (request, reply) => {
 
                 reply.jwtSign(payload, function (err, token) {
                     if (err) {
-                        return reply.code(200).send(helper.Fail(err))
+                        return reply.send(helper.Fail(err))
                     } else {
                         let res = {
                             token_type: 'Bearer',
                             access_token: token,
                             fingerprint: member.finggerprint
                         };
-                        return reply.code(200).send(helper.Success(res))
+                        return reply.send(helper.Success(res))
                     }
                 })
             }else{
@@ -103,7 +103,7 @@ exports.doLogin = (request, reply) => {
             }
         });
     } catch (err) {
-        return reply.code(200).send(helper.Fail(err))
+        return reply.send(helper.Fail(err))
     }
 }
 
