@@ -18,10 +18,14 @@ exports.loyaltyMemberListSchema = {
                     type:"string"
                 },
                 sort:{
-                    type:"string"
+                    type:"string",
+                    enum:["alphabet", "point_low","point_high"]
                 },
                 filter:{
-                    type:"array"
+                    type:"array",
+                    items:{
+                        type:"integer"
+                    }
                 }
             }
         },
