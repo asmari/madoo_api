@@ -18,6 +18,8 @@ async function routes(fastify, options) {
     fastify.register(require("./version-1/google"), { prefix: '/google' })
 
     fastify.register(require("./version-1/convertion"), { prefix : '/conversion' })
+
+    fastify.register(require("./version-1/masterRoute"), { prefix: "/master" })
 }
 
 module.exports = routes
