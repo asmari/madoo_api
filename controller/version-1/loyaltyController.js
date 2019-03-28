@@ -245,16 +245,23 @@ exports.getLoyaltyMember = async (request, reply) => {
 
 				//     console.log(count)
 
-				return LoyaltyMemberCards.paginate(dataOptions);
+				return new Promise(async (resolve, reject) => {
+					try {
+						const paginateCards = await LoyaltyMemberCards.paginate(dataOptions);
+						const countPaginateCards = await LoyaltyMemberCards.findAndCountAll(dataOptions);
+						resolve([paginateCards, countPaginateCards]);
+					} catch (err) {
+						reject(err);
+					}
+				});
 				// })
 			})
 			.then(async (loyaltyCards) => {
-				const data = loyaltyCards.docs;
-
+				const data = loyaltyCards[0].docs;
 				reply.send(helper.Paginate({
 					item: params.item,
 					pages: params.page,
-					total: loyaltyCards.total,
+					total: loyaltyCards[1].count,
 				}, data));
 			})
 			.catch((err) => {
