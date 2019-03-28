@@ -24,6 +24,10 @@ const ConvertionRate = model.define('conversion_rate', {
 		type: sequelize.DOUBLE,
 		allowNull: false,
 	},
+	max_monthly: {
+		type: sequelize.FLOAT,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	deletedAt: 'deleted_at',
