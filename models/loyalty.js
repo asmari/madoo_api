@@ -11,6 +11,10 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.INTEGER,
 		allowNull: false,
 	},
+	business_partner_id: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+	},
 	name: {
 		type: Sequelize.STRING,
 		allowNull: false,
@@ -59,6 +63,14 @@ const Loyalty = model.define('loyalty', {
 	manage: {
 		type: Sequelize.INTEGER,
 		len: 11,
+	},
+	new_link: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
+	ledger_id: {
+		type: Sequelize.STRING,
+		allowNull: true,
 	},
 }, {
 	timestamps: true,
