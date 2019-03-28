@@ -1,7 +1,5 @@
 const Sequelize = require('sequelize');
-const connet = require('./conn/sequelize');
-
-const model = connet.sequelize;
+const model = require('./conn/sequelize').sequelize;
 
 const Pins = require('./pin_members');
 const DeviceNotification = require('./device_notification');

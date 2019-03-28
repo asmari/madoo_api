@@ -1,25 +1,34 @@
-async function routes(fastify, options) {
+const sample = require('./version-1/sample');
+const auth = require('./version-1/auth');
+const members = require('./version-1/members');
+const loyalty = require('./version-1/loyalty');
+const promo = require('./version-1/promo');
+const facebook = require('./version-1/facebook');
+const google = require('./version-1/google');
+const convertion = require('./version-1/convertion');
+const masterRoute = require('./version-1/masterRoute');
+
+
+async function routes(fastify) {
 	fastify.get('/', { schema: { hide: true } }, async (request, reply) => reply.code(200).send({ hello: 'fuad' }));
 
-	fastify.register(require('./version-1/sample'), { prefix: '/sample' });
+	fastify.register(sample, { prefix: '/sample' });
 
-	fastify.register(require('./version-1/auth'), { prefix: '/auth' });
+	fastify.register(auth, { prefix: '/auth' });
 
-	fastify.register(require('./version-1/members'), { prefix: '/members' });
+	fastify.register(members, { prefix: '/members' });
 
-	fastify.register(require('./version-1/loyalty'), { prefix: '/loyalty' });
+	fastify.register(loyalty, { prefix: '/loyalty' });
 
-	fastify.register(require('./version-1/promo'), { prefix: '/promo' });
+	fastify.register(promo, { prefix: '/promo' });
 
-	fastify.register(require('./version-1/facebook'), { prefix: '/facebook' });
+	fastify.register(facebook, { prefix: '/facebook' });
 
-	fastify.register(require('./version-1/google'), { prefix: '/google' });
+	fastify.register(google, { prefix: '/google' });
 
-	fastify.register(require('./version-1/convertion'), { prefix: '/conversion' });
+	fastify.register(convertion, { prefix: '/conversion' });
 
-	fastify.register(require('./version-1/masterRoute'), { prefix: '/master' });
-
-	fastify.register(require('./version-1/notification'), { prefix: '/notification' });
+	fastify.register(masterRoute, { prefix: '/master' });
 }
 
 module.exports = routes;

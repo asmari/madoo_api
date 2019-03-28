@@ -1,16 +1,13 @@
-const convertionController = require("../../controller/version-1/convertionController")
-const convertionSchema = require("../../schema/convertionSchema")
+const convertionController = require('../../controller/version-1/convertionController');
+const convertionSchema = require('../../schema/convertionSchema');
 
-module.exports = async (fastify, options) => {
+module.exports = async (fastify) => {
+	fastify.get('/check', {
+		...convertionSchema.checkConvertion,
+		beforeHandler: [fastify.authenticate],
+	}, convertionController.checkConvertionRate);
 
-    fastify.get("/check", {
-        ...convertionSchema.checkConvertion,
-        beforeHandler:[fastify.authenticate]
-    }, convertionController.checkConvertionRate)
-
-    // fastify.post("/convert",{
-    //     beforeHandler:[fastify.authenticate]
-    // }, convertionController.doConvertionPoint)
-
-}
-
+	// fastify.post("/convert",{
+	//     beforeHandler:[fastify.authenticate]
+	// }, convertionController.doConvertionPoint)
+};

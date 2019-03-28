@@ -1,8 +1,8 @@
 exports.sampleSchema = {
-    schema: {
-        hide: true,
-        querystring: {
-            name: { type: 'integer' }
-        }
-    }
+	schema: {
+		hide: true,
+		querystring: {
+			name: { type: 'integer' },
+		},
+	},
 };

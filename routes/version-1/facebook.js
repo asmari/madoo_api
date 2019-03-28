@@ -1,21 +1,20 @@
 
-const facebookSchema = require("../../schema/facebookAuthSchema")
-const facebookController = require("../../controller/version-1/facebookAuthController")
+const facebookSchema = require('../../schema/facebookAuthSchema');
+const facebookController = require('../../controller/version-1/facebookAuthController');
 
-async function routes(fastify, options){
+async function routes(fastify) {
+	// check sms otp facebook
+	fastify.post('/otp', facebookSchema.facebookOtpSchema, facebookController.doCheckOtp);
 
-    // check sms otp facebook
-    fastify.post("/otp", facebookSchema.facebookOtpSchema, facebookController.doCheckOtp)
+	// login facebook
+	fastify.post('/login', facebookSchema.facebookLoginSchema, facebookController.doLoginFacebook);
 
-    // login facebook
-    fastify.post("/login", facebookSchema.facebookLoginSchema, facebookController.doLoginFacebook)
+	// register facebook oauth data
+	fastify.post('/register', facebookSchema.facebookRegisterSchema, facebookController.doRegisterFacebook);
 
-    // register facebook oauth data
-    fastify.post("/register", facebookSchema.facebookRegisterSchema, facebookController.doRegisterFacebook)
-
-    // save member facebook oauth data
-    fastify.post("/register/save", facebookSchema.facebookSaveMemberSchema, facebookController.doSaveMember)
+	// save member facebook oauth data
+	fastify.post('/register/save', facebookSchema.facebookSaveMemberSchema, facebookController.doSaveMember);
 }
 
 
-module.exports = routes
+module.exports = routes;

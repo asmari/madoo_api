@@ -1,9 +1,9 @@
 exports.listCard = {
-    schema:{
-        security:[
-            {
-                "BearerAuth":[]
-            }
-        ]
-    }
-}
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+	},
+};

@@ -55,10 +55,7 @@ exports.getFilterListPromo = async (request, reply) => {
 			reply.send(helper.Success(data));
 		}
 
-		throw new Error({
-			message: 'Member cards not found',
-			statusCode: 404,
-		});
+		throw new Error('Member cards not found');
 	} catch (err) {
 		reply.send(helper.Fail(err));
 	}
@@ -120,10 +117,7 @@ exports.getFilterListCard = async (request, reply) => {
 			reply.send(helper.Success(data));
 		}
 
-		throw new Error({
-			message: 'Member cards not found',
-			statusCode: 404,
-		});
+		throw new Error('Member cards not found');
 	} catch (err) {
 		reply.send(helper.Fail(err));
 	}

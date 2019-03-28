@@ -1,43 +1,42 @@
 const Sequelize = require('sequelize');
-const connet = require('./conn/sequelize');
-const sequelizePaginate = require("sequelize-paginate")
-const model = connet.sequelize;
+const sequelizePaginate = require('sequelize-paginate');
 
-const Loyalty = require("./loyalty")
-const MemberCards = require("./member_cards")
+const model = require('./conn/sequelize').sequelize;
 
-const LoyaltyMemberCards = model.define("loyalty_has_member_cards", {
-    loyalty_id:{
-        type:Sequelize.INTEGER,
-        // primaryKey:true,
-    },
-    member_cards_id:{
-        type:Sequelize.INTEGER
-    }
-},{
-    timestamps: true,
-    paranoid: true,
-    deletedAt: "deleted_at",
-    underscored: true
-})
+const Loyalty = require('./loyalty');
+const MemberCards = require('./member_cards');
 
-LoyaltyMemberCards.hasMany(Loyalty.Get, { 
-    foreignKey: "id",
-    sourceKey:"loyalty_id",
-    targetKey:"loyalty_id"
- })
+const LoyaltyMemberCards = model.define('loyalty_has_member_cards', {
+	loyalty_id: {
+		type: Sequelize.INTEGER,
+		// primaryKey:true,
+	},
+	member_cards_id: {
+		type: Sequelize.INTEGER,
+	},
+}, {
+	timestamps: true,
+	paranoid: true,
+	deletedAt: 'deleted_at',
+	underscored: true,
+});
+
+LoyaltyMemberCards.hasMany(Loyalty.Get, {
+	foreignKey: 'id',
+	sourceKey: 'loyalty_id',
+	targetKey: 'loyalty_id',
+});
 
 LoyaltyMemberCards.hasMany(MemberCards.Get, {
-    foreignKey:"id",
-    sourceKey:"member_cards_id"
-})
+	foreignKey: 'id',
+	sourceKey: 'member_cards_id',
+});
 
 // MemberCards.Get.belongsTo(LoyaltyMemberCards,{
 //     foreignKey:"id",
 //     sourceKey:"member_cards_id"
 // })
 
-sequelizePaginate.paginate(LoyaltyMemberCards)
+sequelizePaginate.paginate(LoyaltyMemberCards);
 
-exports.Get = LoyaltyMemberCards
-
+exports.Get = LoyaltyMemberCards;
