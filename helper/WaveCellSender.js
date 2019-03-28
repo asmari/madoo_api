@@ -1,183 +1,169 @@
-'use strict'
+const https = require('https');
 
-const config = require("../config").get
-const https = require("https")
+const config = require('../config').get;
 
-module.exports = class WaveCellSender{
+module.exports = class WaveCellSender {
+	constructor() {
+		this.subAccount = config.sms.subAccount;
+		this.token = config.sms.token;
 
-    constructor(){
-        this.subAccount = config.sms.subAccount
-        this.token = config.sms.token
+		this.url = {
+			POST_SEND_OTP: () => `https://api.wavecell.com/verify/v1/${this.subAccount}`,
+			GET_VALIDATION_OTP: uid => `https://api.wavecell.com/verify/v1/${this.subAccount}/${uid}`,
+		};
+	}
 
-        this.url = {
-            POST_SEND_OTP : () => {
-                return "https://api.wavecell.com/verify/v1/" + this.subAccount
-            },
-            GET_VALIDATION_OTP : (uid) => {
-                return "https://api.wavecell.com/verify/v1/" + this.subAccount + "/" + uid
-            }
-        }
-        
-    }
+	getUrl(type = 'single') {
+		return `https://api.wavecell.com/sms/v1/${this.subAccount}/${type}`;
+	}
 
-    getUrl(type = "single"){
-        return "https://api.wavecell.com/sms/v1/" + this.subAccount + "/" + type
-    }
+	static parsePhoneNumber(phone) {
+		return `+${phone}`;
+	}
 
-    parsePhoneNumber(phone){
-        // if(phone.charAt(0) != "+"){
-        //     return "+" + phone
-        // }
+	checkOtp(otp, uid) {
+		const { token } = this;
 
-        return "+" + phone
-    }
+		return new Promise((resolve, reject) => {
+			try {
+				const url = `${this.url.GET_VALIDATION_OTP(uid)}?code=${otp}`;
 
-    checkOtp(otp, uid){
-        const token = this.token
-        
-        return new Promise((resolve, reject) => {
+				const req = https.request(url, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+					method: 'GET',
+				}, (res) => {
+					let chunk = [];
 
-            try{
+					res.on('error', reject);
+					res.on('data', (buffer) => {
+						chunk += buffer;
+					});
 
-                const url = this.url.GET_VALIDATION_OTP(uid) + "?code=" + otp
+					res.on('end', () => {
+						if (res.statusCode === 200) {
+							resolve(JSON.parse(chunk));
+						} else {
+							reject(JSON.parse(chunk));
+						}
+					});
+				});
 
-                const req = https.request(url, {
-                    headers:{
-                        "Authorization":"Bearer " + token,
-                    },
-                    method:"GET"
-                }, (res) => {
-                    let chunk = []
+				req.end();
+			} catch (err) {
+				reject(err);
+			}
+		});
+	}
 
-                    res.on('error', reject)
-                    res.on('data', (buffer) => {
-                        chunk += buffer
-                    })
-
-                    res.on("end", () => {
-                        res.statusCode == 200 ? resolve(JSON.parse(chunk)) : reject(JSON.parse(chunk))
-                    })
-                })
-
-                req.end()
-
-            }catch(err){
-                reject(err)
-            }
-
-        })
-    }
-
-    sendOtp(phone){
-        const token = this.token
-        
-        return new Promise((resolve, reject) => {
-
-            try{
-                phone = this.parsePhoneNumber(phone)
+	sendOtp(varPhone) {
+		const { token } = this;
+		let phone = varPhone;
+		return new Promise((resolve, reject) => {
+			try {
+				phone = this.parsePhoneNumber(phone);
 
 
-                const data = JSON.stringify({
-                    destination:phone,
-                    productName:"Husky",
-                    codeLength:6,
-                    codeValidity:120,
-                    codeType:"NUMERIC",
-                    template:{
-                        source:"Husky",
-                        text : "Kode otp anda untuk {productName} adalah {code}. expire kode otp anda 2 menit "
-                    }
-                })
+				const data = JSON.stringify({
+					destination: phone,
+					productName: 'Husky',
+					codeLength: 6,
+					codeValidity: 120,
+					codeType: 'NUMERIC',
+					template: {
+						source: 'Husky',
+						text: 'Kode otp anda untuk {productName} adalah {code}. expire kode otp anda 2 menit ',
+					},
+				});
 
-                const url = this.url.POST_SEND_OTP()
+				const url = this.url.POST_SEND_OTP();
 
-                const req = https.request(url, {
-                    headers:{
-                        "Authorization":"Bearer " + token,
-                        "Content-Type":"application/json",
-                        "Content-Length" : Buffer.byteLength(data)
-                    },
-                    method:"POST"
-                }, (res) => {
-                    let chunk = []
+				const req = https.request(url, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
+						'Content-Length': Buffer.byteLength(data),
+					},
+					method: 'POST',
+				}, (res) => {
+					let chunk = [];
 
-                    res.on('error', reject)
-                    res.on('data', (buffer) => {
-                        chunk += buffer
-                    })
+					res.on('error', reject);
+					res.on('data', (buffer) => {
+						chunk += buffer;
+					});
 
-                    res.on("end", () => {
-                        res.statusCode == 200 ? resolve(JSON.parse(chunk)) : reject(JSON.parse(chunk))
-                    })
-                })
+					res.on('end', () => {
+						if (res.statusCode === 200) {
+							resolve(JSON.parse(chunk));
+						} else {
+							reject(JSON.parse(chunk));
+						}
+					});
+				});
 
-                req.write(data)
-                req.end()
+				req.write(data);
+				req.end();
+			} catch (err) {
+				reject(err);
+			}
+		});
+	}
 
-            }catch(err){
-                reject(err)
-            }
+	send(varPhone, message, clientId = 0, type = 'single') {
+		const { token } = this;
+		let phone = varPhone;
+		return new Promise((resolve, reject) => {
+			try {
+				phone = this.parsePhoneNumber(phone);
 
-        })
-    }
+				const data = JSON.stringify({
+					source: 'Husky',
+					destination: phone,
+					text: message,
+					clientMessageId: clientId,
+					enconding: 'AUTO',
+					/* PRODUCTION */
+					// dlrCallbackUrl:config.url + ":" + config.serverPort + "/hook/forgot/pin",
 
-    send(phone, message, clientId = 0, type = "single"){
+					/* TESTING, for inspect https://requestbin.fullcontact.com/1i7xgaj1?inspect */
+					dlrCallbackUrl: 'http://requestbin.fullcontact.com/1i7xgaj1',
+				});
 
-        const token = this.token
+				const url = this.getUrl(type);
 
-        return new Promise((resolve, reject) => {
+				console.log(url);
 
-            try{
+				const req = https.request(url, {
+					headers: {
+						'Content-Length': Buffer.byteLength(data),
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${token}`,
+					},
+					method: 'POST',
+				}, (res) => {
+					let chunk = [];
 
-                phone = this.parsePhoneNumber(phone)
+					res.on('error', reject);
+					res.on('data', (buffer) => {
+						chunk += buffer;
+					});
 
-                const data = JSON.stringify({
-                    source:"Husky",
-                    destination:phone,
-                    text:message,
-                    clientMessageId: clientId,
-                    enconding:"AUTO",
-                    /* PRODUCTION */
-                    // dlrCallbackUrl:config.url + ":" + config.serverPort + "/hook/forgot/pin",
+					res.on('end', () => {
+						if (res.statusCode === 200) {
+							resolve(JSON.parse(chunk));
+						} else {
+							reject(JSON.parse(chunk));
+						}
+					});
+				});
 
-                    /* TESTING, for inspect https://requestbin.fullcontact.com/1i7xgaj1?inspect */
-                    dlrCallbackUrl:"http://requestbin.fullcontact.com/1i7xgaj1"
-                })
-
-                const url = this.getUrl(type)
-
-                console.log(url)
-
-                const req = https.request(url, {
-                    headers:{
-                        "Content-Length":Buffer.byteLength(data),
-                        "Content-Type":"application/json",
-                        "Authorization":"Bearer " + token
-                    },
-                    method:"POST"
-                }, (res) => {
-                    let chunk = []
-
-                    res.on('error', reject)
-                    res.on('data', (buffer) => {
-                        chunk += buffer
-                    })
-
-                    res.on("end", () => {
-                        res.statusCode == 200 ? resolve(JSON.parse(chunk)) : reject(JSON.parse(chunk))
-                    })
-                })
-
-                req.write(data)
-                req.end()
-
-            }catch(err){
-                reject(err)
-            }
-
-        })
-
-    }
-
-
-}
+				req.write(data);
+				req.end();
+			} catch (err) {
+				reject(err);
+			}
+		});
+	}
+};

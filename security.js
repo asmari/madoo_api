@@ -11,8 +11,7 @@ module.exports = fp(async (fastify) => {
 
 	fastify.decorate('authenticate', async (request, reply) => {
 		try {
-			const req = await request.jwtVerify();
-			console.log(req);
+			await request.jwtVerify();
 		} catch (err) {
 			reply.send(err);
 		}

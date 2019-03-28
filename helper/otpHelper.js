@@ -1,164 +1,133 @@
+const Otp = require('../models').Otp.Get;
+const ForgotPassword = require('../models').ForgotPassword.Get;
+const WaveCellSender = require('../helper/WaveCellSender');
 
-const Otp = require("../models").Otp.Get
-const ForgotPassword = require("../models").ForgotPassword.Get
-const WaveCellSender = require("../helper/WaveCellSender")
+// check otp for forgot pin
+exports.forgotCheckOtp = (condition, otpNumber = null) => ForgotPassword.findOne({
+	where: condition,
+}).then(async (otp) => {
+	if (otpNumber != null) {
+		const waveSender = new WaveCellSender();
 
-// check otp for forgot pin 
-exports.forgotCheckOtp = (condition, otpNumber = null) => {
-    return ForgotPassword.findOne({
-        where:condition,
-    }).then(async (otp) => {
+		const responseOtp = await waveSender.checkOtp(otpNumber, otp.uid);
 
-        if(otpNumber != null){
+		const values = {
+			...responseOtp,
+			...condition,
+		};
 
-            const waveSender = new WaveCellSender()
+		let otpMember = null;
 
-            const responseOtp = await waveSender.checkOtp(otpNumber, otp.uid)
+		if (otp != null) {
+			otp.update(values);
 
-            const values = {
-                ...responseOtp,
-                ...condition
-            }
+			otpMember = otp;
+		} else {
+			otpMember = await ForgotPassword.create(values);
+		}
 
-            let otpMember = null
+		return otpMember;
+	}
 
-            if(otp != null){
-                otp.update(values)
+	return otp;
+});
 
-                otpMember = otp
-            }else{
+// send otp for forgot pin otp
+exports.forgotPinOtp = (condition, phoneNumber = null) => ForgotPassword.findOne({
+	where: condition,
+}).then(async (otp) => {
+	if (phoneNumber != null) {
+		const waveSender = new WaveCellSender();
 
-                otpMember = await ForgotPassword.create(values)
-            }
-            
-            return otpMember
+		const responseOtp = await waveSender.sendOtp(phoneNumber);
 
-        }
+		const values = {
+			...responseOtp,
+			...condition,
+		};
 
-        return otp
+		let otpMember = null;
 
-    })
-}
+		if (otp != null) {
+			otp.update(values);
 
-//send otp for forgot pin otp
-exports.forgotPinOtp = (condition, phoneNumber = null) => {
-    
+			otpMember = otp;
+		} else {
+			otpMember = await ForgotPassword.create(values);
+		}
 
-    return ForgotPassword.findOne({
-        where:condition,
-    }).then(async (otp) => {
-
-        if(phoneNumber != null){
-            const waveSender = new WaveCellSender()
-
-            const responseOtp = await waveSender.sendOtp(phoneNumber)
-
-            const values = {
-                ...responseOtp,
-                ...condition
-            }
-
-            let otpMember = null
-
-            if(otp != null){
-                otp.update(values)
-
-                otpMember = otp
-            }else{
-
-                otpMember = await ForgotPassword.create(values)
-            }
-            
-            return otpMember
-        }
-    
-
-        return otp
-    })
-    
-}
-
-exports.sendOtp = (condition, phoneNumber = null) => {
-
-    return Otp.findOne({
-        where:condition,
-    }).then(async (otp) => {
-
-        if (phoneNumber != null) {
-            const waveSender = new WaveCellSender()
-
-            const responseOtp = await waveSender.sendOtp(phoneNumber)
-
-            const values = {
-                ...responseOtp,
-                ...condition
-            }
-
-            let otpMember = null
-
-            if (otp != null) {
-                otp.update(values)
-
-                otpMember = otp
-            } else {
-
-                otpMember = await Otp.create(values)
-            }
-
-            return otpMember
-        }
+		return otpMember;
+	}
 
 
-        return otp
-    })
-    
-}
+	return otp;
+});
 
-exports.checkOtp = (condition, otpNumber = null) => {
-    return Otp.findOne({
-        where:condition,
-    }).then(async (otp) => {
+exports.sendOtp = (condition, phoneNumber = null) => Otp.findOne({
+	where: condition,
+}).then(async (otp) => {
+	if (phoneNumber != null) {
+		const waveSender = new WaveCellSender();
 
-        if(otpNumber != null){
+		const responseOtp = await waveSender.sendOtp(phoneNumber);
 
-            const waveSender = new WaveCellSender()
+		const values = {
+			...responseOtp,
+			...condition,
+		};
 
-            const responseOtp = await waveSender.checkOtp(otpNumber, otp.uid)
+		let otpMember = null;
 
-            const values = {
-                ...responseOtp,
-                ...condition
-            }
+		if (otp != null) {
+			otp.update(values);
 
-            let otpMember = null
+			otpMember = otp;
+		} else {
+			otpMember = await Otp.create(values);
+		}
 
-            if(otp != null){
-                otp.update(values)
+		return otpMember;
+	}
 
-                otpMember = otp
-            }else{
 
-                otpMember = await Otp.create(values)
-            }
+	return otp;
+});
 
-            return otpMember
+exports.checkOtp = (condition, otpNumber = null) => Otp.findOne({
+	where: condition,
+}).then(async (otp) => {
+	if (otpNumber != null) {
+		const waveSender = new WaveCellSender();
 
-        }
+		const responseOtp = await waveSender.checkOtp(otpNumber, otp.uid);
 
-        return otp
+		const values = {
+			...responseOtp,
+			...condition,
+		};
 
-    })
+		let otpMember = null;
 
-}
+		if (otp != null) {
+			otp.update(values);
 
-const createOtp = () => {
-    return Math.floor(100000 + Math.random() * 900000)
-}
+			otpMember = otp;
+		} else {
+			otpMember = await Otp.create(values);
+		}
+
+		return otpMember;
+	}
+
+	return otp;
+});
+
+const createOtp = () => Math.floor(100000 + Math.random() * 900000);
 
 const createExpireDate = (minutes) => {
-    const d = new Date()
-    return new Date(d.getTime() + minutes * 60000)
-}
+	const d = new Date();
+	return new Date(d.getTime() + minutes * 60000);
+};
 
-exports.createExpireDate = createExpireDate
-exports.createOtpNumber = createOtp
+exports.createExpireDate = createExpireDate;
+exports.createOtpNumber = createOtp;

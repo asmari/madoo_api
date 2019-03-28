@@ -1,58 +1,52 @@
-'use strict'
-
-const fs = require('fs')
-
-//import fastify-formbody and fastify-multipart for parsing body request post
-const fastifyFormBody = require("fastify-formbody")
-// const fastifyMultipart = require("fastify-multipart")
-
-//import fastify-file-upload for uploading image
-const fastifyFileUpload = require("fastify-file-upload")
-
-require('dotenv').config()
-
-const security = require("./security") 
-const documentations = require("./documentations")
-const config = require("./config").get
-
+const fs = require('fs');
 // Require the framework and instantiate it
 const fastify = require('fastify')({
 	// http2: true,
-	logger: true
-})
-const jwt = require('fastify-jwt')
+	logger: true,
+});
 
-//register jwt security 
-fastify.register(security)
+// import fastify-formbody and fastify-multipart for parsing body request post
+const fastifyFormBody = require('fastify-formbody');
+// const fastifyMultipart = require("fastify-multipart")
 
-//register fastify swagger
-fastify.register(documentations)
+// import fastify-file-upload for uploading image
+const fastifyFileUpload = require('fastify-file-upload');
 
-//register upload file plugin
-fastify.register(fastifyFileUpload)
+require('dotenv').config();
 
-//register formbody and multipart parsing body post
-fastify.register(fastifyFormBody)
-// fastify.register(fastifyMultipart)
+const security = require('./security');
+const documentations = require('./documentations');
+const config = require('./config').get;
+
+// register jwt security
+fastify.register(security);
+
+// register fastify swagger
+fastify.register(documentations);
+
+// register upload file plugin
+fastify.register(fastifyFileUpload);
+
+// register formbody and multipart parsing body post
+fastify.register(fastifyFormBody);
 
 // Declare a route
-fastify.get('/', { schema: {hide: true}}, function (request, reply) {
-	reply.send({ hello: 'fuad' })
-})
+fastify.get('/', { schema: { hide: true } }, (request, reply) => {
+	reply.send({ hello: 'fuad' });
+});
 
 // Register your version plugin
-fastify.register(require('./routes/version-1'), { prefix: '/v1' })
+fastify.register(require('./routes/version-1'), { prefix: '/v1' });
 
-//check if upload folder is exist, if not create it
-if(!fs.existsSync("./upload")){
-	fs.mkdirSync("./upload")
+// check if upload folder is exist, if not create it
+if (!fs.existsSync('./upload')) {
+	fs.mkdirSync('./upload');
 }
 
 // Run the server!
-fastify.listen(config.serverPort , function (err, address) {
+fastify.listen(config.serverPort, (err) => {
 	if (err) {
-		console.log(err)
-		// fastify.log.error(err)
-		process.exit(1)
+		fastify.log.error(err);
+		process.exit(1);
 	}
-})
+});
