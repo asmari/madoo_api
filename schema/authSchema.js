@@ -1,11 +1,16 @@
 exports.authLoginSchema = {
 	schema: {
+		description: 'Rest API for members login',
 		body: {
 			// Required body paramter for login
 			required: ['mobile_phone', 'pin'],
 			properties: {
-				mobile_phone: { type: 'string' },
-				pin: { type: 'string' },
+				mobile_phone: {
+					type: 'string',
+				},
+				pin: {
+					type: 'string',
+				},
 			},
 		},
 	},
@@ -13,6 +18,7 @@ exports.authLoginSchema = {
 
 exports.authForgotPinOtp = {
 	schema: {
+		description: 'Rest API for forgot pin',
 		body: {
 			required: ['mobile_phone'],
 			properties: {
@@ -26,6 +32,7 @@ exports.authForgotPinOtp = {
 
 exports.authForgotPinOtpCheck = {
 	schema: {
+		description: 'Rest API for forgot pin verify OTP',
 		body: {
 			required: ['mobile_phone', 'otp'],
 			properties: {
@@ -42,6 +49,7 @@ exports.authForgotPinOtpCheck = {
 
 exports.authChangePin = {
 	schema: {
+		description: 'Rest API for forgot pin save new',
 		body: {
 			required: ['mobile_phone', 'pin', 'confirm_pin'],
 			properties: {
@@ -67,6 +75,7 @@ exports.authChangePin = {
 
 exports.authCheckSchema = {
 	schema: {
+		description: 'Rest API for validate mobile phone',
 		body: {
 			required: ['mobile_phone'],
 			properties: {
