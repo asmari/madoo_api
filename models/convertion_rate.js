@@ -1,4 +1,5 @@
 const sequelize = require('sequelize');
+const sequelizePaginate = require('sequelize-paginate');
 
 const model = require('./conn/sequelize').sequelize;
 
@@ -48,5 +49,5 @@ const ConvertionRate = model.define('conversion_rate', {
 // 	targetKey: 'conversion_loyalty',
 // 	as: 'LoyaltyTarget',
 // });
-
+sequelizePaginate.paginate(ConvertionRate);
 exports.Get = ConvertionRate;

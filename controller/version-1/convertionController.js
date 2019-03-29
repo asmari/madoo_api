@@ -61,6 +61,8 @@ exports.getConvertionRate = async (request, reply) => {
 		const whereTarget = {};
 		const params = JSON.parse(JSON.stringify(request.query));
 
+		params.page = parseInt(params.page, 10) || 1;
+		params.item = parseInt(params.item, 10) || 10;
 		if (params.loyalty_id != null) {
 			if (params.conversion_type === 'from') {
 				whereCondition.loyalty_id = params.loyalty_id;
@@ -90,13 +92,20 @@ exports.getConvertionRate = async (request, reply) => {
 				required: true,
 				where: whereTarget,
 			}],
+			page: params.page,
+			paginate: params.item,
 			where: whereCondition,
 		};
 
-		const conversion = await ConvertionRate.findAll({ ...dataOptions });
+		const conversion = await ConvertionRate.paginate({ ...dataOptions });
 
 		if (conversion) {
-			return reply.send(helper.Success(conversion));
+			console.log(conversion);
+			reply.send(helper.Paginate({
+				item: params.item,
+				pages: params.page,
+				total: conversion.total,
+			}, conversion.docs));
 		}
 
 		throw new Error('Conversion Rate not found');

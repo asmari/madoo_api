@@ -43,6 +43,12 @@ exports.getConvertion = {
 				search: {
 					type: 'string',
 				},
+				page: {
+					type: 'integer',
+				},
+				item: {
+					type: 'integer',
+				},
 			},
 		},
 	},
