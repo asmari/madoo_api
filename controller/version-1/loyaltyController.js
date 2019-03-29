@@ -275,11 +275,22 @@ exports.getLoyaltyMember = async (request, reply) => {
 // list loyalty
 exports.getListLoyalty = async (request, reply) => {
 	try {
+		const whereLoyalty = {};
+		const params = JSON.parse(JSON.stringify(request.query));
+
+		if (params.search != null && typeof (params.search) === 'string') {
+			whereLoyalty.name = {
+				[Op.like]: `%${params.search}%`,
+			};
+		}
 		const data = await LoyaltyType.findAll({
 			order: [
 				['id', 'ASC'],
 			],
-			include: [Loyalty],
+			include: [{
+				model: Loyalty,
+				where: whereLoyalty,
+			}],
 		});
 
 		reply.send(helper.Success(data));

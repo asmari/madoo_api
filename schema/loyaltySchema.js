@@ -62,6 +62,14 @@ exports.loyaltyListSchema = {
 				BearerAuth: [],
 			},
 		],
+		querystring: {
+			type: 'object',
+			properties: {
+				search: {
+					type: 'string',
+				},
+			},
+		},
 	},
 };
 
