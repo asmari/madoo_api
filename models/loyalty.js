@@ -5,6 +5,7 @@ const model = require('./conn/sequelize').sequelize;
 
 // const LoyaltyMemberCards = require("./loyalty_member_cards")
 const Promo = require('./promo');
+const ConvertionRate = require('./convertion_rate');
 
 const Loyalty = model.define('loyalty', {
 	type_loyalty_id: {
@@ -44,18 +45,18 @@ const Loyalty = model.define('loyalty', {
 	api_point_minus: {
 		type: Sequelize.TEXT,
 	},
-	company: {
-		type: Sequelize.STRING,
-		len: 100,
-	},
+	// company: {
+	// 	type: Sequelize.STRING,
+	// 	len: 100,
+	// },
 	min_convertion: {
 		type: Sequelize.INTEGER,
 		len: 11,
 	},
-	multiple: {
-		type: Sequelize.INTEGER,
-		len: 11,
-	},
+	// multiple: {
+	// 	type: Sequelize.INTEGER,
+	// 	len: 11,
+	// },
 	type_id: {
 		type: Sequelize.STRING,
 		len: 20,
@@ -93,6 +94,28 @@ Promo.Get.belongsTo(Loyalty, {
 Loyalty.hasMany(Promo.Get, {
 	sourceKey: 'Loyalty.id',
 	foreignKey: 'loyalty_id',
+});
+ConvertionRate.Get.belongsTo(Loyalty, {
+	foreignKey: 'loyalty_id',
+	targetKey: 'id',
+	as: 'Source',
+});
+ConvertionRate.Get.belongsTo(Loyalty, {
+	foreignKey: 'conversion_loyalty',
+	targetKey: 'id',
+	as: 'Target',
+});
+
+Loyalty.hasMany(ConvertionRate.Get, {
+	sourceKey: 'id',
+	foreignKey: 'loyalty_id',
+	as: 'LoyaltySource',
+});
+
+Loyalty.hasMany(ConvertionRate.Get, {
+	sourceKey: 'id',
+	foreignKey: 'conversion_loyalty',
+	as: 'LoyaltyTarget',
 });
 
 

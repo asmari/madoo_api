@@ -22,3 +22,28 @@ exports.checkConvertion = {
 		},
 	},
 };
+exports.getConvertion = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		querystring: {
+			type: 'object',
+			required: ['conversion_type','loyalty_id'],
+			properties: {
+				loyalty_id: {
+					type: 'integer',
+				},
+				conversion_type: {
+					type: 'string',
+					description: 'from/to',
+				},
+				search: {
+					type: 'string',
+				},
+			},
+		},
+	},
+};

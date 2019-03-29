@@ -10,4 +10,9 @@ module.exports = async (fastify) => {
 	// fastify.post("/convert",{
 	//     beforeHandler:[fastify.authenticate]
 	// }, convertionController.doConvertionPoint)
+
+	fastify.get('/list', {
+		...convertionSchema.getConvertion,
+		beforeHandler: [fastify.authenticate],
+	}, convertionController.getConvertionRate);
 };

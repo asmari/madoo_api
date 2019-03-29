@@ -2,7 +2,7 @@ const sequelize = require('sequelize');
 
 const model = require('./conn/sequelize').sequelize;
 
-const Loyalty = require('./loyalty').Get;
+// const Loyalty = require('./loyalty').Get;
 
 const ConvertionRate = model.define('conversion_rate', {
 	loyalty_id: {
@@ -37,16 +37,16 @@ const ConvertionRate = model.define('conversion_rate', {
 	tableName: 'conversion_rate',
 });
 
-Loyalty.belongsTo(ConvertionRate, {
-	foreignKey: 'id',
-	targetKey: 'loyalty_id',
-	as: 'LoyaltySource',
-});
-
-Loyalty.belongsTo(ConvertionRate, {
-	foreignKey: 'id',
-	targetKey: 'conversion_loyalty',
-	as: 'LoyaltyTarget',
-});
+// Loyalty.belongsTo(ConvertionRate, {
+// 	foreignKey: 'id',
+// 	targetKey: 'loyalty_id',
+// 	as: 'LoyaltySource',
+// });
+//
+// Loyalty.belongsTo(ConvertionRate, {
+// 	foreignKey: 'id',
+// 	targetKey: 'conversion_loyalty',
+// 	as: 'LoyaltyTarget',
+// });
 
 exports.Get = ConvertionRate;

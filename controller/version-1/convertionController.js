@@ -1,6 +1,8 @@
+const sequelize = require('sequelize');
 const helper = require('../../helper');
 const model = require('../../models');
 
+const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
 const Loyalty = model.Loyalty.Get;
 
@@ -49,4 +51,56 @@ exports.checkConvertionRate = async (request, reply) => {
 
 exports.doConvertionPoint = async () => {
 
+};
+
+
+exports.getConvertionRate = async (request, reply) => {
+	try {
+		const whereCondition = {};
+		const whereSource = {};
+		const whereTarget = {};
+		const params = JSON.parse(JSON.stringify(request.query));
+
+		if (params.loyalty_id != null) {
+			if (params.conversion_type === 'from') {
+				whereCondition.loyalty_id = params.loyalty_id;
+				if (params.search != null && typeof (params.search) === 'string') {
+					whereTarget.name = {
+						[Op.like]: `%${params.search}%`,
+					};
+				}
+			} else {
+				whereCondition.conversion_loyalty = params.loyalty_id;
+				if (params.search != null && typeof (params.search) === 'string') {
+					whereSource.name = {
+						[Op.like]: `%${params.search}%`,
+					};
+				}
+			}
+		}
+		const dataOptions = {
+			include: [{
+				model: Loyalty,
+				as: 'Source',
+				required: true,
+				where: whereSource,
+			}, {
+				model: Loyalty,
+				as: 'Target',
+				required: true,
+				where: whereTarget,
+			}],
+			where: whereCondition,
+		};
+
+		const conversion = await ConvertionRate.findAll({ ...dataOptions });
+
+		if (conversion) {
+			return reply.send(helper.Success(conversion));
+		}
+
+		throw new Error('Conversion Rate not found');
+	} catch (err) {
+		return reply.send(helper.Fail(err));
+	}
 };
