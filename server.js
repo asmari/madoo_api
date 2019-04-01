@@ -15,6 +15,7 @@ const fastifyFileUpload = require('fastify-file-upload');
 require('dotenv').config();
 
 const security = require('./security');
+const errorHandler = require('./errorHandler');
 const documentations = require('./documentations');
 const config = require('./config').get;
 
@@ -23,6 +24,9 @@ fastify.register(security);
 
 // register fastify swagger
 fastify.register(documentations);
+
+// register fastify error boom
+fastify.register(errorHandler);
 
 // register upload file plugin
 fastify.register(fastifyFileUpload);
@@ -46,7 +50,8 @@ if (!fs.existsSync('./upload')) {
 // Run the server!
 fastify.listen(config.serverPort, (err) => {
 	if (err) {
-		fastify.log.error(err);
+		console.trace(err);
+		// fastify.log.error(err);
 		process.exit(1);
 	}
 });
