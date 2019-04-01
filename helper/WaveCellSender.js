@@ -18,7 +18,14 @@ module.exports = class WaveCellSender {
 	}
 
 	static parsePhoneNumber(phone) {
-		return `+${phone}`;
+		try {
+			if (phone.substring(0, 1) !== '+') {
+				return `+${phone}`;
+			}
+			return phone;
+		} catch (err) {
+			return phone;
+		}
 	}
 
 	checkOtp(otp, uid) {
@@ -62,7 +69,7 @@ module.exports = class WaveCellSender {
 		let phone = varPhone;
 		return new Promise((resolve, reject) => {
 			try {
-				phone = this.parsePhoneNumber(phone);
+				phone = WaveCellSender.parsePhoneNumber(phone);
 
 
 				const data = JSON.stringify({

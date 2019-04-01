@@ -5,6 +5,8 @@ async function routes(fastify) {
 	fastify.get('/', schema.sampleSchema, sampleController.getSampleMessage);
 
 	fastify.get('/screet', { schema: { hide: true } }, sampleController.getSampleScreet);
+
+	fastify.get('/code/response', sampleController.getCodeResponse);
 }
 
 module.exports = routes;

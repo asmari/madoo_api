@@ -1,290 +1,277 @@
 const bcrypt = require('bcrypt');
 
+const { ErrorResponse, Response } = require('../../helper/response');
 const model = require('../../models');
 const otpHelper = require('../../helper/otpHelper');
-const helper = require('../../helper');
-const { sequelize } = require('../../models/conn/sequelize');
 
 const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 
 // register fb oauth
-exports.doRegisterFacebook = async (request, reply) => {
-	try {
-		let params = request.raw.body || request.body;
+exports.doRegisterFacebook = async (request) => {
+	const params = request.body;
 
-		params = params || {};
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'full_name')) {
-			return reply.send(helper.Fail({
-				message: 'Field full_name is required',
-			}));
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'email')) {
-			return reply.send(helper.Fail({
-				message: 'Field email is required',
-			}));
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'mobile_phone')) {
-			return reply.send(helper.Fail({
-				message: 'Field mobile_phone is required',
-			}));
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'fb_id')) {
-			return reply.send(helper.Fail({
-				message: 'Field fb_id is required',
-			}));
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'fb_token')) {
-			return reply.send(helper.Fail({
-				message: 'Field fb_token is required',
-			}));
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'pin')) {
-			return reply.send(helper.Fail({
-				message: 'Field pin is required',
-			}));
-		}
-
-
-		const fingerprint = Object.prototype.hasOwnProperty.call(params, 'fingerprint') ? params.fingerprint : 0;
-		const image = Object.prototype.hasOwnProperty.call(params, 'image') ? params.image : null;
-
-		// start transaction
-		return sequelize.transaction(async () => {
-			// find email unique
-			Members.findOne({
-				where: {
-					email: params.email,
-				},
-			}).then((member) => {
-				if (member != null) {
-					return Promise.reject(new Error('Email already registered'));
-				}
-
-				// find phone unique
-				return Members.findOne({
-					where: {
-						mobile_phone: params.mobile_phone,
-					},
-				});
-			}).then(async (member) => {
-				if (member != null) {
-					return Promise.reject(new Error('Phone number already registered'));
-				}
-
-				// create member
-				const exists = await MembersRegister
-					.findOne({
-						where: {
-							mobile_phone: params.mobile_phone,
-							status: 'pending',
-						},
-					});
-
-				if (exists != null) {
-					return exists;
-				}
-
-				return MembersRegister.create({
-					full_name: params.full_name,
-					email: params.email,
-					fb_id: params.fb_id,
-					fb_token: params.fb_token,
-					mobile_phone: params.mobile_phone,
-					pin: params.pin,
-					finggerprint: fingerprint,
-					image,
-					status: 'pending',
-				});
-			}).then(members => otpHelper.sendOtp({
-				members_register_id: members.id,
-			}, params.mobile_phone));
-			// .then(() => {
-
-			//     //create pin for member
-			//     return Pins.create({
-			//         members_id: members.id,
-			//         token:0,
-			//         expired:new Date(),
-			//         wrong:0,
-			//         pin: hash}, { transaction: t }).then(pins => {
-			//             return Members.findByPk(pins.member_id);
-			//         })
-			// });
-		}).then(async () => {
-			const payload = params;
-			payload.image = image;
-			payload.fingerprint = fingerprint;
-
-			return reply.send(helper.Success(payload));
-		}).catch(err => reply.code(500).send(helper.Fail(err)));
-	} catch (err) {
-		return reply.code(500).send(helper.Fail(err));
-	}
-};
-
-// check otp facebook oauth
-exports.doCheckOtp = async (request, reply) => {
-	try {
-		const { body } = request;
-
-		const member = await MembersRegister.findOne({
-			where: {
-				mobile_phone: body.mobile_phone,
-				email: body.email,
-				fb_id: body.fb_id,
-			},
+	if (!Object.prototype.hasOwnProperty.call(params, 'full_name')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'full_name',
 		});
-
-		if (member != null) {
-			const { status, message } = await otpHelper.checkOtp(body.otp, {
-				members_register_id: member.id,
-			});
-
-			if (status) {
-				return reply.send(helper.Success({
-					otp_status: status,
-				}, message));
-			}
-			return reply.send(helper.Fail({
-				message,
-			}));
-		}
-		throw new Error('Member not found');
-	} catch (err) {
-		return reply.send(helper.Fail(err));
 	}
-};
 
-// do save member with facebook
-exports.doSaveMember = async (request, reply) => {
-	try {
-		const params = request.body;
-		const date = new Date();
+	if (!Object.prototype.hasOwnProperty.call(params, 'email')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'email',
+		});
+	}
 
-		const pin = bcrypt.hashSync(params.pin.toString(), 10);
+	if (!Object.prototype.hasOwnProperty.call(params, 'mobile_phone')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'mobile_phone',
+		});
+	}
 
-		const memberRegister = await MembersRegister.findOne({
+	if (!Object.prototype.hasOwnProperty.call(params, 'fb_id')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'fb_id',
+		});
+	}
+
+	if (!Object.prototype.hasOwnProperty.call(params, 'fb_token')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'fb_token',
+		});
+	}
+
+	if (!Object.prototype.hasOwnProperty.call(params, 'pin')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'pin',
+		});
+	}
+
+	const fingerprint = Object.prototype.hasOwnProperty.call(params, 'fingerprint') ? params.fingerprint : 0;
+	const image = Object.prototype.hasOwnProperty.call(params, 'image') ? params.image : null;
+
+	// find email unique
+	const memberEmail = await Members.findOne({
+		where: {
+			email: params.email,
+		},
+	});
+
+	if (memberEmail != null) {
+		// Error: :field already registered!
+		throw new ErrorResponse(40104, {
+			field: 'Email',
+		});
+	}
+
+	// find phone unique
+	const memberPhone = await Members.findOne({
+		where: {
+			mobile_phone: params.mobile_phone,
+		},
+	});
+
+	if (memberPhone != null) {
+		// Error: :field already registered!
+		throw new ErrorResponse(40104, {
+			field: 'Phone',
+		});
+	}
+
+	// create member
+	let exists = await MembersRegister
+		.findOne({
 			where: {
-				email: params.email,
 				mobile_phone: params.mobile_phone,
 				status: 'pending',
 			},
 		});
 
-		if (memberRegister != null) {
-			const member = await Members.create({
-				...params,
-				fb_id: memberRegister.fb_id,
-				fb_token: memberRegister.fb_token,
+	if (exists == null) {
+		exists = await MembersRegister.create({
+			full_name: params.full_name,
+			email: params.email,
+			fb_id: params.fb_id,
+			fb_token: params.fb_token,
+			mobile_phone: params.mobile_phone,
+			pin: params.pin,
+			finggerprint: fingerprint,
+			image,
+			status: 'pending',
+		});
+	}
+
+	await otpHelper.sendOtp({
+		members_register_id: exists.id,
+	}, params.mobile_phone);
+
+	const payload = params;
+	payload.image = image;
+	payload.fingerprint = fingerprint;
+
+	return new Response(20004, payload);
+};
+
+// check otp facebook oauth
+exports.doCheckOtp = async (request) => {
+	const { body } = request;
+
+	const member = await MembersRegister.findOne({
+		where: {
+			mobile_phone: body.mobile_phone,
+			email: body.email,
+			fb_id: body.fb_id,
+		},
+	});
+
+	if (member != null) {
+		const { status, message } = await otpHelper.checkOtp(body.otp, {
+			members_register_id: member.id,
+		});
+
+		if (status) {
+			return new Response(20009, {
+				otp_status: status,
+			}, message);
+		}
+		// Error: :message
+		return new ErrorResponse(40098, {
+			message,
+		});
+	}
+	// Error: Member not found
+	throw new ErrorResponse(40400);
+};
+
+// do save member with facebook
+exports.doSaveMember = async (request, reply) => {
+	const params = request.body;
+	const date = new Date();
+
+	const pin = bcrypt.hashSync(params.pin.toString(), 10);
+
+	const memberRegister = await MembersRegister.findOne({
+		where: {
+			email: params.email,
+			mobile_phone: params.mobile_phone,
+			status: 'pending',
+		},
+	});
+
+	if (memberRegister != null) {
+		const member = await Members.create({
+			...params,
+			fb_id: memberRegister.fb_id,
+			fb_token: memberRegister.fb_token,
+		});
+
+		await Pins.create({
+			pin,
+			members_id: member.id,
+			expired: date,
+		});
+
+		await memberRegister.update({
+			status: 'registered',
+		});
+
+		const payload = {
+			id: member.id,
+			oauth: true,
+		};
+
+		const token = await new Promise((resolve, reject) => {
+			reply.jwtSign(payload, (err, accessToken) => {
+				if (err) {
+					reject(err);
+				} else {
+					resolve(accessToken);
+				}
 			});
+		});
 
-			await Pins.create({
-				pin,
-				members_id: member.id,
-				expired: date,
+		if (token != null) {
+			return new Response(20005, {
+				token_type: 'Bearer',
+				access_token: token,
+				fingerprint: member.finggerprint || 0,
 			});
-
-			await memberRegister.update({
-				status: 'registered',
-			});
-
-			const payload = {
-				id: member.id,
-				oauth: true,
-			};
-
-			// console.log(payload);
-
-			const token = await new Promise((resolve, reject) => {
-				reply.jwtSign(payload, (err, accessToken) => {
-					if (err) {
-						reject(err);
-					} else {
-						resolve(accessToken);
-					}
-				});
-			});
-
-			if (token != null) {
-				return reply.send(helper.Success({
-					token_type: 'Bearer',
-					access_token: token,
-					fingerprint: member.finggerprint || 0,
-				}));
-			}
-			throw new Error('Token is null');
 		}
 
-		throw new Error('Member register not found');
-	} catch (err) {
-		return reply.send(helper.Fail(err));
+		// Error: Token is null
+		throw new ErrorResponse(40402);
 	}
+
+	// Error: Member register not found
+	throw new ErrorResponse(40403);
 };
 
 // login check against facebook oauth
 exports.doLoginFacebook = async (request, reply) => {
-	try {
-		const params = request.body;
+	const params = request.body;
 
-		if (!Object.prototype.hasOwnProperty.call(params, 'email')) {
-			throw new Error('Field email is required');
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'fb_id')) {
-			throw new Error('Field fb_id is required');
-		}
-
-		if (!Object.prototype.hasOwnProperty.call(params, 'fb_token')) {
-			throw new Error('Field fb_token is required');
-		}
-
-		return Members.findOne({
-			where: {
-				email: params.email,
-				fb_id: params.fb_id,
-			},
-		}).then((member) => {
-			if (member == null) {
-				return reply.code(200).send(helper.Fail({
-					message: 'Member is not found',
-					statusCode: 404,
-				}));
-			}
-
-			// update fb_token using latest token received
-			return member.update({
-				fb_token: params.fb_token,
-			}).then(async () => {
-				const payload = {
-					id: member.id,
-					oauth: true,
-				};
-
-				const token = await new Promise((resolve, reject) => {
-					reply.jwtSign(payload, (err, accessToken) => {
-						if (err) {
-							reject(err);
-						}
-						resolve({
-							token_type: 'Bearer',
-							access_token: accessToken,
-							fingerprint: member.finggerprint,
-						});
-					});
-				});
-
-				return reply.send(helper.Success(token));
-			});
-		}).catch(err => reply.code(500).send(helper.Fail(err)));
-	} catch (err) {
-		return reply.code(500).send(helper.Fail(err));
+	if (!Object.prototype.hasOwnProperty.call(params, 'email')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'email',
+		});
 	}
+
+	if (!Object.prototype.hasOwnProperty.call(params, 'fb_id')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'fb_id',
+		});
+	}
+
+	if (!Object.prototype.hasOwnProperty.call(params, 'fb_token')) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'fb_token',
+		});
+	}
+
+	const member = await Members.findOne({
+		where: {
+			email: params.email,
+			fb_id: params.fb_id,
+		},
+	});
+
+	if (member == null) {
+		// Error: Member not found
+		throw new ErrorResponse(40400);
+	}
+
+	// update fb_token using latest token received
+	const memberUpdate = await member.update({
+		fb_token: params.fb_token,
+	});
+
+	const payload = {
+		id: memberUpdate.id,
+		oauth: true,
+	};
+
+	const token = await new Promise((resolve, reject) => {
+		reply.jwtSign(payload, (err, accessToken) => {
+			if (err) {
+				reject(err);
+			}
+			resolve({
+				token_type: 'Bearer',
+				access_token: accessToken,
+				fingerprint: memberUpdate.finggerprint,
+			});
+		});
+	});
+
+	return new Response(20006, token);
 };
