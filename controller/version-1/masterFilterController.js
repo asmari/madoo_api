@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 
-const helper = require('../../helper');
+const { ErrorResponse, Response } = require('../../helper/response');
 const {
 	Loyalty,
 	LoyaltyMemberCards,
@@ -9,116 +9,107 @@ const {
 } = require('../../models');
 
 // list filter promo content
-exports.getFilterListPromo = async (request, reply) => {
-	try {
-		const { user } = request;
+exports.getFilterListPromo = async (request) => {
+	const { user } = request;
 
-		const memberCards = await MembersCards.Get.findAll({
-			where: {
-				members_id: user.id,
+	const memberCards = await MembersCards.Get.findAll({
+		where: {
+			members_id: user.id,
+		},
+	});
+
+	if (memberCards) {
+		const memberCardsId = memberCards.map(value => value.id);
+
+		const promo = await Promo.Get.findAll({
+			loyalty_id: {
+				[Op.in]: memberCardsId,
 			},
 		});
 
-		if (memberCards) {
-			const memberCardsId = memberCards.map(value => value.id);
+		const promoMemberId = promo.map(value => value.loyalty_id);
 
-			const promo = await Promo.Get.findAll({
-				loyalty_id: {
-					[Op.in]: memberCardsId,
+		const loyaltyMemberCards = await LoyaltyMemberCards.Get.findAll({
+			where: {
+				member_cards_id: {
+					[Op.in]: promoMemberId,
 				},
-			});
-
-			const promoMemberId = promo.map(value => value.loyalty_id);
-
-			const loyaltyMemberCards = await LoyaltyMemberCards.Get.findAll({
-				where: {
-					member_cards_id: {
-						[Op.in]: promoMemberId,
-					},
+			},
+			include: [
+				{
+					model: Loyalty.Get,
 				},
-				include: [
-					{
-						model: Loyalty.Get,
-					},
-				],
-			});
+			],
+		});
 
-			const data = loyaltyMemberCards.map((value) => {
-				const innerData = value.loyalties.map(value2 => ({
-					id: value2.id,
-					name: value2.name,
-				}));
+		const data = loyaltyMemberCards.map((value) => {
+			const innerData = value.loyalties.map(value2 => ({
+				id: value2.id,
+				name: value2.name,
+			}));
 
-				return innerData[0] || [];
-			});
+			return innerData[0] || [];
+		});
 
-			reply.send(helper.Success(data));
-		}
-
-		throw new Error('Member cards not found');
-	} catch (err) {
-		reply.send(helper.Fail(err));
+		return new Response(20016, data);
 	}
+
+	// Error: Member cards not found
+	throw new ErrorResponse(40405);
 };
 
 // list sort card content
-exports.getSortListCard = async (request, reply) => {
-	reply.send(helper.Success([
-		{
-			id: 'alphabet',
-			name: 'Alphabetical',
-		}, {
-			id: 'point_low',
-			name: 'Point Low to High',
-		}, {
-			id: 'point_high',
-			name: 'Point High to Low',
-		},
-	]));
-};
+exports.getSortListCard = async () => new Response(20017, [
+	{
+		id: 'alphabet',
+		name: 'Alphabetical',
+	}, {
+		id: 'point_low',
+		name: 'Point Low to High',
+	}, {
+		id: 'point_high',
+		name: 'Point High to Low',
+	},
+]);
 
 // list filter card content
-exports.getFilterListCard = async (request, reply) => {
-	try {
-		const { user } = request;
+exports.getFilterListCard = async (request) => {
+	const { user } = request;
 
-		const memberCards = await MembersCards.Get.findAll({
+	const memberCards = await MembersCards.Get.findAll({
+		where: {
+			members_id: user.id,
+		},
+	});
+
+	if (memberCards) {
+		const memberCardsId = memberCards.map(value => value.id);
+
+		const loyaltyMemberCards = await LoyaltyMemberCards.Get.findAll({
 			where: {
-				members_id: user.id,
+				member_cards_id: {
+					[Op.in]: memberCardsId,
+				},
 			},
+			include: [
+				{
+					model: Loyalty.Get,
+				},
+			],
 		});
 
-		if (memberCards) {
-			const memberCardsId = memberCards.map(value => value.id);
 
-			const loyaltyMemberCards = await LoyaltyMemberCards.Get.findAll({
-				where: {
-					member_cards_id: {
-						[Op.in]: memberCardsId,
-					},
-				},
-				include: [
-					{
-						model: Loyalty.Get,
-					},
-				],
-			});
+		const data = loyaltyMemberCards.map((value) => {
+			const innerData = value.loyalties.map(value2 => ({
+				id: value2.id,
+				name: value2.name,
+			}));
 
+			return innerData[0] || [];
+		});
 
-			const data = loyaltyMemberCards.map((value) => {
-				const innerData = value.loyalties.map(value2 => ({
-					id: value2.id,
-					name: value2.name,
-				}));
-
-				return innerData[0] || [];
-			});
-
-			reply.send(helper.Success(data));
-		}
-
-		throw new Error('Member cards not found');
-	} catch (err) {
-		reply.send(helper.Fail(err));
+		return new Response(20018, data);
 	}
+
+	throw new ErrorResponse(40405);
 };

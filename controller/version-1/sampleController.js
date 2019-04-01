@@ -1,16 +1,20 @@
+const { Response, CodeResponse } = require('../../helper/response');
+
 // Get welcome message
-exports.getSampleMessage = async (request, reply) => {
-	try {
-		return reply.code(200).send({ hello: 'guest' });
-	} catch (err) {
-		throw err;
-	}
+exports.getSampleMessage = async () => new Response(20099, { hello: 'guest' });
+
+exports.getSampleScreet = async (request) => {
+	const res = await new Promise((resolve, reject) => {
+		request.jwtVerify((err) => {
+			if (err) {
+				return reject(err);
+			}
+
+			return resolve({ hello: 'fuad' });
+		});
+	});
+
+	return new Response(20099, res);
 };
 
-exports.getSampleScreet = async (request, reply) => {
-	try {
-		request.jwtVerify(err => reply.code(200).send(err || { hello: 'fuad' }));
-	} catch (err) {
-		throw err;
-	}
-};
+exports.getCodeResponse = async () => new Response(20099, CodeResponse);
