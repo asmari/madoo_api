@@ -34,7 +34,7 @@ exports.doRegisterPhone = async (request) => {
 				members_register_id: memberRegister.id,
 			}, memberRegister.mobile_phone);
 
-			return new Response(sendOtp);
+			return new Response(20001, sendOtp);
 		}
 
 		// Error: Member already registered! Please login
@@ -51,7 +51,7 @@ exports.doRegisterPhone = async (request) => {
 			members_register_id: newMember.id,
 		}, newMember.mobile_phone);
 
-		return new Response(sendOtp);
+		return new Response(20001, sendOtp);
 	}
 };
 
