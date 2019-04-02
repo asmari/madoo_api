@@ -122,3 +122,20 @@ exports.memberDetail = async (request) => {
 	// Error: Member not found
 	throw new ErrorResponse(41700);
 };
+
+exports.doPinValidation = async (request) => {
+	const token = await request.jwtVerify();
+	const params = JSON.parse(JSON.stringify(request.query));
+
+	const pinMember = await Pins.findOne({ attributes: ['pin'], where: { id: token.id } });
+
+	if (pinMember) {
+		if (bcrypt.compareSync(params.pin.toString(), pinMember.pin)) {
+			return new Response(20026, { pin_valid: true });
+		}
+		return new ErrorResponse(40103);
+	}
+
+	// Error: Pin not found
+	throw new ErrorResponse(41700);
+};

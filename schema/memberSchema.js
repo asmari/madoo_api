@@ -50,3 +50,22 @@ exports.memberDetailSchema = {
 		],
 	},
 };
+
+exports.pinValidationSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		querystring: {
+			type: 'object',
+			properties: {
+				pin: {
+					type: 'integer',
+				},
+			},
+			required: ['pin'],
+		},
+	},
+};

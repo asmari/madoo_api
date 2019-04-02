@@ -13,11 +13,18 @@ async function routes(fastify) {
 
 	// Save Member
 	fastify.post('/register/save', memberSchema.memberSchema, memberController.doSaveMember);
+
 	// get detail members
 	fastify.get('/detail', {
 		...memberSchema.memberDetailSchema,
 		beforeHandler: [fastify.authenticate],
 	}, memberController.memberDetail);
+
+	// validate pin
+	fastify.post('/pin/validation', {
+		...memberSchema.pinValidationSchema,
+		beforeHandler: [fastify.authenticate],
+	}, memberController.doPinValidation);
 }
 
 module.exports = routes;
