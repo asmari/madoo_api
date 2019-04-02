@@ -111,14 +111,14 @@ exports.doSaveMember = async (request, reply) => {
 };
 
 exports.memberDetail = async (request) => {
-	const params = JSON.parse(JSON.stringify(request.query));
+	const token = await request.jwtVerify();
 
-	const member = await Members.findOne({ attributes: ['full_name', 'email', 'mobile_phone', 'image'], where: { id: params.member_id } });
+	const member = await Members.findOne({ attributes: ['full_name', 'email', 'mobile_phone', 'image'], where: { id: token.id } });
 
 	if (member) {
 		return new Response(20025, member);
 	}
 
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };

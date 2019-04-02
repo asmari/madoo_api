@@ -48,14 +48,5 @@ exports.memberDetailSchema = {
 				BearerAuth: [],
 			},
 		],
-		querystring: {
-			type: 'object',
-			properties: {
-				member_id: {
-					type: 'integer',
-				},
-			},
-			required: ['member_id'],
-		},
 	},
 };
