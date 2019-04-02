@@ -13,6 +13,11 @@ async function routes(fastify) {
 
 	// Save Member
 	fastify.post('/register/save', memberSchema.memberSchema, memberController.doSaveMember);
+	// get detail members
+	fastify.get('/detail', {
+		...memberSchema.memberDetailSchema,
+		beforeHandler: [fastify.authenticate],
+	}, memberController.memberDetail);
 }
 
 module.exports = routes;
