@@ -2,7 +2,6 @@
 const bcrypt = require('bcrypt');
 
 const model = require('../../models');
-const helper = require('../../helper');
 const otpHelper = require('../../helper/otpHelper');
 const { ErrorResponse, Response } = require('../../helper/response');
 
@@ -152,7 +151,7 @@ exports.doCheckOtp = async (request) => {
 		});
 	} else {
 		// Error: member not found
-		throw new ErrorResponse(40400);
+		throw new ErrorResponse(41700);
 	}
 };
 
@@ -211,11 +210,11 @@ exports.doSaveMember = async (request, reply) => {
 			});
 		}
 		// Error: token is null
-		throw new ErrorResponse(40402);
+		throw new ErrorResponse(41702);
 	}
 
 	// Error: member register not found
-	throw new ErrorResponse(40403);
+	throw new ErrorResponse(41703);
 };
 
 // login check against google oauth
@@ -251,10 +250,7 @@ exports.doLoginGoogle = async (request, reply) => {
 	});
 
 	if (member == null) {
-		reply.code(200).send(helper.Fail({
-			message: 'Member is not found',
-			statusCode: 404,
-		}));
+		throw new ErrorResponse(41700);
 	}
 
 	// update g_token using latest token received

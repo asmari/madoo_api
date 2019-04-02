@@ -59,7 +59,7 @@ exports.doLogin = async (request, reply) => {
 
 	if (member == null) {
 		// Error: Member not found
-		throw new ErrorResponse(40400);
+		throw new ErrorResponse(41700);
 	}
 
 	const pin = member.pin_member;
@@ -109,7 +109,7 @@ exports.setForgotPinOtp = async (request) => {
 	}
 
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };
 
 // check forgot pin otp
@@ -131,7 +131,7 @@ exports.checkForgotPinOtp = async (request) => {
 	}
 
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };
 
 
@@ -211,5 +211,5 @@ exports.doChangePin = async (request, reply) => {
 	}
 
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };

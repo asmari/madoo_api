@@ -1,6 +1,6 @@
 const error400 = require('./4xx/400');
 const error401 = require('./4xx/401');
-const error404 = require('./4xx/404');
+const error417 = require('./4xx/417');
 const error422 = require('./4xx/422');
 const message200 = require('./2xx/200');
 
@@ -9,7 +9,7 @@ const instance = {
 		...message200,
 		...error400,
 		...error401,
-		...error404,
+		...error417,
 		...error422,
 	},
 	getMessage: (code, parameters = {}) => {

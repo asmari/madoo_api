@@ -147,7 +147,7 @@ exports.doCheckOtp = async (request) => {
 		});
 	}
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };
 
 // do save member with facebook
@@ -206,11 +206,11 @@ exports.doSaveMember = async (request, reply) => {
 		}
 
 		// Error: Token is null
-		throw new ErrorResponse(40402);
+		throw new ErrorResponse(41702);
 	}
 
 	// Error: Member register not found
-	throw new ErrorResponse(40403);
+	throw new ErrorResponse(41703);
 };
 
 // login check against facebook oauth
@@ -247,7 +247,7 @@ exports.doLoginFacebook = async (request, reply) => {
 
 	if (member == null) {
 		// Error: Member not found
-		throw new ErrorResponse(40400);
+		throw new ErrorResponse(41700);
 	}
 
 	// update fb_token using latest token received

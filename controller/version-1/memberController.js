@@ -69,7 +69,7 @@ exports.doOtpValidation = async (request) => {
 	}
 
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };
 
 exports.doSaveMember = async (request, reply) => {
@@ -107,5 +107,5 @@ exports.doSaveMember = async (request, reply) => {
 		return new Response(20005, accessToken);
 	}
 	// Error: Member not found
-	throw new ErrorResponse(40400);
+	throw new ErrorResponse(41700);
 };

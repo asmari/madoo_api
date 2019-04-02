@@ -55,7 +55,7 @@ exports.getFilterListPromo = async (request) => {
 	}
 
 	// Error: Member cards not found
-	throw new ErrorResponse(40405);
+	throw new ErrorResponse(41705);
 };
 
 // list sort card content
@@ -111,5 +111,5 @@ exports.getFilterListCard = async (request) => {
 		return new Response(20018, data);
 	}
 
-	throw new ErrorResponse(40405);
+	throw new ErrorResponse(41705);
 };

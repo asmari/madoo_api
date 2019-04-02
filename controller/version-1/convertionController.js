@@ -1,7 +1,7 @@
 const sequelize = require('sequelize');
 const helper = require('../../helper');
 const model = require('../../models');
-const { ErrorResponse, Response } = require('../../helper/response');
+const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 
 const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
@@ -48,7 +48,7 @@ exports.checkConvertionRate = async (request) => {
 		});
 	}
 	// Error: Convertion rate not found
-	throw new ErrorResponse(40402);
+	throw new ErrorResponse(41702);
 };
 
 
@@ -57,62 +57,57 @@ exports.doConvertionPoint = async () => {
 };
 
 
-exports.getConvertionRate = async (request, reply) => {
-	try {
-		const whereCondition = {};
-		const whereSource = {};
-		const whereTarget = {};
-		const params = JSON.parse(JSON.stringify(request.query));
+exports.getConvertionRate = async (request) => {
+	const whereCondition = {};
+	const whereSource = {};
+	const whereTarget = {};
+	const params = JSON.parse(JSON.stringify(request.query));
 
-		params.page = parseInt(params.page, 10) || 1;
-		params.item = parseInt(params.item, 10) || 10;
-		if (params.loyalty_id != null) {
-			if (params.conversion_type === 'from') {
-				whereCondition.loyalty_id = params.loyalty_id;
-				if (params.search != null && typeof (params.search) === 'string') {
-					whereTarget.name = {
-						[Op.like]: `%${params.search}%`,
-					};
-				}
-			} else {
-				whereCondition.conversion_loyalty = params.loyalty_id;
-				if (params.search != null && typeof (params.search) === 'string') {
-					whereSource.name = {
-						[Op.like]: `%${params.search}%`,
-					};
-				}
+	params.page = parseInt(params.page, 10) || 1;
+	params.item = parseInt(params.item, 10) || 10;
+	if (params.loyalty_id != null) {
+		if (params.conversion_type === 'from') {
+			whereCondition.loyalty_id = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereTarget.name = {
+					[Op.like]: `%${params.search}%`,
+				};
+			}
+		} else {
+			whereCondition.conversion_loyalty = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereSource.name = {
+					[Op.like]: `%${params.search}%`,
+				};
 			}
 		}
-		const dataOptions = {
-			include: [{
-				model: Loyalty,
-				as: 'Source',
-				required: true,
-				where: whereSource,
-			}, {
-				model: Loyalty,
-				as: 'Target',
-				required: true,
-				where: whereTarget,
-			}],
-			page: params.page,
-			paginate: params.item,
-			where: whereCondition,
-		};
-
-		const conversion = await ConvertionRate.paginate({ ...dataOptions });
-
-		if (conversion) {
-			console.log(conversion);
-			reply.send(helper.Paginate({
-				item: params.item,
-				pages: params.page,
-				total: conversion.total,
-			}, conversion.docs));
-		}
-
-		throw new Error('Conversion Rate not found');
-	} catch (err) {
-		return reply.send(helper.Fail(err));
 	}
+	const dataOptions = {
+		include: [{
+			model: Loyalty,
+			as: 'Source',
+			required: true,
+			where: whereSource,
+		}, {
+			model: Loyalty,
+			as: 'Target',
+			required: true,
+			where: whereTarget,
+		}],
+		page: params.page,
+		paginate: params.item,
+		where: whereCondition,
+	};
+
+	const conversion = await ConvertionRate.paginate({ ...dataOptions });
+
+	if (conversion) {
+		return new ResponsePaginate({
+			item: params.item,
+			pages: params.page,
+			total: conversion.total,
+		}, conversion.docs);
+	}
+
+	throw new ErrorResponse(41701);
 };

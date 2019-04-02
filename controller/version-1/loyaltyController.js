@@ -111,7 +111,7 @@ exports.getDetailMember = async (request) => {
 		}
 	}
 	// Error: Member cards with loyalty not found!
-	throw new ErrorResponse(40404);
+	throw new ErrorResponse(41704);
 };
 
 // List Detail Member Card
