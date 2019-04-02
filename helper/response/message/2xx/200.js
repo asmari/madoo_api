@@ -24,6 +24,7 @@ module.exports = {
 	20022: 'Get random promos success',
 	20023: 'Get list promos success',
 	20024: 'Get Detail promo success',
+	20025: 'Get Detail Member success',
 
 	20099: 'Success',
 };

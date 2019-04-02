@@ -41,3 +41,21 @@ exports.memberSchema = {
 		},
 	},
 };
+exports.memberDetailSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		querystring: {
+			type: 'object',
+			properties: {
+				member_id: {
+					type: 'integer',
+				},
+			},
+			required: ['member_id'],
+		},
+	},
+};
