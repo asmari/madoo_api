@@ -5,6 +5,7 @@ exports.fcmTokenSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for ??',
 		querystring: {
 			type: 'object',
 			properties: {

@@ -5,6 +5,7 @@ exports.loyaltyMemberListSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for members loyalty program list',
 		querystring: {
 			type: 'object',
 			properties: {
@@ -42,6 +43,7 @@ exports.loyaltyMemberDetailSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for members loyalty program datail',
 		querystring: {
 			type: 'object',
 			properties: {
@@ -62,6 +64,7 @@ exports.loyaltyListSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for Loyalty Program list',
 		querystring: {
 			type: 'object',
 			properties: {
@@ -80,6 +83,7 @@ exports.loyaltyDetailSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for Loyalty Program detail',
 		querystring: {
 			type: 'object',
 			properties: {
@@ -99,6 +103,7 @@ exports.loyaltyDeleteMembercard = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for members delete loyalty program',
 		body: {
 			properties: {
 				member_cards_id: {

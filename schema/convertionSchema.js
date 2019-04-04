@@ -5,6 +5,7 @@ exports.checkConvertion = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for validate conversion role',
 		querystring: {
 			type: 'object',
 			required: ['loyalty_id_source', 'loyalty_id_target', 'point_to_convert'],
@@ -29,6 +30,7 @@ exports.getConvertion = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for check conversion point between loyalty',
 		querystring: {
 			type: 'object',
 			required: ['conversion_type','loyalty_id'],

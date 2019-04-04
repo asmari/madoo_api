@@ -5,6 +5,7 @@ exports.promoListSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for List Promo',
 		querystring: {
 			type: 'object',
 			properties: {
@@ -38,6 +39,7 @@ exports.promoDetailSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for detail promo',
 		querystring: {
 			type: 'object',
 			properties: {

@@ -1,5 +1,6 @@
 exports.facebookLoginSchema = {
 	schema: {
+		description: 'Rest API for login with facebook',
 		body: {
 			// Required body paramter for login
 			required: ['email', 'fb_id', 'fb_token'],
@@ -14,6 +15,7 @@ exports.facebookLoginSchema = {
 
 exports.facebookSaveMemberSchema = {
 	schema: {
+		description: 'Rest API for register user & auto login',
 		body: {
 			required: ['full_name', 'email', 'mobile_phone', 'pin'],
 			properties: {
@@ -52,6 +54,7 @@ exports.facebookSaveMemberSchema = {
 
 exports.facebookOtpSchema = {
 	schema: {
+		description: 'Rest API for validate otp register with facebook',
 		body: {
 			type: 'object',
 			required: ['otp', 'mobile_phone', 'fb_id', 'fb_token', 'email'],
@@ -79,6 +82,7 @@ exports.facebookOtpSchema = {
 exports.facebookRegisterSchema = {
 	schema: {
 		consumes: ['multipart/form-data'],
+		description: 'Rest API for validate user & send otp',
 		body: {
 			required: ['full_name', 'email', 'fb_id', 'fb_token', 'mobile_phone', 'pin'],
 			properties: {

@@ -1,5 +1,6 @@
 exports.googleLoginSchema = {
 	schema: {
+		description: 'Rest API for login with google',
 		body: {
 			// Required body paramter for login
 			required: ['email', 'g_id', 'g_token'],
@@ -15,6 +16,7 @@ exports.googleLoginSchema = {
 exports.googleRegisterSchema = {
 	schema: {
 		consumes: ['multipart/form-data'],
+		description: 'Rest API for validate user & send otp',
 		body: {
 			required: ['full_name', 'email', 'g_id', 'g_token', 'mobile_phone', 'pin'],
 			properties: {
@@ -37,6 +39,7 @@ exports.googleRegisterSchema = {
 
 exports.googleSaveMemberSchema = {
 	schema: {
+		description: 'Rest API for register user & auto login',
 		body: {
 			required: ['full_name', 'email', 'mobile_phone', 'pin'],
 			properties: {
@@ -75,6 +78,7 @@ exports.googleSaveMemberSchema = {
 
 exports.googleOtpSchema = {
 	schema: {
+		description: 'Rest API for validate otp register with google',
 		body: {
 			type: 'object',
 			required: ['otp', 'mobile_phone', 'g_id', 'g_token', 'email'],

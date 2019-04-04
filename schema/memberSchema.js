@@ -1,5 +1,6 @@
 exports.registerSchema = {
 	schema: {
+		description: 'Rest API for check user and sent OTP',
 		body: {
 			// Required body paramter for register
 			required: ['full_name', 'email', 'mobile_phone'],
@@ -14,6 +15,7 @@ exports.registerSchema = {
 };
 exports.otpSchema = {
 	schema: {
+		description: 'Rest API for user validate otp',
 		body: {
 			// Required body paramter for register
 			required: ['mobile_phone', 'otp'],
@@ -28,6 +30,7 @@ exports.otpSchema = {
 
 exports.memberSchema = {
 	schema: {
+		description: 'Rest API for register user and auto login',
 		body: {
 			// Required body paramter for save member
 			required: ['full_name', 'email', 'mobile_phone', 'pin'],
@@ -58,6 +61,7 @@ exports.pinValidationSchema = {
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for validate pin',
 		querystring: {
 			type: 'object',
 			properties: {
