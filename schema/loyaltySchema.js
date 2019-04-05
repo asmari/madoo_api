@@ -36,6 +36,7 @@ exports.loyaltyMemberListSchema = {
 
 exports.loyaltyCheckMemberSchema = {
 	schema: {
+		description: 'Api Check Member card loyalty',
 		security: [
 			{
 				BearerAuth: [],
