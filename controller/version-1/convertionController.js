@@ -1,5 +1,4 @@
 const sequelize = require('sequelize');
-const helper = require('../../helper');
 const model = require('../../models');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 

@@ -26,6 +26,7 @@ module.exports = {
 	20024: 'Get Detail promo success',
 	20025: 'Get Detail Member success',
 	20026: 'Pin validation success',
+	20027: 'Check Member card success',
 
 	20099: 'Success',
 };

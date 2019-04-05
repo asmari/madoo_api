@@ -31,6 +31,11 @@ module.exports = {
 		message: ':field length maximum :length',
 		params: ['field', 'length'],
 	},
+	42208: {
+		message: 'Loyalty api user detail not in form json!, :error',
+		params: ['error'],
+	},
+	42209: 'Loyalty doesnt have api detail',
 
 	42298: {
 		message: ':message',

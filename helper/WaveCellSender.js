@@ -76,7 +76,8 @@ module.exports = class WaveCellSender {
 					destination: phone,
 					productName: 'Husky',
 					codeLength: 6,
-					codeValidity: 120,
+					codeValidity: 300,
+					resendingInterval: 300,
 					codeType: 'NUMERIC',
 					template: {
 						source: 'Husky',
