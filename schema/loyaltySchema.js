@@ -34,6 +34,27 @@ exports.loyaltyMemberListSchema = {
 
 };
 
+exports.loyaltyCheckMemberSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		querystring: {
+			type: 'object',
+			properties: {
+				loyalty_id: {
+					type: 'integer',
+				},
+				member_card: {
+					type: 'integer',
+				},
+			},
+			required: ['loyalty_id', 'member_card'],
+		},
+	},
+};
 
 exports.loyaltyMemberDetailSchema = {
 	schema: {
