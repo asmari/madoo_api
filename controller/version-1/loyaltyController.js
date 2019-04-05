@@ -1,6 +1,7 @@
 const sequelize = require('sequelize');
 const helper = require('../../helper');
 const model = require('../../models');
+const RestClient = require('../../restclient');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 
 const { Op } = sequelize;
@@ -10,6 +11,43 @@ const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
 const MemberCards = model.MembersCards.Get;
 const Promo = model.Promo.Get;
+
+// Check membercard loyalty
+exports.doCheckMemberCard = async (request) => {
+	const params = JSON.parse(JSON.stringify(request.query)) || {};
+
+	const loyalty = await Loyalty.findOne({
+		where: {
+			id: params.loyalty_id,
+		},
+	});
+
+	let json = null;
+
+	if (loyalty.api_user_detail !== null) {
+		try {
+			json = JSON.parse(loyalty.api_user_detail);
+		} catch (err) {
+			throw new ErrorResponse(42208, {
+				error: err.toString(),
+			});
+		}
+
+		const rest = new RestClient(json);
+
+		rest.insertBody(params);
+
+		const response = await rest.request();
+
+		if (response instanceof Error) {
+			throw new ErrorResponse(42298, {
+				message: response.toString(),
+			});
+		}
+		return new Response(20027, response);
+	}
+	return new ErrorResponse(42209);
+};
 
 // Delete Membercard loyalty
 exports.doDeleteLoyaltyMemberCard = async (request, reply) => {
