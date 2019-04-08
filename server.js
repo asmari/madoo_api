@@ -41,6 +41,7 @@ fastify.get('/', { schema: { hide: true } }, (request, reply) => {
 
 // Register your version plugin
 fastify.register(require('./routes/version-1'), { prefix: '/v1' });
+fastify.register(require('./routes/version-2'), { prefix: '/v2' });
 
 // check if upload folder is exist, if not create it
 if (!fs.existsSync('./upload')) {
