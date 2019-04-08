@@ -21,6 +21,12 @@ async function routes(fastify) {
 		beforeHandler: [fastify.authenticate],
 	}, loyaltyController.doCheckMemberCard);
 
+	// save member card
+	fastify.post('/save/card', {
+		...loyaltySchema.loyaltySaveMemberCardSchema,
+		beforeHandler: [fastify.authenticate],
+	}, loyaltyController.doSaveMemberCard);
+
 	// list loyalty with type
 	fastify.get('/list', {
 		...loyaltySchema.loyaltyListSchema,

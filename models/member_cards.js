@@ -6,15 +6,15 @@ const model = require('./conn/sequelize').sequelize;
 const Members = require('./members');
 
 const MemberCards = model.define('member_cards', {
-	id: {
-		type: Sequelize.INTEGER,
-		allowNull: false,
-		primaryKey: true,
-		// references:{
-		//     model:LoyaltyMemberCards.Get,
-		//     key:"member_cards_id"
-		// }
-	},
+	// id: {
+	// 	type: Sequelize.INTEGER,
+	// 	allowNull: false,
+	// 	primaryKey: true,
+	// 	// references:{
+	// 	//     model:LoyaltyMemberCards.Get,
+	// 	//     key:"member_cards_id"
+	// 	// }
+	// },
 	members_id: {
 		type: Sequelize.INTEGER,
 		allowNull: false,
@@ -55,7 +55,8 @@ const MemberCards = model.define('member_cards', {
 	},
 	date_birth: {
 		type: Sequelize.DATE,
-		allowNull: false,
+		allowNull: true,
+		defaultValue: null,
 	},
 	member_level: {
 		type: Sequelize.STRING,
