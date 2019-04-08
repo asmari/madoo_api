@@ -11,6 +11,89 @@ const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
 const MemberCards = model.MembersCards.Get;
 const Promo = model.Promo.Get;
+const Members = model.Members.Get;
+
+// Save Membercard loyalty
+exports.doSaveMemberCard = async (request) => {
+	const { user, body } = request;
+
+	switch (body.type_id) {
+	case 'card_number':
+		if (!Object.prototype.hasOwnProperty.call(body, 'card_number')) {
+			throw new ErrorResponse(42200, {
+				field: 'card_number',
+			});
+		}
+		break;
+
+	case 'email':
+		if (!Object.prototype.hasOwnProperty.call(body, 'email')) {
+			throw new ErrorResponse(42200, {
+				field: 'email',
+			});
+		}
+		break;
+
+	case 'mobile_number':
+		if (!Object.prototype.hasOwnProperty.call(body, 'mobile_number')) {
+			throw new ErrorResponse(42200, {
+				field: 'mobile_number',
+			});
+		}
+		break;
+
+	default:
+
+		break;
+	}
+
+	const signupDate = Date.parse(body.signup_date);
+
+	// eslint-disable-next-line no-restricted-globals
+	if (isNaN(signupDate)) {
+		throw new ErrorResponse(42210, {
+			field: 'signup_date',
+		});
+	}
+
+	const member = await Members.findOne({
+		where: {
+			id: user.id,
+		},
+	});
+
+	if (member) {
+		try {
+			const memberCard = await MemberCards.create({
+				members_id: member.id,
+				card_number: body.card_number || '',
+				full_name: member.full_name,
+				email: body.email || '',
+				mobile_number: body.mobile_number || '',
+				date_birth: body.date_birth || null,
+				member_level: body.member_level || '',
+				signup_date: body.signup_date,
+				expiry_date: body.expiry_date || null,
+				type_id: body.type_id,
+				point_balance: body.point_balance,
+			});
+
+			await LoyaltyMemberCards.create({
+				loyalty_id: body.loyalty_id,
+				member_cards_id: memberCard.id,
+			});
+
+			return new Response(20028, memberCard);
+		} catch (err) {
+			throw new ErrorResponse(42298, {
+				message: err.toString(),
+			});
+		}
+	}
+
+	throw new ErrorResponse(41700);
+};
+
 
 // Check membercard loyalty
 exports.doCheckMemberCard = async (request) => {
