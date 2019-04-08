@@ -28,7 +28,9 @@ module.exports = fp((fastify, _, next) => {
 				break;
 
 			default:
-				errBag = new ErrorResponse(42299);
+				errBag = new ErrorResponse(42298, {
+					message: error.toString(),
+				});
 				break;
 			}
 
