@@ -28,6 +28,7 @@ module.exports = {
 	20026: 'Pin validation success',
 	20027: 'Check Member card success',
 	20028: 'Save Member card success',
+	20029: 'Get List Loyalty Type Success',
 
 	20099: 'Success',
 };
