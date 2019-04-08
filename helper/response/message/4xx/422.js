@@ -36,6 +36,10 @@ module.exports = {
 		params: ['error'],
 	},
 	42209: 'Loyalty doesnt have api detail',
+	42210: {
+		message: ':field is not date or datetime type',
+		params: ['field'],
+	},
 
 	42298: {
 		message: ':message',
