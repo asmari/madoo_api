@@ -7,6 +7,7 @@ const facebook = require('./version-1/facebook');
 const google = require('./version-1/google');
 const convertion = require('./version-1/convertion');
 const masterRoute = require('./version-1/masterRoute');
+const notification = require('./version-1/notification');
 
 
 async function routes(fastify) {
@@ -29,6 +30,8 @@ async function routes(fastify) {
 	fastify.register(convertion, { prefix: '/conversion' });
 
 	fastify.register(masterRoute, { prefix: '/master' });
+
+	fastify.register(notification, { prefix: '/notification' });
 }
 
 module.exports = routes;
