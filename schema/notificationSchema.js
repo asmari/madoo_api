@@ -5,7 +5,7 @@ exports.fcmTokenSchema = {
 				BearerAuth: [],
 			},
 		],
-		description: 'Rest API for ??',
+		description: 'Rest API for save device token member',
 		querystring: {
 			type: 'object',
 			properties: {
@@ -25,7 +25,7 @@ exports.fcmTokenSchema = {
 					type: 'string',
 				},
 			},
-			required: ['members_id', 'fcm_token', 'device_id'],
+			required: ['fcm_token', 'device_id'],
 		},
 
 	},

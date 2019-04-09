@@ -3,11 +3,11 @@ const model = require('../../models');
 
 
 const DeviceNotification = model.DeviceNotification.Get;
-// get random promo
+// save notification token
 exports.doRegisterToken = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query));
 
-	const fcmToken = await DeviceNotification.findOne({ members_id: params.members_id });
+	const fcmToken = await DeviceNotification.findOne({ fcmToken: params.fcmToken });
 
 	let token = null;
 
