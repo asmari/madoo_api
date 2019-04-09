@@ -10,3 +10,4 @@ exports.Promo = require('./promo');
 exports.ForgotPassword = require('./forgot_password');
 exports.ConvertionRate = require('./convertion_rate');
 exports.DeviceNotification = require('./device_notification');
+exports.Transaction = require('./transaction');
