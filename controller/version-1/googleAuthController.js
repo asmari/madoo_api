@@ -207,6 +207,7 @@ exports.doSaveMember = async (request, reply) => {
 				token_type: 'Bearer',
 				access_token: token,
 				fingerprint: member.finggerprint || 0,
+				members_id: member.id,
 			});
 		}
 		// Error: token is null

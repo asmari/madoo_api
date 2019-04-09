@@ -269,6 +269,7 @@ exports.doLoginFacebook = async (request, reply) => {
 				token_type: 'Bearer',
 				access_token: accessToken,
 				fingerprint: memberUpdate.finggerprint,
+				members_id: member.id,
 			});
 		});
 	});
