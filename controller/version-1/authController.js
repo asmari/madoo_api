@@ -79,6 +79,7 @@ exports.doLogin = async (request, reply) => {
 					token_type: 'Bearer',
 					access_token: token,
 					fingerprint: member.finggerprint,
+					members_id: member.id,
 				};
 				resolve(res);
 			});
