@@ -127,11 +127,32 @@ exports.doPinValidation = async (request) => {
 	const token = await request.jwtVerify();
 	const params = JSON.parse(JSON.stringify(request.query));
 
-	const pinMember = await Pins.findOne({ attributes: ['pin'], where: { id: token.id } });
+	const pinMember = await Pins.findOne({ attributes: ['pin'], where: { members_id: token.id } });
 
 	if (pinMember) {
 		if (bcrypt.compareSync(params.pin.toString(), pinMember.pin)) {
 			return new Response(20026, { pin_valid: true });
+		}
+		return new ErrorResponse(40103);
+	}
+
+	// Error: Pin not found
+	throw new ErrorResponse(41700);
+};
+exports.doChangePin = async (request) => {
+	const token = await request.jwtVerify();
+	const params = JSON.parse(JSON.stringify(request.query));
+
+	const pinMember = await Pins.findOne({ attributes: ['id', 'pin'], where: { members_id: token.id } });
+	console.log(pinMember);
+	if (pinMember) {
+		if (bcrypt.compareSync(params.old_pin.toString(), pinMember.pin)) {
+			if (params.new_pin.toString() === params.confirm_pin.toString()) {
+				params.pin = bcrypt.hashSync(params.new_pin.toString(), 10);
+				pinMember.update({ pin: params.pin });
+				return new Response(20031, { change_pin: true });
+			}
+			return new ErrorResponse(40106);
 		}
 		return new ErrorResponse(40103);
 	}

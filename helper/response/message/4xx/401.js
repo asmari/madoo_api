@@ -11,4 +11,5 @@ module.exports = {
 		params: ['field'],
 	},
 	40105: 'Member already registered! Please login',
+	40106: 'New pin do not match',
 };

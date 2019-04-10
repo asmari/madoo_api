@@ -73,3 +73,29 @@ exports.pinValidationSchema = {
 		},
 	},
 };
+
+exports.changePinSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for chagnge pin',
+		querystring: {
+			type: 'object',
+			properties: {
+				old_pin: {
+					type: 'integer',
+				},
+				new_pin: {
+					type: 'integer', maxLength: 6, minLength: 6,
+				},
+				confirm_pin: {
+					type: 'integer', maxLength: 6, minLength: 6,
+				},
+			},
+			required: ['old_pin', 'new_pin', 'confirm_pin'],
+		},
+	},
+};

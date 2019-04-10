@@ -30,6 +30,7 @@ module.exports = {
 	20028: 'Save Member card success',
 	20029: 'Get List Loyalty Type Success',
 	20030: 'Transaction List Success',
+	20031: 'Change Pin Success',
 
 	20099: 'Success',
 };
