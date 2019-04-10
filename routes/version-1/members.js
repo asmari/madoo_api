@@ -25,6 +25,12 @@ async function routes(fastify) {
 		...memberSchema.pinValidationSchema,
 		beforeHandler: [fastify.authenticate],
 	}, memberController.doPinValidation);
+
+	// change pin
+	fastify.post('/pin/change', {
+		...memberSchema.changePinSchema,
+		beforeHandler: [fastify.authenticate],
+	}, memberController.doChangePin);
 }
 
 module.exports = routes;
