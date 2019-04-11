@@ -31,9 +31,7 @@ exports.doCheckMember = async (request) => {
 		});
 	}
 
-	return new Response(200, {
-		user_exists: false,
-	});
+	return new ErrorResponse(41700);
 };
 
 // Process login member
