@@ -10,6 +10,7 @@ const masterRoute = require('./version-1/masterRoute');
 const notification = require('./version-1/notification');
 const transaction = require('./version-1/transaction');
 const contact = require('./version-1/contact');
+const about = require('./version-1/about');
 
 
 async function routes(fastify) {
@@ -37,7 +38,11 @@ async function routes(fastify) {
 
 	fastify.register(transaction, { prefix: '/transaction' });
 
+<<<<<<< HEAD
 	fastify.register(contact, { prefix: '/contact' });
+=======
+	fastify.register(about, { prefix: '/about' });
+>>>>>>> remotes/origin/feature_rest_api_get_about
 }
 
 module.exports = routes;

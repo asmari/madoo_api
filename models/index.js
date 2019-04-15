@@ -12,3 +12,4 @@ exports.ConvertionRate = require('./convertion_rate');
 exports.DeviceNotification = require('./device_notification');
 exports.Transaction = require('./transaction');
 exports.Contact = require('./contact');
+exports.About = require('./about');
