@@ -20,7 +20,7 @@ exports.otpSchema = {
 			// Required body paramter for register
 			required: ['mobile_phone', 'otp'],
 			properties: {
-				mobile_phone: { type: 'string', maxLength: 18, minLength: 11 },
+				mobile_phone: { type: 'string', maxLength: 20, minLength: 11 },
 				otp: { type: 'integer', maxLength: 6, minLength: 6 },
 
 			},
