@@ -36,10 +36,12 @@ exports.getRandomPromo = async (request) => {
 			valid_until: {
 				[Op.gte]: currentDate,
 			},
+			isfeatured: 1,
 		},
 		include: [Loyalty],
-		limit: 10,
-		order: sequelize.literal('rand()'),
+		limit: 3,
+		// order: sequelize.literal('rand()'),
+		order: [['updated_at', 'DESC']],
 	});
 
 	return new Response(20022, promos);
