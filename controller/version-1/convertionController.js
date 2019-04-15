@@ -19,27 +19,32 @@ exports.checkConvertionRate = async (request) => {
 	if (rate) {
 		const point = params.point_to_convert;
 
-		const source = await Loyalty.findOne({
-			where: {
-				id: params.loyalty_id_source,
-			},
-		});
+		// const source = await Loyalty.findOne({
+		// 	where: {
+		// 		id: params.loyalty_id_source,
+		// 	},
+		// });
 
-		if (point % source.multiple !== 0) {
+		if (point % rate.multiple !== 0) {
 			// Error: :message
 			throw new ErrorResponse(42298, {
-				message: `Point not multiply by ${source.multiple}`,
+				message: `Point not multiply by ${rate.multiple}`,
 			});
 		}
 
-		if (point < source.min_convertion) {
+		if (point < rate.minimum) {
 			// Error: :message
 			throw new ErrorResponse(42298, {
-				message: `Point is less than ${source.min_convertion}`,
+				message: `Point is less than ${rate.minimum}`,
 			});
 		}
 
-		const newPoint = point * rate.point_conversion;
+		const fromRate = rate.mid_from_rate / rate.point_loyalty;
+		const toRate = rate.mid_to_rate / rate.point_conversion;
+
+		let newPoint = point * fromRate;
+		newPoint -= rate.fee;
+		newPoint *= toRate;
 
 		return new Response(20003, {
 			...params,
