@@ -173,8 +173,8 @@ exports.doSaveMember = async (request, reply) => {
 	if (memberRegister != null) {
 		const member = await Members.create({
 			...params,
-			g_id: memberRegister.g_id,
-			g_token: memberRegister.g_token,
+			g_id: params.g_id,
+			g_token: params.g_token,
 		});
 
 		await Pins.create({
