@@ -29,6 +29,26 @@ const ConvertionRate = model.define('conversion_rate', {
 		type: sequelize.FLOAT,
 		allowNull: true,
 	},
+	mid_from_rate: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
+	mid_to_rate: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
+	fee: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
+	minimum: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
+	multiple: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	deletedAt: 'deleted_at',
