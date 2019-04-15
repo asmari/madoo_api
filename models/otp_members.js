@@ -12,39 +12,17 @@ const OtpMembers = model.define('otp_members', {
 			key: 'id',
 		},
 	},
-	uid: {
-		type: Sequelize.STRING,
-		allowNull: false,
-		validate: {
-			notEmpty: {
-				msg: 'Uid is required',
-			},
-		},
-	},
-	resourceUri: {
-		type: Sequelize.STRING,
-		allowNull: false,
-	},
-	msisdn: {
-		type: Sequelize.STRING,
-		allowNull: false,
-	},
-	status: {
-		type: Sequelize.STRING,
-		allowNull: false,
-	},
-	attempt: {
+	otp: {
 		type: Sequelize.INTEGER,
-		allowNull: false,
 	},
 	expiresAt: {
-		type: Sequelize.STRING,
-	},
-	nextSmsAfter: {
-		type: Sequelize.STRING,
+		type: Sequelize.DATE,
 	},
 	error_message: {
 		type: Sequelize.STRING,
+	},
+	wrong: {
+		type: Sequelize.INTEGER,
 	},
 }, {
 	timestamps: true,

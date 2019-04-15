@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const model = require('../../models');
 const helper = require('../../helper');
-const otpHelper = require('../../helper/otpHelper');
 const { ErrorResponse, Response } = require('../../helper/response');
+const OtpNewHelper = require('../../helper/OtpNewHelper');
 
 const Members = model.Members.Get;
 const Pins = model.Pins.Get;
@@ -92,6 +92,7 @@ exports.doLogin = async (request, reply) => {
 // forgot pin otp
 exports.setForgotPinOtp = async (request) => {
 	const params = request.body;
+	const otpNewHelper = new OtpNewHelper();
 
 	const member = await Members.findOne({
 		where: {
@@ -100,9 +101,16 @@ exports.setForgotPinOtp = async (request) => {
 	});
 
 	if (member) {
-		const resOtp = await otpHelper.forgotPinOtp({
-			members_id: member.id,
-		}, params.mobile_phone);
+		// const resOtp = await otpHelper.forgotPinOtp({
+		// 	members_id: member.id,
+		// }, params.mobile_phone);
+
+		const resOtp = await otpNewHelper.sendOtp(params.mobile_phone, {
+			type: 'forget',
+			data: {
+				memberId: member.id,
+			},
+		});
 
 		return new Response(20001, resOtp);
 	}
@@ -114,6 +122,7 @@ exports.setForgotPinOtp = async (request) => {
 // check forgot pin otp
 exports.checkForgotPinOtp = async (request) => {
 	const params = request.body;
+	const otpNewHelper = new OtpNewHelper();
 
 	const member = await Members.findOne({
 		where: {
@@ -122,11 +131,39 @@ exports.checkForgotPinOtp = async (request) => {
 	});
 
 	if (member) {
-		const resOtp = await otpHelper.forgotCheckOtp({
-			members_id: member.id,
-		}, params.otp);
+		// const resOtp = await otpHelper.forgotCheckOtp({
+		// 	members_id: member.id,
+		// }, params.otp);
 
-		return new Response(20002, resOtp);
+		try {
+			const res = await otpNewHelper.checkOtp('', {
+				type: 'forget',
+				data: {
+					memberId: member.id,
+					otp: params.otp,
+				},
+			});
+
+			switch (res.toString()) {
+			case OtpNewHelper.STATUS.OTP_MATCH:
+				return new Response(20032);
+			default:
+				return new Response(20032);
+			}
+		} catch (err) {
+			switch (err.toString()) {
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH:
+				return new ErrorResponse(40107);
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES:
+				return new ErrorResponse(40108);
+			case OtpNewHelper.STATUS.OTP_EXPIRED:
+				return new ErrorResponse(40109);
+			default:
+				return new ErrorResponse(40198, {
+					message: err.toString(),
+				});
+			}
+		}
 	}
 
 	// Error: Member not found

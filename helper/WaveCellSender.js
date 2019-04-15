@@ -121,11 +121,9 @@ module.exports = class WaveCellSender {
 
 	send(varPhone, message, clientId = 0, type = 'single') {
 		const { token } = this;
-		let phone = varPhone;
+		const phone = WaveCellSender.parsePhoneNumber(varPhone);
 		return new Promise((resolve, reject) => {
 			try {
-				phone = this.parsePhoneNumber(phone);
-
 				const data = JSON.stringify({
 					source: 'Husky',
 					destination: phone,
@@ -135,13 +133,11 @@ module.exports = class WaveCellSender {
 					/* PRODUCTION */
 					// dlrCallbackUrl:config.url + ":" + config.serverPort + "/hook/forgot/pin",
 
-					/* TESTING, for inspect https://requestbin.fullcontact.com/1i7xgaj1?inspect */
-					dlrCallbackUrl: 'http://requestbin.fullcontact.com/1i7xgaj1',
+					/* TESTING, for inspect https://requestbin.fullcontact.com/y2ql8ty2?inspect */
+					dlrCallbackUrl: 'http://requestbin.fullcontact.com/y2ql8ty2',
 				});
 
 				const url = this.getUrl(type);
-
-				console.log(url);
 
 				const req = https.request(url, {
 					headers: {

@@ -31,6 +31,7 @@ module.exports = {
 	20029: 'Get List Loyalty Type Success',
 	20030: 'Transaction List Success',
 	20031: 'Change Pin Success',
+	20032: 'OTP Match',
 
 	20099: 'Success',
 };
