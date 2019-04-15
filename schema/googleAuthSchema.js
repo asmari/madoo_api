@@ -18,7 +18,7 @@ exports.googleRegisterSchema = {
 		consumes: ['multipart/form-data'],
 		description: 'Rest API for validate user & send otp',
 		body: {
-			required: ['full_name', 'email', 'g_id', 'g_token', 'mobile_phone', 'pin'],
+			required: ['full_name', 'email', 'g_id', 'g_token', 'mobile_phone'],
 			properties: {
 				full_name: { type: 'string' },
 				email: { type: 'string' },
@@ -30,7 +30,6 @@ exports.googleRegisterSchema = {
 				g_id: { type: 'integer' },
 				g_token: { type: 'integer' },
 				mobile_phone: { type: 'integer' },
-				pin: { type: 'integer' },
 				fingerprint: { type: 'integer' },
 			},
 		},
