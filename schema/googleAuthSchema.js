@@ -40,7 +40,7 @@ exports.googleSaveMemberSchema = {
 	schema: {
 		description: 'Rest API for register user & auto login',
 		body: {
-			required: ['full_name', 'email', 'mobile_phone', 'pin'],
+			required: ['full_name', 'email', 'mobile_phone', 'pin', 'g_id', 'g_token'],
 			properties: {
 				full_name: {
 					type: 'string',
@@ -69,6 +69,12 @@ exports.googleSaveMemberSchema = {
 				},
 				fingerprint: {
 					type: 'integer',
+				},
+				g_id: {
+					type: 'string',
+				},
+				g_token: {
+					type: 'string',
 				},
 			},
 		},
