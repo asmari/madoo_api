@@ -12,4 +12,11 @@ module.exports = {
 	},
 	40105: 'Member already registered! Please login',
 	40106: 'New pin do not match',
+	40107: 'OTP Not Match',
+	40108: 'OTP Not Match 5 Times',
+	40109: 'OTP Expired',
+	40198: {
+		message: 'Error :message',
+		params: ['message'],
+	},
 };
