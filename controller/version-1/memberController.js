@@ -2,8 +2,8 @@ const moment = require('moment');
 const bcrypt = require('bcrypt');
 
 const model = require('../../models');
-const otpHelper = require('../../helper/otpHelper');
 const { ErrorResponse, Response } = require('../../helper/response');
+const OtpNewHelper = require('../../helper/OtpNewHelper');
 
 const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
@@ -22,6 +22,7 @@ exports.memberIndex = async () => {
 // process to memberRegister with phone
 exports.doRegisterPhone = async (request) => {
 	const params = request.body;
+	const otpNewHelper = new OtpNewHelper();
 
 	const memberRegister = await MembersRegister.findOne({
 		where: {
@@ -30,9 +31,16 @@ exports.doRegisterPhone = async (request) => {
 	}, {});
 	if (memberRegister) {
 		if (memberRegister.status !== 'regitered') {
-			const sendOtp = await otpHelper.sendOtp({
-				members_register_id: memberRegister.id,
-			}, memberRegister.mobile_phone);
+			// const sendOtp = await otpHelper.sendOtp({
+			// 	members_register_id: memberRegister.id,
+			// }, memberRegister.mobile_phone);
+
+			const sendOtp = await otpNewHelper.sendOtp(memberRegister.mobile_phone, {
+				type: 'otp',
+				data: {
+					memberId: memberRegister.id,
+				},
+			});
 
 			return new Response(20001, sendOtp);
 		}
@@ -47,9 +55,16 @@ exports.doRegisterPhone = async (request) => {
 			status: 'pending',
 		};
 		const newMember = await MembersRegister.create(payload);
-		const sendOtp = await otpHelper.sendOtp({
-			members_register_id: newMember.id,
-		}, newMember.mobile_phone);
+		// const sendOtp = await otpHelper.sendOtp({
+		// 	members_register_id: newMember.id,
+		// }, newMember.mobile_phone);
+
+		const sendOtp = await otpNewHelper.sendOtp(newMember.mobile_phone, {
+			type: 'otp',
+			data: {
+				memberId: newMember.id,
+			},
+		});
 
 		return new Response(20001, sendOtp);
 	}
@@ -57,15 +72,40 @@ exports.doRegisterPhone = async (request) => {
 
 exports.doOtpValidation = async (request) => {
 	const params = request.body;
+	const otpNewHelper = new OtpNewHelper();
 
 	const memberRegister = await MembersRegister.findOne({ include: [Otp], where: { mobile_phone: params.mobile_phone, status: 'pending' } });
 
 	if (memberRegister) {
-		const otpCheck = await otpHelper.checkOtp({
-			members_register_id: memberRegister.id,
-		}, params.otp);
+		try {
+			const res = await otpNewHelper.checkOtp('', {
+				type: 'otp',
+				data: {
+					memberId: memberRegister.id,
+					otp: params.otp,
+				},
+			});
 
-		return new Response(20020, otpCheck);
+			switch (res.toString()) {
+			case OtpNewHelper.STATUS.OTP_MATCH:
+				return new Response(20032);
+			default:
+				return res;
+			}
+		} catch (err) {
+			switch (err.toString()) {
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH:
+				return new ErrorResponse(40107);
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES:
+				return new ErrorResponse(40108);
+			case OtpNewHelper.STATUS.OTP_EXPIRED:
+				return new ErrorResponse(40109);
+			default:
+				return new ErrorResponse(40198, {
+					message: err.toString(),
+				});
+			}
+		}
 	}
 
 	// Error: Member not found
@@ -144,7 +184,7 @@ exports.doChangePin = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query));
 
 	const pinMember = await Pins.findOne({ attributes: ['id', 'pin'], where: { members_id: token.id } });
-	console.log(pinMember);
+
 	if (pinMember) {
 		if (bcrypt.compareSync(params.old_pin.toString(), pinMember.pin)) {
 			if (params.new_pin.toString() === params.confirm_pin.toString()) {
