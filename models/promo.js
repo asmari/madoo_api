@@ -35,6 +35,22 @@ const Promo = model.define('promo', {
 		type: sequelize.DATE,
 		allowNull: false,
 	},
+	isfeatured: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
+	valid_until_end: {
+		type: sequelize.DATE,
+		allowNull: true,
+	},
+	status: {
+		type: sequelize.INTEGER,
+		allowNull: true,
+	},
+	typeloyalty_id: {
+		type: sequelize.STRING,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
