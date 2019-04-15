@@ -23,7 +23,7 @@ exports.getAbout = async (request) => {
 
 	const data = abouts.docs;
 
-	return new ResponsePaginate(20033, {
+	return new ResponsePaginate(20034, {
 		item: params.item,
 		pages: params.page,
 		total: abouts.total,

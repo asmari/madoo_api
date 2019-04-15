@@ -38,11 +38,9 @@ async function routes(fastify) {
 
 	fastify.register(transaction, { prefix: '/transaction' });
 
-<<<<<<< HEAD
 	fastify.register(contact, { prefix: '/contact' });
-=======
+
 	fastify.register(about, { prefix: '/about' });
->>>>>>> remotes/origin/feature_rest_api_get_about
 }
 
 module.exports = routes;
