@@ -17,7 +17,7 @@ exports.facebookSaveMemberSchema = {
 	schema: {
 		description: 'Rest API for register user & auto login',
 		body: {
-			required: ['full_name', 'email', 'mobile_phone', 'pin'],
+			required: ['full_name', 'email', 'mobile_phone', 'pin', 'fb_id', 'fb_token'],
 			properties: {
 				full_name: {
 					type: 'string',
@@ -46,6 +46,12 @@ exports.facebookSaveMemberSchema = {
 				},
 				fingerprint: {
 					type: 'integer',
+				},
+				fb_id: {
+					type: 'string',
+				},
+				fb_token: {
+					type: 'string',
 				},
 			},
 		},
