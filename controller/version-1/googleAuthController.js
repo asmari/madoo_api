@@ -122,39 +122,6 @@ exports.doRegisterGoogle = async (request) => {
 	return new Response(20007, payload);
 };
 
-// check otp facebook oauth
-exports.doCheckOtp = async (request) => {
-	const { body } = request;
-
-	const member = await MembersRegister.findOne({
-		where: {
-			mobile_phone: body.mobile_phone,
-			email: body.email,
-			g_id: body.g_id,
-		},
-	});
-
-	if (member != null) {
-		const { status, message } = await otpHelper.checkOtp(body.otp, {
-			members_register_id: member.id,
-		});
-
-		if (status) {
-			return new Response(20008, {
-				otp_status: status,
-			}, message);
-		}
-
-		// Error: message custom
-		throw new ErrorResponse(40098, {
-			message,
-		});
-	} else {
-		// Error: member not found
-		throw new ErrorResponse(41700);
-	}
-};
-
 // do save member with google
 exports.doSaveMember = async (request, reply) => {
 	const params = request.body;

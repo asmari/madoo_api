@@ -3,9 +3,6 @@ const googleSchema = require('../../schema/googleAuthSchema');
 const googleController = require('../../controller/version-1/googleAuthController');
 
 async function routes(fastify) {
-	// check sms otp google
-	fastify.post('/otp', googleSchema.googleOtpSchema, googleController.doCheckOtp);
-
 	// login google
 	fastify.post('/login', googleSchema.googleLoginSchema, googleController.doLoginGoogle);
 
