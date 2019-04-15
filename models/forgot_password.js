@@ -9,43 +9,17 @@ const ForgotPassword = model.define('forgot_password', {
 		allowNull: false,
 		maxLength: 10,
 	},
-	uid: {
-		type: sequilize.STRING,
-		allowNull: false,
-		maxLength: 150,
-	},
-	resourceUri: {
-		type: sequilize.STRING,
-		allowNull: false,
-	},
-	msisdn: {
-		type: sequilize.STRING,
-		allowNull: false,
-		maxLength: 20,
-	},
-	status: {
-		type: sequilize.STRING,
-		allowNull: false,
-		maxLength: 15,
-	},
-	attempt: {
+	otp: {
 		type: sequilize.INTEGER,
-		allowNull: false,
-		maxLength: 10,
 	},
 	expiresAt: {
-		type: sequilize.STRING,
-		allowNull: false,
-		maxLength: 100,
-	},
-	nextSmsAfter: {
-		type: sequilize.STRING,
-		allowNull: false,
-		maxLength: 100,
+		type: sequilize.DATE,
 	},
 	error_message: {
 		type: sequilize.STRING,
-		allowNull: true,
+	},
+	wrong: {
+		type: sequilize.INTEGER,
 	},
 }, {
 	timestamps: true,
