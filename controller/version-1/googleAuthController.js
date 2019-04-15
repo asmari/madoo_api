@@ -48,12 +48,12 @@ exports.doRegisterGoogle = async (request) => {
 		});
 	}
 
-	if (!Object.prototype.hasOwnProperty.call(params, 'pin')) {
-		// Error: Required field :field
-		throw new ErrorResponse(42200, {
-			field: 'pin',
-		});
-	}
+	// if (!Object.prototype.hasOwnProperty.call(params, 'pin')) {
+	// 	// Error: Required field :field
+	// 	throw new ErrorResponse(42200, {
+	// 		field: 'pin',
+	// 	});
+	// }
 
 
 	const fingerprint = Object.prototype.hasOwnProperty.call(params, 'fingerprint') ? params.fingerprint : 0;
@@ -104,7 +104,6 @@ exports.doRegisterGoogle = async (request) => {
 			g_id: params.g_id,
 			g_token: params.g_token,
 			mobile_phone: params.mobile_phone,
-			pin: params.pin,
 			finggerprint: fingerprint,
 			image,
 			status: 'pending',
