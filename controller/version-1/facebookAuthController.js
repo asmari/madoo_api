@@ -55,9 +55,6 @@ exports.doRegisterFacebook = async (request) => {
 	// 	});
 	// }
 
-	const fingerprint = Object.prototype.hasOwnProperty.call(params, 'fingerprint') ? params.fingerprint : 0;
-	const image = Object.prototype.hasOwnProperty.call(params, 'image') ? params.image : null;
-
 	// find email unique
 	const memberEmail = await Members.findOne({
 		where: {
@@ -103,8 +100,6 @@ exports.doRegisterFacebook = async (request) => {
 			fb_token: params.fb_token,
 			mobile_phone: params.mobile_phone,
 			// pin: params.pin,
-			finggerprint: fingerprint,
-			image,
 			status: 'pending',
 		});
 	}
@@ -121,8 +116,6 @@ exports.doRegisterFacebook = async (request) => {
 	});
 
 	const payload = params;
-	payload.image = image;
-	payload.fingerprint = fingerprint;
 
 	return new Response(20004, payload);
 };
@@ -178,7 +171,7 @@ exports.doSaveMember = async (request, reply) => {
 			return new Response(20005, {
 				token_type: 'Bearer',
 				access_token: token,
-				fingerprint: member.finggerprint || 0,
+				fingerprint: member.finggerprint ? 1 : 0,
 			});
 		}
 
