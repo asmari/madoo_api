@@ -51,13 +51,14 @@ exports.promoDetailSchema = {
 		},
 	},
 };
-exports.promoRandomSchema = {
+exports.promoFeaturedSchema = {
 	schema: {
 		security: [
 			{
 				BearerAuth: [],
 			},
 		],
+		description: 'Rest API for featured promo',
 		querystring: {
 		},
 	},

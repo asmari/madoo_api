@@ -3,10 +3,10 @@ const promoListschema = require('../../schema/promoSchema');
 
 async function routes(fastify) {
 	// list random promo
-	fastify.get('/list/random', {
-		...promoListschema.promoRandomSchema,
+	fastify.get('/list/featured', {
+		...promoListschema.promoFeaturedSchema,
 		beforeHandler: [fastify.authenticate],
-	}, promoController.getRandomPromo);
+	}, promoController.getFeaturedPromo);
 
 	// list promo
 	fastify.get('/list', {

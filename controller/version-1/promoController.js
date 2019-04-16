@@ -8,8 +8,8 @@ const { Op } = sequelize;
 const Loyalty = model.Loyalty.Get;
 const Promo = model.Promo.Get;
 
-// get random promo
-exports.getRandomPromo = async (request) => {
+// get featured random
+exports.getFeaturedPromo = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query));
 
 	let filterPromo = {};
