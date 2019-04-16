@@ -7,7 +7,7 @@ exports.registerSchema = {
 			properties: {
 				full_name: { type: 'string', maxLength: 50, minLength: 3 },
 				email: { type: 'string' },
-				mobile_phone: { type: 'string', maxLength: 20, minLength: 11 },
+				mobile_phone: { type: 'string', maxLength: 20, minLength: 9 },
 
 			},
 		},
