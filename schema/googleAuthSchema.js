@@ -6,8 +6,8 @@ exports.googleLoginSchema = {
 			required: ['email', 'g_id', 'g_token'],
 			properties: {
 				email: { type: 'string' },
-				g_id: { type: 'integer' },
-				g_token: { type: 'integer' },
+				g_id: { type: 'string' },
+				g_token: { type: 'string' },
 			},
 		},
 	},
@@ -22,15 +22,13 @@ exports.googleRegisterSchema = {
 			properties: {
 				full_name: { type: 'string' },
 				email: { type: 'string' },
-				image: {
+				g_id: { type: 'string' },
+				g_token: { type: 'string' },
+				mobile_phone: {
 					type: 'string',
-					// isFileType:true,
-					// type:"object"
+					maxLength: 20,
+					minLength: 9,
 				},
-				g_id: { type: 'integer' },
-				g_token: { type: 'integer' },
-				mobile_phone: { type: 'integer' },
-				fingerprint: { type: 'integer' },
 			},
 		},
 	},
@@ -53,22 +51,18 @@ exports.googleSaveMemberSchema = {
 					minLength: 3,
 				},
 				mobile_phone: {
-					type: 'integer',
-					maxLength: 18,
-					minLength: 11,
+					type: 'string',
+					maxLength: 20,
+					minLength: 9,
 				},
 				pin: {
 					type: 'integer',
 					maxLength: 6,
 					minLength: 6,
 				},
-				image: {
-					type: 'string',
-					// isFileType:true,
-					// type:"object"
-				},
 				fingerprint: {
-					type: 'integer',
+					type: 'boolean',
+					default: false,
 				},
 				g_id: {
 					type: 'string',
