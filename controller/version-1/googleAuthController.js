@@ -56,10 +56,6 @@ exports.doRegisterGoogle = async (request) => {
 	// 	});
 	// }
 
-
-	const fingerprint = Object.prototype.hasOwnProperty.call(params, 'fingerprint') ? params.fingerprint : 0;
-	const image = Object.prototype.hasOwnProperty.call(params, 'image') ? params.image : null;
-
 	// const hash = bcrypt.hashSync(params.pin.toString(), 10);
 
 	// find email unique
@@ -105,8 +101,6 @@ exports.doRegisterGoogle = async (request) => {
 			g_id: params.g_id,
 			g_token: params.g_token,
 			mobile_phone: params.mobile_phone,
-			finggerprint: fingerprint,
-			image,
 			status: 'pending',
 		});
 	}
@@ -123,8 +117,6 @@ exports.doRegisterGoogle = async (request) => {
 	});
 
 	const payload = params;
-	payload.image = image;
-	payload.fingerprint = fingerprint;
 
 	return new Response(20007, payload);
 };
@@ -180,7 +172,7 @@ exports.doSaveMember = async (request, reply) => {
 			return new Response(20005, {
 				token_type: 'Bearer',
 				access_token: token,
-				fingerprint: member.finggerprint || 0,
+				fingerprint: member.finggerprint ? 1 : 0,
 				members_id: member.id,
 			});
 		}
