@@ -24,6 +24,9 @@ const OtpMembers = model.define('otp_members', {
 	wrong: {
 		type: Sequelize.INTEGER,
 	},
+	webhook_status: {
+		type: Sequelize.TEXT,
+	},
 }, {
 	timestamps: true,
 	freezeTableName: true,
