@@ -6,8 +6,8 @@ exports.facebookLoginSchema = {
 			required: ['email', 'fb_id', 'fb_token'],
 			properties: {
 				email: { type: 'string' },
-				fb_id: { type: 'integer' },
-				fb_token: { type: 'integer' },
+				fb_id: { type: 'string' },
+				fb_token: { type: 'string' },
 			},
 		},
 	},
@@ -30,22 +30,18 @@ exports.facebookSaveMemberSchema = {
 					minLength: 3,
 				},
 				mobile_phone: {
-					type: 'integer',
-					maxLength: 18,
-					minLength: 11,
+					type: 'string',
+					maxLength: 20,
+					minLength: 9,
 				},
 				pin: {
 					type: 'integer',
 					maxLength: 6,
 					minLength: 6,
 				},
-				image: {
-					type: 'string',
-					// isFileType:true,
-					// type:"object"
-				},
 				fingerprint: {
-					type: 'integer',
+					type: 'boolean',
+					default: false,
 				},
 				fb_id: {
 					type: 'string',
@@ -94,16 +90,9 @@ exports.facebookRegisterSchema = {
 			properties: {
 				full_name: { type: 'string' },
 				email: { type: 'string' },
-				image: {
-					type: 'string',
-					// isFileType:true,
-					// type:"object"
-				},
-				fb_id: { type: 'integer' },
-				fb_token: { type: 'integer' },
-				mobile_phone: { type: 'integer' },
-				pin: { type: 'integer' },
-				fingerprint: { type: 'integer' },
+				fb_id: { type: 'string' },
+				fb_token: { type: 'string' },
+				mobile_phone: { type: 'string' },
 			},
 		},
 	},
