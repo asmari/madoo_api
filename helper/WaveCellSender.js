@@ -131,10 +131,10 @@ module.exports = class WaveCellSender {
 					clientMessageId: clientId,
 					enconding: 'AUTO',
 					/* PRODUCTION */
-					// dlrCallbackUrl:config.url + ":" + config.serverPort + "/hook/forgot/pin",
+					dlrCallbackUrl: `${config.url}/v1/webhook/otp`,
 
-					/* TESTING, for inspect https://requestbin.fullcontact.com/y2ql8ty2?inspect */
-					dlrCallbackUrl: 'http://requestbin.fullcontact.com/y2ql8ty2',
+					/* TESTING, for inspect https://requestbin.fullcontact.com/vatvlzva?inspect */
+					// dlrCallbackUrl: 'http://requestbin.fullcontact.com/vatvlzva',
 				});
 
 				const url = this.getUrl(type);
