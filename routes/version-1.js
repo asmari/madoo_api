@@ -11,6 +11,7 @@ const notification = require('./version-1/notification');
 const transaction = require('./version-1/transaction');
 const contact = require('./version-1/contact');
 const about = require('./version-1/about');
+const webhook = require('./version-1/webhook');
 
 
 async function routes(fastify) {
@@ -41,6 +42,8 @@ async function routes(fastify) {
 	fastify.register(contact, { prefix: '/contact' });
 
 	fastify.register(about, { prefix: '/about' });
+
+	fastify.register(webhook, { prefix: '/webhook' });
 }
 
 module.exports = routes;
