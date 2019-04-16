@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 
 const model = require('../../models');
-const otpHelper = require('../../helper/otpHelper');
+const OtpNewHelper = require('../../helper/OtpNewHelper');
 const { ErrorResponse, Response } = require('../../helper/response');
 
 const Members = model.Members.Get;
@@ -12,6 +12,7 @@ const Pins = model.Pins.Get;
 // register google oauth
 exports.doRegisterGoogle = async (request) => {
 	const params = request.body;
+	const otpNewHelper = new OtpNewHelper();
 
 	if (!Object.prototype.hasOwnProperty.call(params, 'full_name')) {
 		// Error: Required field :field
@@ -110,9 +111,16 @@ exports.doRegisterGoogle = async (request) => {
 		});
 	}
 
-	await otpHelper.sendOtp({
-		members_register_id: exists.id,
-	}, params.mobile_phone);
+	// await otpHelper.sendOtp({
+	// 	members_register_id: exists.id,
+	// }, params.mobile_phone);
+
+	await otpNewHelper.sendOtp(params.mobile_phone, {
+		type: 'otp',
+		data: {
+			memberId: exists.id,
+		},
+	});
 
 	const payload = params;
 	payload.image = image;

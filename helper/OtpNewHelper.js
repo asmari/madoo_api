@@ -128,6 +128,7 @@ module.exports = class OtpNewHelper {
 						otp: randNumb,
 						expiresAt: time,
 						wrong: 0,
+						webhook_status: '',
 					});
 				} else {
 					await OtpMembers.create({
@@ -135,11 +136,12 @@ module.exports = class OtpNewHelper {
 						members_register_id: data.memberId,
 						expiresAt: time,
 						wrong: 0,
+						webhook_status: '',
 					});
 				}
 			}
 
-			return instance.send(phone, message, randNumb);
+			return instance.send(phone, message, `${randNumb}_otp`);
 
 		case 'forgot':
 			message = `Kode OTP Forgot Password anda : ${randNumb}`;
@@ -155,17 +157,19 @@ module.exports = class OtpNewHelper {
 					await member.update({
 						otp: randNumb,
 						expiresAt: time,
+						webhook_status: '',
 					});
 				} else {
 					await ForgotPassword.create({
 						otp: randNumb,
 						members_id: data.memberId,
 						expiresAt: time,
+						webhook_status: '',
 					});
 				}
 			}
 
-			return instance.send(phone, message, randNumb);
+			return instance.send(phone, message, `${randNumb}_forgot`);
 
 		default:
 			break;

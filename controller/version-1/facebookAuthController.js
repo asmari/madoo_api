@@ -2,7 +2,7 @@ const bcrypt = require('bcrypt');
 
 const { ErrorResponse, Response } = require('../../helper/response');
 const model = require('../../models');
-const otpHelper = require('../../helper/otpHelper');
+const OtpNewHelper = require('../../helper/OtpNewHelper');
 
 const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
@@ -11,6 +11,7 @@ const Pins = model.Pins.Get;
 // register fb oauth
 exports.doRegisterFacebook = async (request) => {
 	const params = request.body;
+	const otpNewHelper = new OtpNewHelper();
 
 	if (!Object.prototype.hasOwnProperty.call(params, 'full_name')) {
 		// Error: Required field :field
@@ -47,12 +48,12 @@ exports.doRegisterFacebook = async (request) => {
 		});
 	}
 
-	if (!Object.prototype.hasOwnProperty.call(params, 'pin')) {
-		// Error: Required field :field
-		throw new ErrorResponse(42200, {
-			field: 'pin',
-		});
-	}
+	// if (!Object.prototype.hasOwnProperty.call(params, 'pin')) {
+	// 	// Error: Required field :field
+	// 	throw new ErrorResponse(42200, {
+	// 		field: 'pin',
+	// 	});
+	// }
 
 	const fingerprint = Object.prototype.hasOwnProperty.call(params, 'fingerprint') ? params.fingerprint : 0;
 	const image = Object.prototype.hasOwnProperty.call(params, 'image') ? params.image : null;
@@ -101,16 +102,23 @@ exports.doRegisterFacebook = async (request) => {
 			fb_id: params.fb_id,
 			fb_token: params.fb_token,
 			mobile_phone: params.mobile_phone,
-			pin: params.pin,
+			// pin: params.pin,
 			finggerprint: fingerprint,
 			image,
 			status: 'pending',
 		});
 	}
 
-	await otpHelper.sendOtp({
-		members_register_id: exists.id,
-	}, params.mobile_phone);
+	// await otpHelper.sendOtp({
+	// 	members_register_id: exists.id,
+	// }, params.mobile_phone);
+
+	await otpNewHelper.sendOtp(params.mobile_phone, {
+		type: 'otp',
+		data: {
+			memberId: exists.id,
+		},
+	});
 
 	const payload = params;
 	payload.image = image;
