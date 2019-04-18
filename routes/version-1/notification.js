@@ -13,6 +13,12 @@ async function routes(fastify) {
 		...notificationSchema.notificationListSchema,
 		beforeHandler: [fastify.authenticate],
 	}, notificationController.getNotificationList);
+
+	// get detail notification member
+	fastify.get('/member/detail', {
+		...notificationSchema.notificationDetailSchema,
+		beforeHandler: [fastify.authenticate],
+	}, notificationController.getDetailNotification);
 }
 
 module.exports = routes;
