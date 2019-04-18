@@ -31,3 +31,21 @@ exports.fcmTokenSchema = {
 	},
 
 };
+
+exports.fcmTriggerSchema = {
+	schema: {
+		description: 'Rest api to send trigger notification',
+		querystring: {
+			type: 'object',
+			properties: {
+				notification_id: {
+					type: 'integer',
+				},
+				members_id: {
+					type: 'integer',
+				},
+			},
+			required: ['notification_id'],
+		},
+	},
+};

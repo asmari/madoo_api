@@ -3,6 +3,8 @@ const model = require('./conn/sequelize').sequelize;
 
 const Pins = require('./pin_members');
 const DeviceNotification = require('./device_notification');
+const NotificationSettings = require('./notificationSetting');
+const NotificationMembers = require('./notificationMember');
 
 const Members = model.define('members', {
 	full_name: {
@@ -85,5 +87,7 @@ const Members = model.define('members', {
 
 Members.hasOne(Pins.Get, { foreignKey: 'members_id' });
 Members.hasOne(DeviceNotification.Get, { foreignKey: 'members_id' });
+Members.hasOne(NotificationSettings.Get, { foreignKey: 'members_id' });
+Members.hasOne(NotificationMembers.Get, { foreignKey: 'members_id' });
 
 exports.Get = Members;

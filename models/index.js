@@ -13,3 +13,6 @@ exports.DeviceNotification = require('./device_notification');
 exports.Transaction = require('./transaction');
 exports.Contact = require('./contact');
 exports.About = require('./about');
+exports.Notification = require('./notification');
+exports.NotificationMembers = require('./notificationMember');
+exports.NotificationSettings = require('./notificationSetting');

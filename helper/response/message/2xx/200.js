@@ -34,6 +34,7 @@ module.exports = {
 	20032: 'OTP Match',
 	20033: 'Contact list success',
 	20034: 'About list success',
+	20035: 'Notification service trigger success',
 
 	20099: 'Success',
 };
