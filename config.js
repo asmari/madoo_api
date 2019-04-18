@@ -12,4 +12,8 @@ exports.get = {
 		token: process.env.SMS_TOKEN,
 	},
 	url: process.env.BASE_URL,
+	fcm: {
+		key: process.env.FIREBASE_KEY,
+		url: process.env.FIREBASE_URL,
+	},
 };
