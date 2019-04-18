@@ -1,12 +1,59 @@
 // eslint-disable-next-line import/no-unresolved
 const { Worker } = require('worker_threads');
+const { Op } = require('sequelize');
 const path = require('path');
 
-const { Response } = require('../../helper/response');
+const { Response, ResponsePaginate } = require('../../helper/response');
 const model = require('../../models');
 
 const DeviceNotification = model.DeviceNotification.Get;
+const Notification = model.Notification.Get;
+const NotificationMembers = model.NotificationMembers.Get;
 
+// get list notification members
+exports.getNotificationList = async (request) => {
+	const { user, query } = request;
+
+	const params = {
+		filter: query.filter || [],
+		page: query.page || 1,
+		item: query.item || 10,
+	};
+
+	if (!Array.isArray(params.filter)) {
+		params.filter = [params.filter];
+	}
+
+	let whereNotificationFilter = {};
+
+	if (params.filter.length > 0) {
+		whereNotificationFilter = {
+			type: {
+				[Op.in]: params.filter,
+			},
+		};
+	}
+
+	const notification = await Notification.paginate({
+		page: params.page,
+		paginate: params.item,
+		where: whereNotificationFilter,
+		include: [
+			{
+				model: NotificationMembers,
+				where: {
+					members_id: user.id,
+				},
+			},
+		],
+	});
+
+
+	return new ResponsePaginate(20036, {
+		...notification,
+		item: params.item,
+	});
+};
 
 // send notification
 exports.doSendNotification = async (request) => {
