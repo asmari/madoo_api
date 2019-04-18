@@ -50,12 +50,34 @@ exports.fcmTriggerSchema = {
 	},
 };
 
+exports.notificationDetailSchema = {
+	schema: {
+		description: 'Rest api get detail notification',
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		querystring: {
+			type: 'object',
+			properties: {
+				notification_id: {
+					type: 'integer',
+				},
+			},
+			required: ['notification_id'],
+		},
+	},
+};
+
 exports.notificationListSchema = {
 	schema: {
 		description: 'Rest api list notification members',
-		security: {
-			BearerAuth: [],
-		},
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
 		querystring: {
 			type: 'object',
 			properties: {
