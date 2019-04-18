@@ -72,6 +72,20 @@ exports.getSortListCard = async () => new Response(20017, [
 	},
 ]);
 
+// list sort card content
+exports.getFilterListNotification = async () => new Response(20017, [
+	{
+		id: 'promotion',
+		name: 'Promotion',
+	}, {
+		id: 'convertion',
+		name: 'Convertion',
+	}, {
+		id: 'other',
+		name: 'Other',
+	},
+]);
+
 // list filter card content
 exports.getFilterListCard = async (request) => {
 	const { user } = request;

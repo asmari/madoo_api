@@ -49,3 +49,31 @@ exports.fcmTriggerSchema = {
 		},
 	},
 };
+
+exports.notificationListSchema = {
+	schema: {
+		description: 'Rest api list notification members',
+		security: {
+			BearerAuth: [],
+		},
+		querystring: {
+			type: 'object',
+			properties: {
+				filter: {
+					type: ['array', 'string'],
+					enums: ['promotion', 'conversion', 'other'],
+					items: {
+						type: 'string',
+						enums: ['promotion', 'conversion', 'other'],
+					},
+				},
+				page: {
+					type: 'integer',
+				},
+				item: {
+					type: 'integer',
+				},
+			},
+		},
+	},
+};

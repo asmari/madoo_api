@@ -35,6 +35,7 @@ module.exports = {
 	20033: 'Contact list success',
 	20034: 'About list success',
 	20035: 'Notification service trigger success',
+	20036: 'List Notification members success',
 
 	20099: 'Success',
 };

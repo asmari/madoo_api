@@ -1,4 +1,5 @@
 const sequelize = require('sequelize');
+const sequelizePaginate = require('sequelize-paginate');
 const model = require('./conn/sequelize').sequelize;
 
 const Loyalty = require('./loyalty').Get;
@@ -52,5 +53,7 @@ Notification.hasOne(Loyalty);
 Notification.hasOne(NotificationMember, {
 	foreignKey: 'notification_id',
 });
+
+sequelizePaginate.paginate(Notification);
 
 exports.Get = Notification;
