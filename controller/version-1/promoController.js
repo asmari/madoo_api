@@ -57,23 +57,32 @@ exports.getPromo = async (request) => {
 		item: parseInt(request.query.item, 10) || 10,
 		search: request.query.search || null,
 		sort: request.query.sort || null,
-		filter: request.query.filter || [],
+		filter_loyalty: request.query.filter_loyalty || [],
+		filter_category: request.query.filter_category || [],
 		total: 0,
 	};
 
-	const paramsFilter = JSON.parse(JSON.stringify(request.query));
+	if (!Array.isArray(params.filter_loyalty)) {
+		params.filter_loyalty = [params.filter_loyalty];
+	}
+	if (!Array.isArray(params.filter_category)) {
+		params.filter_category = [params.filter_category];
+	}
 
-
-	if (Object.prototype.hasOwnProperty.call(paramsFilter, 'filter')) {
-		const { filter } = paramsFilter;
-		let filterParams = filter;
-
-		if (typeof (filter) === 'number') {
-			filterParams = [filter];
-		}
-
+	if (params.filter_loyalty.length > 0) {
 		whereCondition.loyalty_id = {
-			[Op.in]: filterParams,
+			[Op.in]: params.filter_loyalty,
+		};
+	}
+	if (params.filter_category.length > 0) {
+		console.log(JSON.stringify(params.filter_category));
+		const likeCondition = [];
+		params.filter_category.forEach((element) => {
+			likeCondition.push({ [Op.like]: `%"${element}"%` });
+		});
+		whereCondition.typeloyalty_id = {
+			[Op.or]:
+				likeCondition,
 		};
 	}
 

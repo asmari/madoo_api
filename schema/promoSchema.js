@@ -21,7 +21,13 @@ exports.promoListSchema = {
 				sort: {
 					type: 'string',
 				},
-				filter: {
+				filter_loyalty: {
+					type: ['array', 'integer'],
+					items: {
+						type: 'integer',
+					},
+				},
+				filter_category: {
 					type: ['array', 'integer'],
 					items: {
 						type: 'integer',
