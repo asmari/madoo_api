@@ -3,12 +3,28 @@ const { Worker } = require('worker_threads');
 const { Op } = require('sequelize');
 const path = require('path');
 
-const { Response, ResponsePaginate } = require('../../helper/response');
+const { Response, ResponsePaginate, ErrorResponse } = require('../../helper/response');
 const model = require('../../models');
 
 const DeviceNotification = model.DeviceNotification.Get;
 const Notification = model.Notification.Get;
 const NotificationMembers = model.NotificationMembers.Get;
+
+// get detail notification members
+exports.getDetailNotification = async (request) => {
+	const { query } = request;
+
+	const notification = await Notification.findOne({
+		where: {
+			id: query.notification_id,
+		},
+	});
+
+	if (notification) {
+		return new Response(20037, notification);
+	}
+	return new ErrorResponse(41706);
+};
 
 // get list notification members
 exports.getNotificationList = async (request) => {
