@@ -19,6 +19,17 @@ module.exports = async (fastify) => {
 		beforeHandler: [fastify.authenticate],
 	}, masterController.getSortListCard);
 
+	fastify.get('/filter/notification', {
+		schema: {
+			security: [
+				{
+					BearerAuth: [],
+				},
+			],
+		},
+		beforeHandler: [fastify.authenticate],
+	}, masterController.getFilterListNotification);
+
 
 	fastify.get('/filter/promo', {
 		schema: {
