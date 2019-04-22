@@ -15,6 +15,8 @@ module.exports = class OtpNewHelper {
 			OTP_NOT_MATCH: 'OTP_NOT_MATCH',
 			OTP_EXPIRED: 'OTP_EXPIRED',
 			OTP_NOT_MATCH_5_TIMES: 'OTP_NOT_MATCH_5_TIMES',
+			OTP_RESEND_5_TIMES: 'OTP_RESEND_5_TIMES',
+			OTP_CANT_RESEND_24_HOURS: 'OTP_CANT_RESEND_24_HOURS',
 		};
 	}
 
@@ -108,6 +110,8 @@ module.exports = class OtpNewHelper {
 		const time = new Date();
 		time.setSeconds(time.getSeconds() + 180);
 
+		const currentTime = new Date().getTime();
+
 		let message = '';
 
 		const randNumb = OtpNewHelper.randNumb();
@@ -124,10 +128,20 @@ module.exports = class OtpNewHelper {
 				});
 
 				if (member) {
+					// eslint-disable-next-line max-len
+					const compare = Math.round((currentTime / 1000) - (new Date(member.last_resend).getTime() / 1000));
+
+					if (member.resend_count >= 5 && compare <= 86400) {
+						return Promise.reject(new Error(OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS));
+					}
+
+					const resendCount = member.resend_count + 1;
 					await member.update({
 						otp: randNumb,
 						expiresAt: time,
 						wrong: 0,
+						resend_count: resendCount,
+						last_resend: new Date(),
 						webhook_status: '',
 					});
 				} else {
@@ -136,11 +150,12 @@ module.exports = class OtpNewHelper {
 						members_register_id: data.memberId,
 						expiresAt: time,
 						wrong: 0,
+						resend_count: 0,
+						last_resend: new Date(),
 						webhook_status: '',
 					});
 				}
 			}
-
 			return instance.send(phone, message, `${randNumb}_otp`);
 
 		case 'forgot':
@@ -154,10 +169,20 @@ module.exports = class OtpNewHelper {
 				});
 
 				if (member) {
+					// eslint-disable-next-line max-len
+					const compare = Math.round((currentTime / 1000) - (new Date(member.last_resend).getTime() / 1000));
+
+					if (member.resend_count >= 5 && compare <= 86400) {
+						return Promise.reject(new Error(OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS));
+					}
+
+					const resendCount = member.resend_count + 1;
 					await member.update({
 						otp: randNumb,
 						expiresAt: time,
 						webhook_status: '',
+						resend_count: resendCount,
+						last_resend: new Date(),
 					});
 				} else {
 					await ForgotPassword.create({
@@ -165,10 +190,11 @@ module.exports = class OtpNewHelper {
 						members_id: data.memberId,
 						expiresAt: time,
 						webhook_status: '',
+						last_resend: new Date(),
+						resend_count: 0,
 					});
 				}
 			}
-
 			return instance.send(phone, message, `${randNumb}_forgot`);
 
 		default:
