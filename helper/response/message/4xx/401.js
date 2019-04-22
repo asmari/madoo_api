@@ -15,6 +15,11 @@ module.exports = {
 	40107: 'OTP Not Match',
 	40108: 'OTP Not Match 5 Times',
 	40109: 'OTP Expired',
+	40110: 'OTP Resend is 5 Times',
+	40111: {
+		message: 'You\'ve enter wrong code 5 Times, Please try again in the next :time',
+		params: ['time'],
+	},
 	40198: {
 		message: 'Error :message',
 		params: ['message'],
