@@ -86,7 +86,7 @@ exports.facebookRegisterSchema = {
 		consumes: ['multipart/form-data'],
 		description: 'Rest API for validate user & send otp',
 		body: {
-			required: ['full_name', 'email', 'fb_id', 'fb_token', 'mobile_phone', 'pin'],
+			required: ['full_name', 'email', 'fb_id', 'fb_token', 'mobile_phone'],
 			properties: {
 				full_name: { type: 'string' },
 				email: { type: 'string' },
