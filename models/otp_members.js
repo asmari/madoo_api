@@ -27,6 +27,14 @@ const OtpMembers = model.define('otp_members', {
 	webhook_status: {
 		type: Sequelize.TEXT,
 	},
+	resend_count: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+	},
+	last_resend: {
+		type: Sequelize.DATE,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	freezeTableName: true,

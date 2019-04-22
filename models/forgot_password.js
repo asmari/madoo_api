@@ -24,6 +24,14 @@ const ForgotPassword = model.define('forgot_password', {
 	webhook_status: {
 		type: sequilize.TEXT,
 	},
+	resend_count: {
+		type: sequilize.INTEGER,
+		allowNull: false,
+	},
+	last_resend: {
+		type: sequilize.DATE,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	paranoid: true,
