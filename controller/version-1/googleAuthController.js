@@ -109,16 +109,22 @@ exports.doRegisterGoogle = async (request) => {
 	// 	members_register_id: exists.id,
 	// }, params.mobile_phone);
 
-	await otpNewHelper.sendOtp(params.mobile_phone, {
-		type: 'otp',
-		data: {
-			memberId: exists.id,
-		},
-	});
+	try {
+		await otpNewHelper.sendOtp(params.mobile_phone, {
+			type: 'otp',
+			data: {
+				memberId: exists.id,
+			},
+		});
 
-	const payload = params;
+		const payload = params;
 
-	return new Response(20007, payload);
+		return new Response(20007, payload);
+	} catch (err) {
+		return new ErrorResponse(40111, {
+			time: '1 x 24 hour',
+		});
+	}
 };
 
 // do save member with google
