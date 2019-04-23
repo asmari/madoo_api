@@ -177,7 +177,7 @@ exports.doSaveMember = async (request, reply) => {
 			return new Response(20005, {
 				token_type: 'Bearer',
 				access_token: token,
-				fingerprint: member.finggerprint ? 1 : 0,
+				fingerprint: member.finggerprint,
 			});
 		}
 

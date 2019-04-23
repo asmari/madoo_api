@@ -39,7 +39,7 @@ exports.memberSchema = {
 				email: { type: 'string', maxLength: 50, minLength: 3 },
 				mobile_phone: { type: 'string', maxLength: 20, minLength: 11 },
 				pin: { type: 'integer', maxLength: 6, minLength: 6 },
-				fingerprint: { type: 'boolean', default: false },
+				fingerprint: { type: 'integer', default: 0 },
 			},
 		},
 	},
