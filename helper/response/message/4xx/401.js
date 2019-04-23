@@ -20,6 +20,7 @@ module.exports = {
 		message: 'You\'ve enter wrong code 5 Times, Please try again in the next :time',
 		params: ['time'],
 	},
+	40112: 'Account suspended',
 	40198: {
 		message: 'Error :message',
 		params: ['message'],
