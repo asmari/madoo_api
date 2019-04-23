@@ -38,7 +38,7 @@ exports.memberSchema = {
 				full_name: { type: 'string', maxLength: 50, minLength: 3 },
 				email: { type: 'string', maxLength: 50, minLength: 3 },
 				mobile_phone: { type: 'string', maxLength: 20, minLength: 11 },
-				pin: { type: 'integer', maxLength: 6, minLength: 6 },
+				pin: { type: 'string', maxLength: 6, minLength: 6 },
 				fingerprint: { type: 'integer', default: 0 },
 			},
 		},
@@ -66,7 +66,7 @@ exports.pinValidationSchema = {
 			type: 'object',
 			properties: {
 				pin: {
-					type: 'integer',
+					type: 'string',
 				},
 			},
 			required: ['pin'],
@@ -86,13 +86,13 @@ exports.changePinSchema = {
 			type: 'object',
 			properties: {
 				old_pin: {
-					type: 'integer',
+					type: 'string',
 				},
 				new_pin: {
-					type: 'integer', maxLength: 6, minLength: 6,
+					type: 'string', maxLength: 6, minLength: 6,
 				},
 				confirm_pin: {
-					type: 'integer', maxLength: 6, minLength: 6,
+					type: 'string', maxLength: 6, minLength: 6,
 				},
 			},
 			required: ['old_pin', 'new_pin', 'confirm_pin'],
