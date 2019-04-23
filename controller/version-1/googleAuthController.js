@@ -236,7 +236,7 @@ exports.doLoginGoogle = async (request, reply) => {
 		oauth: true,
 	};
 
-	const resotp = new Promise((resolve, reject) => {
+	const resotp = await new Promise((resolve, reject) => {
 		reply.jwtSign(payload, (err, token) => {
 			if (err) {
 				reject(err);
