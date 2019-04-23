@@ -24,6 +24,18 @@ exports.doRegisterPhone = async (request) => {
 	const params = request.body;
 	const otpNewHelper = new OtpNewHelper();
 
+	const member = await Members.findOne({
+		where: {
+			mobile_phone: params.mobile_phone,
+		},
+	});
+
+	if (member) {
+		return new ErrorResponse(40104, {
+			field: 'Phone Number',
+		});
+	}
+
 	const memberRegister = await MembersRegister.findOne({
 		where: {
 			mobile_phone: params.mobile_phone,
