@@ -66,7 +66,7 @@ const MembersRegister = model.define('members_register', {
 		allowNull: true,
 	},
 	fb_token: {
-		type: Sequelize.STRING,
+		type: Sequelize.TEXT,
 		allowNull: true,
 	},
 	g_id: {
@@ -74,7 +74,7 @@ const MembersRegister = model.define('members_register', {
 		allowNull: true,
 	},
 	g_token: {
-		type: Sequelize.STRING,
+		type: Sequelize.TEXT,
 		allowNull: true,
 	},
 }, {
