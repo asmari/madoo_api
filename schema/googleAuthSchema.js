@@ -61,8 +61,8 @@ exports.googleSaveMemberSchema = {
 					minLength: 6,
 				},
 				fingerprint: {
-					type: 'boolean',
-					default: false,
+					type: 'integer',
+					default: 0,
 				},
 				g_id: {
 					type: 'string',

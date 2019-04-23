@@ -40,8 +40,8 @@ exports.facebookSaveMemberSchema = {
 					minLength: 6,
 				},
 				fingerprint: {
-					type: 'boolean',
-					default: false,
+					type: 'integer',
+					default: 0,
 				},
 				fb_id: {
 					type: 'string',
