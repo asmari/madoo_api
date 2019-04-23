@@ -56,7 +56,7 @@ exports.googleSaveMemberSchema = {
 					minLength: 9,
 				},
 				pin: {
-					type: 'integer',
+					type: 'string',
 					maxLength: 6,
 					minLength: 6,
 				},
