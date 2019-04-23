@@ -23,6 +23,7 @@ exports.doCheckMember = async (request) => {
 		where: {
 			mobile_phone: params.mobile_phone,
 		},
+		paranoid: false,
 	});
 
 	if (member) {
