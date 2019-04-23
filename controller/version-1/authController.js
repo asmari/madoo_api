@@ -52,12 +52,17 @@ exports.doLogin = async (request, reply) => {
 		where: {
 			mobile_phone: params.mobile_phone,
 		},
+		paranoid: false,
 		include: [Pins],
 	});
 
 	if (member == null) {
 		// Error: Member not found
 		throw new ErrorResponse(41700);
+	}
+
+	if (member.deleted_at != null) {
+		throw new ErrorResponse(40112);
 	}
 
 	const pin = member.pin_member;
