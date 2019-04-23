@@ -49,7 +49,7 @@ const Notification = model.define('notification', {
 	freezeTableName: true,
 });
 
-Notification.hasOne(Loyalty);
+// Notification.hasOne(Loyalty);
 Notification.hasOne(NotificationMember, {
 	foreignKey: 'notification_id',
 });
