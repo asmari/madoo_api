@@ -219,11 +219,16 @@ exports.doLoginFacebook = async (request, reply) => {
 			email: params.email,
 			fb_id: params.fb_id,
 		},
+		paranoid: false,
 	});
 
 	if (member == null) {
 		// Error: Member not found
 		throw new ErrorResponse(41700);
+	}
+
+	if (member.deleted_at != null) {
+		throw new ErrorResponse(40112);
 	}
 
 	// update fb_token using latest token received

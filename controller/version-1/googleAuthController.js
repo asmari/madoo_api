@@ -220,10 +220,15 @@ exports.doLoginGoogle = async (request, reply) => {
 			email: params.email,
 			g_id: params.g_id,
 		},
+		paranoid: false,
 	});
 
 	if (member == null) {
 		throw new ErrorResponse(41700);
+	}
+
+	if (member.deleted_at != null) {
+		throw new ErrorResponse(40112);
 	}
 
 	// update g_token using latest token received
