@@ -112,7 +112,7 @@ exports.setForgotPinOtp = async (request) => {
 		// }, params.mobile_phone);
 
 		const resOtp = await otpNewHelper.sendOtp(params.mobile_phone, {
-			type: 'forget',
+			type: 'forgot',
 			data: {
 				memberId: member.id,
 			},
