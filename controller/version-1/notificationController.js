@@ -40,6 +40,22 @@ exports.getNotificationList = async (request) => {
 		params.filter = [params.filter];
 	}
 
+	params.filter = params.filter.map((value) => {
+		if (value === 1) {
+			return 'promotion';
+		}
+
+		if (value === 2) {
+			return 'conversion';
+		}
+
+		if (value === 3) {
+			return 'other';
+		}
+
+		return value;
+	});
+
 	let whereNotificationFilter = {};
 
 	if (params.filter.length > 0) {
