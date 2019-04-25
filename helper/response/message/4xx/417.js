@@ -7,4 +7,8 @@ module.exports = {
 	41705: 'Member cards not found',
 	41706: 'Notification not found',
 	41707: 'Contact not found',
+	41708: {
+		message: 'Wording for :lang not found!',
+		params: ['lang'],
+	},
 };
