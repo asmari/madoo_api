@@ -50,7 +50,7 @@ module.exports = class OtpNewHelper {
 						return Promise.reject(OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES);
 					}
 
-					if (member.otp === data.otp) {
+					if (member.otp === parseInt(data.otp, 10)) {
 						return Promise.resolve(OtpNewHelper.STATUS.OTP_MATCH);
 					}
 
@@ -83,7 +83,7 @@ module.exports = class OtpNewHelper {
 						return Promise.reject(OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES);
 					}
 
-					if (member.otp === data.otp) {
+					if (member.otp === parseInt(data.otp, 10)) {
 						return Promise.resolve(OtpNewHelper.STATUS.OTP_MATCH);
 					}
 
