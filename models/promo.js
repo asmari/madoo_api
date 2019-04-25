@@ -27,7 +27,7 @@ const Promo = model.define('promo', {
 		type: sequelize.STRING,
 		allowNull: false,
 	},
-	image: {
+	image_url: {
 		type: sequelize.STRING,
 		allowNull: true,
 	},
