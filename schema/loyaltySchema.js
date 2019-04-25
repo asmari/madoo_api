@@ -19,8 +19,8 @@ exports.loyaltyMemberListSchema = {
 					type: 'string',
 				},
 				sort: {
-					type: 'string',
-					enum: ['alphabet', 'point_low', 'point_high'],
+					type: 'integer',
+					enum: [1, 2, 3],
 				},
 				filter: {
 					type: ['array', 'integer'],

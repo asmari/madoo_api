@@ -82,11 +82,11 @@ exports.notificationListSchema = {
 			type: 'object',
 			properties: {
 				filter: {
-					type: ['array', 'string'],
-					enums: ['promotion', 'conversion', 'other'],
+					type: ['array', 'integer'],
+					enums: [1, 2, 3],
 					items: {
-						type: 'string',
-						enums: ['promotion', 'conversion', 'other'],
+						type: 'integer',
+						enums: [1, 2, 3],
 					},
 				},
 				page: {
