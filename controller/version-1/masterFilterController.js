@@ -27,13 +27,13 @@ exports.getFilterListPromo = async () => {
 // list sort card content
 exports.getSortListCard = async () => new Response(20017, [
 	{
-		id: 'alphabet',
+		id: 1,
 		name: 'Alphabetical',
 	}, {
-		id: 'point_low',
+		id: 2,
 		name: 'Point Low to High',
 	}, {
-		id: 'point_high',
+		id: 3,
 		name: 'Point High to Low',
 	},
 ]);
@@ -41,13 +41,13 @@ exports.getSortListCard = async () => new Response(20017, [
 // list sort card content
 exports.getFilterListNotification = async () => new Response(20017, [
 	{
-		id: 'promotion',
+		id: 1,
 		name: 'Promotion',
 	}, {
-		id: 'convertion',
+		id: 2,
 		name: 'Convertion',
 	}, {
-		id: 'other',
+		id: 3,
 		name: 'Other',
 	},
 ]);
