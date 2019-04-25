@@ -42,19 +42,30 @@ exports.doRegisterPhone = async (request) => {
 		},
 	}, {});
 	if (memberRegister) {
-		if (memberRegister.status !== 'regitered') {
+		if (memberRegister.status !== 'registered') {
 			// const sendOtp = await otpHelper.sendOtp({
 			// 	members_register_id: memberRegister.id,
 			// }, memberRegister.mobile_phone);
 
-			const sendOtp = await otpNewHelper.sendOtp(memberRegister.mobile_phone, {
-				type: 'otp',
-				data: {
-					memberId: memberRegister.id,
-				},
-			});
+			try {
+				const res = await otpNewHelper.sendOtp(memberRegister.mobile_phone, {
+					type: 'otp',
+					data: {
+						memberId: memberRegister.id,
+					},
+				});
 
-			return new Response(20001, sendOtp);
+				switch (res.toString()) {
+				case OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS:
+					return new ErrorResponse(40111, res);
+				default:
+					return new Response(20001, res);
+				}
+			} catch (err) {
+				return new ErrorResponse(40111, {
+					time: '1 x 24 hour',
+				});
+			}
 		}
 
 		// Error: Member already registered! Please login
@@ -71,14 +82,25 @@ exports.doRegisterPhone = async (request) => {
 		// 	members_register_id: newMember.id,
 		// }, newMember.mobile_phone);
 
-		const sendOtp = await otpNewHelper.sendOtp(newMember.mobile_phone, {
-			type: 'otp',
-			data: {
-				memberId: newMember.id,
-			},
-		});
+		try {
+			const res = await otpNewHelper.sendOtp(newMember.mobile_phone, {
+				type: 'otp',
+				data: {
+					memberId: newMember.id,
+				},
+			});
 
-		return new Response(20001, sendOtp);
+			switch (res.toString()) {
+			case OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS:
+				return new ErrorResponse(40111, res);
+			default:
+				return new Response(20001, res);
+			}
+		} catch (err) {
+			return new ErrorResponse(40111, {
+				time: '1 x 24 hour',
+			});
+		}
 	}
 };
 
