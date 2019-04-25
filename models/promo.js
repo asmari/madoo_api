@@ -42,6 +42,14 @@ const Promo = model.define('promo', {
 	valid_until_end: {
 		type: sequelize.DATE,
 		allowNull: true,
+		get() {
+			const date = this.getDataValue('valid_until_end');
+			if (date != null) {
+				const d = new Date(date);
+				return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+			}
+			return date;
+		},
 	},
 	status: {
 		type: sequelize.INTEGER,
