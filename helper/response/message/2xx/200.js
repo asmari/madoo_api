@@ -38,5 +38,6 @@ module.exports = {
 	20036: 'List Notification members success',
 	20037: 'Get notification detail success',
 	20038: 'Webview list success',
+	20039: 'Wording list success',
 	20099: 'Success',
 };
