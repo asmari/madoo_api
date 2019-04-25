@@ -27,7 +27,7 @@ exports.doCheckMember = async (request) => {
 	});
 
 	if (member) {
-		return new Response(200, {
+		return new Response(20000, {
 			user_exists: true,
 		});
 	}
@@ -249,7 +249,7 @@ exports.doChangePin = async (request, reply) => {
 			});
 		});
 
-		return new Response(res);
+		return new Response(20040, res);
 	}
 
 	// Error: Member not found
