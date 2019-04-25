@@ -33,8 +33,11 @@ exports.getFeaturedPromo = async (request) => {
 	const promos = await Promo.findAll({
 		where: {
 			...filterPromo,
-			valid_until: {
+			valid_until_end: {
 				[Op.gte]: currentDate,
+			},
+			valid_until: {
+				[Op.lte]: currentDate,
 			},
 			isfeatured: 1,
 		},
@@ -75,7 +78,7 @@ exports.getPromo = async (request) => {
 		};
 	}
 	if (params.filter_category.length > 0) {
-		console.log(JSON.stringify(params.filter_category));
+		// console.log(JSON.stringify(params.filter_category));
 		const likeCondition = [];
 		params.filter_category.forEach((element) => {
 			likeCondition.push({ [Op.like]: `%"${element}"%` });
