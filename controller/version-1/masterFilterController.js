@@ -6,6 +6,10 @@ const {
 	LoyaltyType,
 	LoyaltyMemberCards,
 	MembersCards,
+	Otp,
+	ForgotPassword,
+	Members,
+	MembersRegister,
 } = require('../../models');
 
 // list filter promo content
@@ -92,4 +96,42 @@ exports.getFilterListCard = async (request) => {
 	}
 
 	throw new ErrorResponse(41705);
+};
+
+
+exports.getForgotMaster = async () => {
+	ForgotPassword.Get.hasMany(Members.Get, {
+		sourceKey: 'members_id',
+		foreignKey: 'id',
+	});
+
+	const forgot = await ForgotPassword.Get.findAll({
+		include: [
+			Members.Get,
+		],
+		order: [[
+			'updated_at', 'DESC',
+		]],
+	});
+
+	return new Response(20001, forgot);
+};
+
+exports.getOtpMember = async () => {
+	Otp.Get.hasMany(MembersRegister.Get, {
+		foreignKey: 'id',
+		sourceKey: 'members_id',
+	});
+	const otpMember = await Otp.Get.findAll({
+		include: [
+			{
+				model: MembersRegister.Get,
+			},
+		],
+		order: [
+			['updated_at', 'DESC'],
+		],
+	});
+
+	return new Response(20001, otpMember);
 };

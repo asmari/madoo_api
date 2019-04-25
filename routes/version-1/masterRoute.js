@@ -41,4 +41,7 @@ module.exports = async (fastify) => {
 		},
 		beforeHandler: [fastify.authenticate],
 	}, masterController.getFilterListPromo);
+
+	fastify.get('/list/otp', masterController.getOtpMember);
+	fastify.get('/list/forgot', masterController.getForgotMaster);
 };
