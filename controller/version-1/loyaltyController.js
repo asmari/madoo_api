@@ -256,17 +256,17 @@ exports.getLoyaltyMember = async (request) => {
 		'id', 'ASC',
 	];
 
-	if (params.sort != null && typeof (params.sort) === 'string') {
+	if (params.sort != null) {
 		switch (params.sort) {
-		case 'alphabet':
+		case 1:
 			orderLoyalty = [Loyalty, 'name', 'ASC'];
 			break;
 
-		case 'point_low':
+		case 2:
 			orderCards = ['point', 'ASC'];
 			break;
 
-		case 'point_high':
+		case 3:
 			orderCards = ['point', 'DESC'];
 			break;
 
