@@ -143,7 +143,7 @@ exports.checkForgotPinOtp = async (request) => {
 
 		try {
 			const res = await otpNewHelper.checkOtp('', {
-				type: 'forget',
+				type: 'forgot',
 				data: {
 					memberId: member.id,
 					otp: params.otp,
