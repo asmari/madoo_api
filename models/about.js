@@ -9,6 +9,14 @@ const About = model.define('about', {
 		type: sequelize.STRING,
 		allowNull: false,
 	},
+	google_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	facebook_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
