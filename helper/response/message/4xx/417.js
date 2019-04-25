@@ -6,4 +6,5 @@ module.exports = {
 	41704: 'Member cards with loyalty not found!',
 	41705: 'Member cards not found',
 	41706: 'Notification not found',
+	41707: 'Contact not found',
 };
