@@ -40,5 +40,6 @@ module.exports = {
 	20038: 'Webview list success',
 	20039: 'Wording list success',
 	20040: 'Pin change success',
+	20041: 'Unlink Social Media Success',
 	20099: 'Success',
 };
