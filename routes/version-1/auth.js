@@ -20,6 +20,12 @@ async function routes(fastify) {
 
 	// change pin and login
 	fastify.post('/forgot/pin/change', authSchema.authChangePin, authController.doChangePin);
+
+	// unlink social media
+	fastify.post('/unlink/social', {
+		...authSchema.authUnlinkSocialSchema,
+		beforeHandler: [fastify.authenticate],
+	}, authController.doUnlinkSocialMedia);
 }
 
 module.exports = routes;

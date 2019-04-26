@@ -255,3 +255,44 @@ exports.doChangePin = async (request, reply) => {
 	// Error: Member not found
 	throw new ErrorResponse(41700);
 };
+
+// unlink social media
+exports.doUnlinkSocialMedia = async (request) => {
+	const { user, body } = request;
+
+	console.log(user);
+
+	const members = await Members.findOne({
+		where: {
+			id: user.id,
+		},
+	});
+
+	
+
+	if (members) {
+		switch (body.type) {
+		case 1:
+			await members.update({
+				fb_id: null,
+				fb_token: null,
+			});
+			break;
+
+		case 2:
+			await members.update({
+				g_id: null,
+				g_token: null,
+			});
+			break;
+
+		default:
+
+			break;
+		}
+
+		return new Response(20041, members);
+	}
+
+	return new ErrorResponse(41700);
+};
