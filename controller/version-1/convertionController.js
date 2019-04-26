@@ -137,6 +137,7 @@ exports.getConvertionRate = async (request) => {
 	}
 
 	const dataOptions = {
+		attributes: [['point_loyalty', 'source_point'], [sequelize.literal('((point_loyalty * rate_from) - fee) * rate_to'), 'target_point']],
 		include: [{
 			model: Loyalty,
 			as: 'Source',
@@ -154,8 +155,9 @@ exports.getConvertionRate = async (request) => {
 	};
 
 	const conversion = await ConvertionRate.paginate({ ...dataOptions });
+	console.log(conversion);
 	if (conversion) {
-		return new ResponsePaginate(20041, {
+		return new ResponsePaginate(20042, {
 			item: params.item,
 			pages: params.page,
 			total: conversion.total,
