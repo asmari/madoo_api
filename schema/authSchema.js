@@ -84,3 +84,23 @@ exports.authCheckSchema = {
 		},
 	},
 };
+
+exports.authUnlinkSocialSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for unlink social media from member',
+		body: {
+			required: ['type'],
+			properties: {
+				type: {
+					type: 'integer',
+					enums: [1, 2],
+				},
+			},
+		},
+	},
+};
