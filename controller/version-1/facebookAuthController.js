@@ -102,6 +102,16 @@ exports.doRegisterFacebook = async (request) => {
 			// pin: params.pin,
 			status: 'pending',
 		});
+	} else {
+		await exists.update({
+			full_name: params.full_name,
+			email: params.email,
+			fb_id: params.fb_id,
+			fb_token: params.fb_token,
+			mobile_phone: params.mobile_phone,
+			// pin: params.pin,
+			status: 'pending',
+		});
 	}
 
 	// await otpHelper.sendOtp({

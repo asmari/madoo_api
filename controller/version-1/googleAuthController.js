@@ -103,6 +103,15 @@ exports.doRegisterGoogle = async (request) => {
 			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		});
+	} else {
+		await exists.update({
+			full_name: params.full_name,
+			email: params.email,
+			g_id: params.g_id,
+			g_token: params.g_token,
+			mobile_phone: params.mobile_phone,
+			status: 'pending',
+		});
 	}
 
 	// await otpHelper.sendOtp({
