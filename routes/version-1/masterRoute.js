@@ -42,6 +42,17 @@ module.exports = async (fastify) => {
 		beforeHandler: [fastify.authenticate],
 	}, masterController.getFilterListPromo);
 
+	fastify.get('/type/unlink/social', {
+		schema: {
+			security: [
+				{
+					BearerAuth: [],
+				},
+			],
+		},
+		beforeHandler: [fastify.authenticate],
+	}, masterController.getTypeUnlinkSocialMaster);
+
 	fastify.get('/list/otp', masterController.getOtpMember);
 	fastify.get('/list/forgot', masterController.getForgotMaster);
 };

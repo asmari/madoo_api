@@ -98,6 +98,17 @@ exports.getFilterListCard = async (request) => {
 	throw new ErrorResponse(41705);
 };
 
+exports.getTypeUnlinkSocialMaster = async () => new Response(20099, [
+	{
+		id: 1,
+		name: 'Facebook',
+	},
+	{
+		id: 2,
+		name: 'Google',
+	},
+]);
+
 
 exports.getForgotMaster = async () => {
 	ForgotPassword.Get.hasMany(Members.Get, {
