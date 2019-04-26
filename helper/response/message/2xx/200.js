@@ -41,5 +41,6 @@ module.exports = {
 	20039: 'Wording list success',
 	20040: 'Pin change success',
 	20041: 'Unlink Social Media Success',
+	20042: 'Convertion list success',
 	20099: 'Success',
 };
