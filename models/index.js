@@ -16,5 +16,6 @@ exports.About = require('./about');
 exports.Notification = require('./notification');
 exports.NotificationMembers = require('./notificationMember');
 exports.NotificationSettings = require('./notificationSetting');
+exports.Conversion = require('./conversion');
 exports.WebView = require('./webview');
 exports.Wording = require('./wording');

@@ -6,6 +6,7 @@ const model = require('./conn/sequelize').sequelize;
 // const LoyaltyMemberCards = require("./loyalty_member_cards")
 const Promo = require('./promo');
 const ConvertionRate = require('./convertion_rate');
+const Conversion = require('./conversion');
 
 const Loyalty = model.define('loyalty', {
 	type_loyalty_id: {
@@ -88,6 +89,10 @@ const Loyalty = model.define('loyalty', {
 });
 
 Promo.Get.belongsTo(Loyalty, {
+	sourceKey: 'loyalty_id',
+});
+
+Conversion.Get.belongsTo(Loyalty, {
 	sourceKey: 'loyalty_id',
 });
 
