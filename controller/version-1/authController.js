@@ -27,6 +27,10 @@ exports.doCheckMember = async (request) => {
 	});
 
 	if (member) {
+		if (member.deleted_at != null) {
+			return new ErrorResponse(40112);
+		}
+
 		return new Response(20000, {
 			user_exists: true,
 		});
@@ -260,15 +264,11 @@ exports.doChangePin = async (request, reply) => {
 exports.doUnlinkSocialMedia = async (request) => {
 	const { user, body } = request;
 
-	console.log(user);
-
 	const members = await Members.findOne({
 		where: {
 			id: user.id,
 		},
 	});
-
-	
 
 	if (members) {
 		switch (body.type) {
