@@ -93,7 +93,8 @@ exports.getPromo = async (request) => {
 		'id', 'ASC',
 	];
 
-	whereCondition.valid_until = { [Op.gte]: currentDate };
+	whereCondition.valid_until_end = { [Op.gte]: currentDate };
+	whereCondition.valid_until = { [Op.lte]: currentDate };
 
 	if (params.search != null && typeof (params.search) === 'string') {
 		whereCondition.title = {
