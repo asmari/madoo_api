@@ -159,7 +159,7 @@ exports.getConvertionRate = async (request) => {
 			item: params.item,
 			pages: params.page,
 			total: conversion.total,
-		}, conversion);
+		}, conversion.docs);
 	}
 
 	throw new ErrorResponse(41701);
