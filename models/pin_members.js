@@ -20,6 +20,9 @@ const PinMembers = model.define('pin_members', {
 	expired: {
 		type: Sequelize.INTEGER,
 	},
+	wrong: {
+		type: Sequelize.INTEGER,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
