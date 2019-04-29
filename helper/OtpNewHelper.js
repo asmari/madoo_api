@@ -159,7 +159,7 @@ module.exports = class OtpNewHelper {
 			return instance.send(phone, message, `${randNumb}_otp`);
 
 		case 'forgot':
-			message = `Kode OTP Forgot Password anda : ${randNumb}`;
+			message = `Your SWAPZ code is ${randNumb}`;
 
 			if (Object.prototype.hasOwnProperty.call(data, 'memberId')) {
 				const member = await ForgotPassword.findOne({
