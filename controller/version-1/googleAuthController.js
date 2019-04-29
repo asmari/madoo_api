@@ -67,9 +67,7 @@ exports.doRegisterGoogle = async (request) => {
 
 	if (memberEmail != null) {
 		// Error: :field already registered
-		throw new ErrorResponse(40104, {
-			field: 'Email',
-		});
+		throw new ErrorResponse(40113);
 	}
 
 	const memberPhone = await Members.findOne({
