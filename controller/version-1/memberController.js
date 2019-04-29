@@ -36,6 +36,16 @@ exports.doRegisterPhone = async (request) => {
 		});
 	}
 
+	const memberEmail = await Members.findOne({
+		where: {
+			email: params.email,
+		},
+	});
+
+	if (memberEmail) {
+		return new ErrorResponse(40113);
+	}
+
 	const memberRegister = await MembersRegister.findOne({
 		where: {
 			mobile_phone: params.mobile_phone,
