@@ -95,6 +95,27 @@ exports.doLogin = async (request, reply) => {
 
 		return new Response(20000, accessToken);
 	}
+
+	if (pin) {
+		const pinMember = await Pins.findOne({
+			id: pin.id,
+		});
+
+		const wrong = pinMember.wrong == null ? 0 : pinMember.wrong;
+
+		if (wrong >= 4) {
+			await Members.destroy({
+				where: {
+					id: member.id,
+				},
+			});
+		}
+
+		await pinMember.update({
+			wrong: wrong + 1,
+		});
+	}
+
 	// Error: Pin member is not valid
 	throw new ErrorResponse(40103);
 };
