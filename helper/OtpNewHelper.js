@@ -118,7 +118,7 @@ module.exports = class OtpNewHelper {
 
 		switch (type) {
 		case 'otp':
-			message = `Kode OTP anda : ${randNumb}`;
+			message = `Your SWAPZ code is ${randNumb}`;
 
 			if (Object.prototype.hasOwnProperty.call(data, 'memberId')) {
 				const member = await OtpMembers.findOne({
