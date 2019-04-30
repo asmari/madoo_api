@@ -17,6 +17,14 @@ const About = model.define('about', {
 		type: sequelize.STRING,
 		allowNull: true,
 	},
+	instagram_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	web_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
