@@ -59,12 +59,12 @@ exports.authChangePin = {
 					maxLength: 18,
 				},
 				pin: {
-					type: 'integer',
+					type: 'string',
 					min: 6,
 					max: 6,
 				},
 				confirm_pin: {
-					type: 'integer',
+					type: 'string',
 					min: 6,
 					max: 6,
 				},
