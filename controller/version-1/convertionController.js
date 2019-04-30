@@ -166,3 +166,74 @@ exports.getConvertionRate = async (request) => {
 
 	throw new ErrorResponse(41701);
 };
+
+exports.getConversionDestination = async (request) => {
+	const whereCondition = {};
+	const prohibitedTo = [];
+	const loyaltyId = [];
+
+	const params = JSON.parse(JSON.stringify(request.query));
+
+	params.page = parseInt(params.page, 10) || 1;
+	params.item = parseInt(params.item, 10) || 10;
+
+
+	if (params.loyalty_id != null) {
+		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
+		const conversionData = JSON.parse(conversionRule.data_conversion);
+
+		if (conversionData.loyalty_to != null) {
+			conversionData.loyalty_to.forEach((id) => {
+				prohibitedTo.push(id);
+			});
+		}
+		if (conversionData.category_to != null) {
+			const whereCategoryTo = { type_loyalty_id: { [Op.in]: conversionData.category_to } };
+			const loyaltyTo = await Loyalty.findAll({ attributes: ['id'], where: whereCategoryTo, raw: true });
+			loyaltyTo.forEach((id) => {
+				prohibitedTo.push(id.id);
+			});
+		}
+		whereCondition.loyalty_id = params.loyalty_id;
+		// if (params.search != null && typeof (params.search) === 'string') {
+		// 	whereTarget.name = {
+		// 		[Op.like]: `%${params.search}%`,
+		// 	};
+		// }
+	}
+
+	if (prohibitedTo.length !== 0) {
+		whereCondition[Op.and] = {
+			conversion_loyalty: {
+				[Op.notIn]: prohibitedTo,
+			},
+		};
+	}
+
+	const dataOptions = {
+		attributes: ['conversion_loyalty'],
+		where: whereCondition,
+		raw: true,
+	};
+
+	const conversion = await ConvertionRate.findAll({ ...dataOptions });
+	if (conversion.length !== 0) {
+		conversion.forEach((id) => {
+			loyaltyId.push(id.conversion_loyalty);
+		});
+	}
+	const loyalty = await Loyalty.paginate({
+		page: params.page,
+		paginate: params.item,
+		where: { id: { [Op.in]: loyaltyId } },
+	});
+	if (loyalty) {
+		return new ResponsePaginate(20043, {
+			item: params.item,
+			pages: params.page,
+			total: loyalty.total,
+		}, loyalty.docs);
+	}
+
+	throw new ErrorResponse(41701);
+};

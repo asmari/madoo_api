@@ -15,4 +15,9 @@ module.exports = async (fastify) => {
 		...convertionSchema.getConvertion,
 		beforeHandler: [fastify.authenticate],
 	}, convertionController.getConvertionRate);
+
+	fastify.get('/destination', {
+		...convertionSchema.getDestination,
+		beforeHandler: [fastify.authenticate],
+	}, convertionController.getConversionDestination);
 };
