@@ -67,6 +67,10 @@ module.exports = class Request {
 						parsedData = parser.toJson(chunkData);
 						break;
 
+					case 'text/html':
+					case 'application/html':
+						break;
+
 					default:
 						parsedData = JSON.parse(chunkData);
 						break;
@@ -76,7 +80,10 @@ module.exports = class Request {
 				});
 			});
 
-			req.write(data, encoding);
+			if (data != null) {
+				req.write(data, encoding);
+			}
+
 			req.end();
 		});
 	}
