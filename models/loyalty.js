@@ -74,6 +74,18 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
+	auth: {
+		type: Sequelize.TINYINT,
+		allowNull: false,
+	},
+	auth_field: {
+		type: Sequelize.TEXT,
+		allowNull: true,
+	},
+	confirm_field: {
+		type: Sequelize.TEXT,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
