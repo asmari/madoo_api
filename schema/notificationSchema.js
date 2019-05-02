@@ -99,3 +99,31 @@ exports.notificationListSchema = {
 		},
 	},
 };
+
+exports.notifSettingSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for Create or Update Notification Setting',
+		querystring: {
+			type: 'object',
+			properties: {
+				promotion: {
+					type: 'integer',
+				},
+				conversion: {
+					type: 'integer',
+				},
+				other: {
+					type: 'integer',
+				},
+			},
+			required: ['promotion', 'conversion', 'other'],
+		},
+
+	},
+
+};
