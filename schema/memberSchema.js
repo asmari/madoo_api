@@ -5,7 +5,7 @@ exports.registerSchema = {
 			// Required body paramter for register
 			required: ['full_name', 'email', 'mobile_phone'],
 			properties: {
-				full_name: { type: 'string', maxLength: 50, minLength: 3 },
+				full_name: { type: 'string', maxLength: 50 },
 				email: { type: 'string' },
 				mobile_phone: { type: 'string', maxLength: 20, minLength: 9 },
 
