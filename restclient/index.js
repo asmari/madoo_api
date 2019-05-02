@@ -1,15 +1,28 @@
 // const flat = require('flat');
 const xmlBuilder = require('xmlbuilder');
+const querystring = require('querystring');
 const flat = require('flat');
 const isBuffer = require('is-buffer');
 
-const { ErrorResponse, Response } = require('../helper/response'); 
+// const { ErrorResponse, Response } = require('../helper/response');
 const Request = require('./request');
 
 module.exports = class RestClient extends Request {
 	constructor(obj) {
 		super();
 		this.api = null;
+
+		if (Object.prototype.hasOwnProperty.call(obj, 'auth')) {
+			const supportedAuth = ['oauth2', 'oauth', 'jwt'];
+			const { auth } = obj;
+
+			supportedAuth.forEach((value) => {
+				if (Object.prototype.hasOwnProperty.call(auth, value)) {
+					this.auth = new RestClient(auth[value]);
+					this.authType = value;
+				}
+			});
+		}
 
 		if (Object.prototype.hasOwnProperty.call(obj, 'agent')) {
 			this.createAgent(obj.agent);
@@ -38,6 +51,11 @@ module.exports = class RestClient extends Request {
 
 	insertBody(data = {}) {
 		this.bodyData = data;
+
+		if (this.auth != null) {
+			this.auth.insertBody(data);
+		}
+
 		try {
 			return this.parsingBody();
 		} catch (err) {
@@ -48,6 +66,7 @@ module.exports = class RestClient extends Request {
 
 	parsingBody() {
 		let contentType = 'application/json';
+		let parsedBody = {};
 
 		Object.keys(this.getHeaders()).forEach((key) => {
 			if (key.toLocaleLowerCase() === 'content-type') {
@@ -57,37 +76,35 @@ module.exports = class RestClient extends Request {
 
 		contentType = contentType.split(';')[0] || contentType;
 
-		const { required, properties } = this.reqBody;
-		const body = this.bodyData;
+		if (this.reqBody != null) {
+			const { required, properties } = this.reqBody;
+			const body = this.bodyData;
 
-		if (required.length > 0) {
-			required.forEach((value) => {
-				if (!Object.prototype.hasOwnProperty.call(body, value)) {
-					throw new Error(`${value} is not found`);
+			if (required.length > 0) {
+				required.forEach((value) => {
+					if (!Object.prototype.hasOwnProperty.call(body, value)) {
+						throw new Error(`${value} is not found`);
+					}
+				});
+			}
+
+			Object.keys(properties).forEach((key) => {
+				const value = properties[key];
+
+				if (value.substr(0, 1) === ':') {
+					const stripedValue = value.replace(':', '');
+					if (Object.prototype.hasOwnProperty.call(body, stripedValue)) {
+						parsedBody[key] = body[stripedValue];
+					}
+				} else if (value.substr(0, 1) === '@') {
+					const stripedValue = value.replace('@', '');
+					const annotValue = RestClient.getAnnotationFunc(stripedValue);
+					parsedBody[key] = annotValue;
+				} else {
+					parsedBody[key] = value;
 				}
 			});
 		}
-
-		let parsedBody = {};
-
-		Object.keys(properties).forEach((key) => {
-			const value = properties[key];
-
-			if (value.substr(0, 1) === ':') {
-				const stripedValue = value.replace(':', '');
-
-				if (Object.prototype.hasOwnProperty.call(body, stripedValue)) {
-					parsedBody[key] = body[stripedValue];
-				}
-			} else if (value.substr(0, 1) === '@') {
-				const stripedValue = value.replace('@', '');
-				const annotValue = RestClient.getAnnotationFunc(stripedValue);
-				parsedBody[key] = annotValue;
-			} else {
-				parsedBody[key] = value;
-			}
-		});
-
 
 		parsedBody = RestClient.unflatten(parsedBody);
 
@@ -101,9 +118,18 @@ module.exports = class RestClient extends Request {
 
 			break;
 
+		case 'application/x-www-form-urlencoded':
+		case 'multipart/form-data':
+			parsedBody = querystring.stringify(parsedBody);
+			break;
+
 		default:
 
 			break;
+		}
+
+		if (Object.keys(parsedBody).length === 0) {
+			parsedBody = null;
 		}
 
 		this.parsedBody = parsedBody;
@@ -111,11 +137,38 @@ module.exports = class RestClient extends Request {
 	}
 
 	async request() {
+		const responseAll = {};
+
+		if (this.auth != null) {
+			try {
+				const responseAuth = await this.auth.request();
+
+				switch (this.authType) {
+				case 'oauth2':
+					this.changeHeader('Authorization', `Bearer ${responseAuth.data.token}`);
+
+					Object.assign(responseAll, {
+						auth: responseAuth.data,
+					});
+					break;
+
+				default:
+					break;
+				}
+			} catch (err) {
+				console.log('Error Test', err);
+			}
+		}
+
 		const response = await super.request(this.api, this.method, this.parsedBody);
 
-		const responseFiltered = this.getFilterValue(JSON.parse(response));
+		const responseFiltered = this.getFilterValue(response);
 
-		return responseFiltered;
+		console.log(responseFiltered);
+
+		Object.assign(responseAll, responseFiltered);
+
+		return responseAll;
 	}
 
 	isOptional(value) {
@@ -158,8 +211,6 @@ module.exports = class RestClient extends Request {
 			const flatened = flat.flatten(response);
 			let code = null;
 
-			// console.log(flatened);
-
 			if (Object.prototype.hasOwnProperty.call(flatened, filter.code)) {
 				code = flatened[filter.code];
 			}
@@ -185,9 +236,10 @@ module.exports = class RestClient extends Request {
 				}
 			});
 
-			if (!propResponse.success) {
-				resultResponse = new Error(resultResponse.message);
-			}
+			resultResponse = {
+				status: propResponse.success,
+				data: resultResponse,
+			};
 		} catch (err) {
 			console.error(err);
 		}
