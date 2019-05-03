@@ -121,7 +121,7 @@ exports.notifSettingSchema = {
 					type: 'integer',
 				},
 			},
-			required: ['promotion', 'conversion', 'other'],
+			// required: ['promotion', 'conversion', 'other'],
 		},
 
 	},
