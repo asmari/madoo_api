@@ -81,8 +81,7 @@ exports.changePinSchema = {
 			},
 		],
 		description: 'Rest API for chagnge pin',
-		querystring: {
-			type: 'object',
+		body: {
 			properties: {
 				old_pin: {
 					type: 'string',
