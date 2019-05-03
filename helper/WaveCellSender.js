@@ -1,5 +1,5 @@
 const https = require('https');
-
+const FakeOtp = require('./FakeOtp');
 const config = require('../config').get;
 
 module.exports = class WaveCellSender {
@@ -122,6 +122,12 @@ module.exports = class WaveCellSender {
 	send(varPhone, message, clientId = 0, type = 'single') {
 		const { token } = this;
 		const phone = WaveCellSender.parsePhoneNumber(varPhone);
+
+		if (config.app_env === 'dev') {
+			const fakeOtp = new FakeOtp(phone, message);
+			return fakeOtp.send();
+		}
+
 		return new Promise((resolve, reject) => {
 			try {
 				const data = JSON.stringify({
