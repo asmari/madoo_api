@@ -98,3 +98,25 @@ exports.changePinSchema = {
 		},
 	},
 };
+exports.updateMemberSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for update member without phone number',
+		querystring: {
+			type: 'object',
+			properties: {
+				full_name: {
+					type: 'string', maxLength: 50, minLength: 3,
+				},
+				email: {
+					type: 'string', format: 'email',
+				},
+			},
+			required: ['full_name', 'email'],
+		},
+	},
+};
