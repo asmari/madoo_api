@@ -9,6 +9,7 @@ const model = require('../../models');
 const DeviceNotification = model.DeviceNotification.Get;
 const Notification = model.Notification.Get;
 const NotificationMembers = model.NotificationMembers.Get;
+const NotificationSetting = model.NotificationSettings.Get;
 
 // get detail notification members
 exports.getDetailNotification = async (request) => {
@@ -119,4 +120,20 @@ exports.doRegisterToken = async (request) => {
 		token = await DeviceNotification.create(params);
 	}
 	return new Response(20021, token);
+};
+// save notification token
+exports.doChangeSetting = async (request) => {
+	const params = JSON.parse(JSON.stringify(request.query));
+	const token = await request.jwtVerify();
+	const setting = await NotificationSetting.findOne({ where: { members_id: token.id } });
+
+	let res = null;
+	if (setting) {
+		setting.update(params);
+		res = setting;
+	} else {
+		params.members_id = token.id;
+		res = await NotificationSetting.create(params);
+	}
+	return new Response(20044, res);
 };
