@@ -1,5 +1,6 @@
 const masterController = require('../../controller/version-1/masterFilterController');
 const masterSchema = require('../../schema/masterSchema');
+const RestClient = require('../../restclient');
 
 module.exports = async (fastify) => {
 	fastify.get('/filter/card', {
@@ -53,6 +54,6 @@ module.exports = async (fastify) => {
 		beforeHandler: [fastify.authenticate],
 	}, masterController.getTypeUnlinkSocialMaster);
 
-	fastify.get('/list/otp', masterController.getOtpMember);
-	fastify.get('/list/forgot', masterController.getForgotMaster);
+	// fastify.get('/list/otp', masterController.getOtpMember);
+	// fastify.get('/list/forgot', masterController.getForgotMaster);
 };
