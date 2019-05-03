@@ -209,12 +209,12 @@ exports.memberDetail = async (request) => {
 
 exports.doPinValidation = async (request) => {
 	const token = await request.jwtVerify();
-	const params = JSON.parse(JSON.stringify(request.query));
+	const params = request.body;
 
 	const pinMember = await Pins.findOne({ attributes: ['pin'], where: { members_id: token.id } });
 
 	if (pinMember) {
-		if (bcrypt.compareSync(params.pin.toString(), pinMember.pin)) {
+		if (bcrypt.compareSync(params.pin.toString(), pinMember.pin.toString())) {
 			return new Response(20026, { pin_valid: true });
 		}
 		return new ErrorResponse(40103);
