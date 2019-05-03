@@ -47,6 +47,12 @@ module.exports = class RestClient extends Request {
 		if (Object.prototype.hasOwnProperty.call(obj, 'response')) {
 			this.responseFilter = obj.response;
 		}
+
+		this.lang = 'en';
+	}
+
+	setLanguage(lang) {
+		this.lang = lang;
 	}
 
 	insertBody(data = {}) {
@@ -145,7 +151,7 @@ module.exports = class RestClient extends Request {
 
 				switch (this.authType) {
 				case 'oauth2':
-					this.changeHeader('Authorization', `Bearer ${responseAuth.data.token}`);
+					this.changeHeader('Authorization', `Bearer ${responseAuth.data.token.value}`);
 
 					Object.assign(responseAll, {
 						auth: responseAuth.data,
@@ -224,7 +230,44 @@ module.exports = class RestClient extends Request {
 			}
 
 			Object.keys(propResponse.properties).forEach((key) => {
-				const keyLink = propResponse.properties[key];
+				let keyLink = propResponse.properties[key];
+				let displayName = null;
+
+				if (typeof keyLink === 'object') {
+					const objValue = keyLink;
+
+					if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
+						keyLink = objValue.value;
+					}
+
+					if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
+						switch (typeof objValue.displayName) {
+						case 'string':
+							// eslint-disable-next-line prefer-destructuring
+							displayName = objValue.displayName;
+							break;
+						case 'object':
+							// eslint-disable-next-line no-case-declarations
+							const keyData = Object.keys(objValue.displayName);
+
+							keyData.forEach((value) => {
+								if (value === this.lang) {
+									displayName = objValue.displayName[value];
+								}
+							});
+
+							if (displayName == null && keyData.length > 0) {
+								displayName = objValue.displayName[keyData[0]];
+							}
+
+							break;
+
+						default:
+							break;
+						}
+					}
+				}
+
 				const keyLinkSplit = keyLink.split('.');
 
 				const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
@@ -234,6 +277,15 @@ module.exports = class RestClient extends Request {
 				} else {
 					resultResponse[key] = flatened[keyLink];
 				}
+
+				if (displayName == null) {
+					displayName = key;
+				}
+
+				resultResponse[key] = {
+					value: resultResponse[key],
+					displayName,
+				};
 			});
 
 			resultResponse = {
