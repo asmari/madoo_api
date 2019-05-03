@@ -35,6 +35,30 @@ exports.loyaltyMemberListSchema = {
 
 };
 
+exports.loyaltyCheckRequiredField = {
+	schema: {
+		description: 'Rest Api Check Required field',
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		querystring: {
+			type: 'object',
+			properties: {
+				loyalty_id: {
+					type: 'integer',
+				},
+				type_id: {
+					type: 'integer',
+					enums: [1, 2, 3, 4],
+				},
+			},
+			required: ['loyalty_id', 'type_id'],
+		},
+	},
+};
+
 exports.loyaltyCheckMemberSchema = {
 	schema: {
 		description: 'Api Check Member card loyalty',
@@ -49,11 +73,8 @@ exports.loyaltyCheckMemberSchema = {
 				loyalty_id: {
 					type: 'integer',
 				},
-				member_card: {
-					type: 'integer',
-				},
 			},
-			required: ['loyalty_id', 'member_card'],
+			required: ['loyalty_id'],
 		},
 	},
 };
