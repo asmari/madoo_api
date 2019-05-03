@@ -284,7 +284,6 @@ exports.doChangePin = async (request, reply) => {
 // unlink social media
 exports.doUnlinkSocialMedia = async (request) => {
 	const { user, body } = request;
-
 	const members = await Members.findOne({
 		where: {
 			id: user.id,
@@ -313,6 +312,43 @@ exports.doUnlinkSocialMedia = async (request) => {
 		}
 
 		return new Response(20041, members);
+	}
+
+	return new ErrorResponse(41700);
+};
+
+// link social media
+exports.doLinkSocialMedia = async (request) => {
+	const { user } = request;
+	const body = JSON.parse(JSON.stringify(request.query));
+	const members = await Members.findOne({
+		where: {
+			id: user.id,
+		},
+	});
+
+	if (members) {
+		switch (body.type) {
+		case 1:
+			await members.update({
+				fb_id: body.id,
+				fb_token: body.token,
+			});
+			break;
+
+		case 2:
+			await members.update({
+				g_id: body.id,
+				g_token: body.token,
+			});
+			break;
+
+		default:
+
+			break;
+		}
+
+		return new Response(20046, members);
 	}
 
 	return new ErrorResponse(41700);
