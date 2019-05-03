@@ -123,7 +123,7 @@ module.exports = class WaveCellSender {
 		const { token } = this;
 		const phone = WaveCellSender.parsePhoneNumber(varPhone);
 
-		if (config.app_env === 'dev') {
+		if (config.app_env === 'dev' || config.app_env === 'staging') {
 			const fakeOtp = new FakeOtp(phone, message);
 			return fakeOtp.send();
 		}
