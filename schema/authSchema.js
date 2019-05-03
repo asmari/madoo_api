@@ -104,3 +104,31 @@ exports.authUnlinkSocialSchema = {
 		},
 	},
 };
+
+exports.authLinkSocialSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for linking social media',
+		querystring: {
+			type: 'object',
+			properties: {
+				type: {
+					type: 'integer',
+					enums: [1, 2],
+					description: '"1" for facebook / "2" for google',
+				},
+				id: {
+					type: 'string',
+				},
+				token: {
+					type: 'string',
+				},
+			},
+			required: ['type', 'id', 'token'],
+		},
+	},
+};

@@ -244,3 +244,21 @@ exports.doChangePin = async (request) => {
 	// Error: Pin not found
 	throw new ErrorResponse(41700);
 };
+
+exports.doUpdateMember = async (request) => {
+	const { user } = request;
+	const param = JSON.parse(JSON.stringify(request.query));
+
+	const member = await Members.findOne({ where: { id: user.id } });
+
+	if (member) {
+		await member.update({
+			full_name: param.full_name,
+			email: param.email,
+		});
+		return new Response(20047, member);
+	}
+
+	// Error: Member not found
+	throw new ErrorResponse(41700);
+};

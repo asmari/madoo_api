@@ -26,6 +26,11 @@ async function routes(fastify) {
 		...authSchema.authUnlinkSocialSchema,
 		beforeHandler: [fastify.authenticate],
 	}, authController.doUnlinkSocialMedia);
+	// unlink social media
+	fastify.post('/link/social', {
+		...authSchema.authLinkSocialSchema,
+		beforeHandler: [fastify.authenticate],
+	}, authController.doLinkSocialMedia);
 }
 
 module.exports = routes;

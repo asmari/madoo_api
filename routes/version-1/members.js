@@ -31,6 +31,12 @@ async function routes(fastify) {
 		...memberSchema.changePinSchema,
 		beforeHandler: [fastify.authenticate],
 	}, memberController.doChangePin);
+
+	// update member without phone number
+	fastify.post('/update', {
+		...memberSchema.updateMemberSchema,
+		beforeHandler: [fastify.authenticate],
+	}, memberController.doUpdateMember);
 }
 
 module.exports = routes;
