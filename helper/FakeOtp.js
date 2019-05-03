@@ -1,6 +1,8 @@
 const https = require('https');
 const querystring = require('querystring');
 
+const config = require('../config').get;
+
 module.exports = class FakeOtp {
 	constructor(phone, message) {
 		this.phone = phone;
@@ -14,10 +16,17 @@ module.exports = class FakeOtp {
 
 		const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
-		const parameter = querystring.stringify({
+		let parameter = querystring.stringify({
 			chat_id: -375935325,
 			text: `${phone} Request OTP : ${message}`,
 		});
+
+		if (config.app_env === 'staging') {
+			parameter = querystring.stringify({
+				chat_id: '@fakeotp_swapz',
+				text: `${phone} Request OTP : ${message}`,
+			});
+		}
 
 		return new Promise((resolve, reject) => {
 			const req = https.request(`${url}?${parameter}`, {
