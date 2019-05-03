@@ -43,5 +43,6 @@ module.exports = {
 	20041: 'Unlink Social Media Success',
 	20042: 'Conversion list success',
 	20043: 'Destination conversion list success',
+	20044: 'Loyalty Member Field success',
 	20099: 'Success',
 };
