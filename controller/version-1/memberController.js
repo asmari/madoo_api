@@ -225,7 +225,7 @@ exports.doPinValidation = async (request) => {
 };
 exports.doChangePin = async (request) => {
 	const token = await request.jwtVerify();
-	const params = JSON.parse(JSON.stringify(request.query));
+	const params = request.body;
 
 	const pinMember = await Pins.findOne({ attributes: ['id', 'pin'], where: { members_id: token.id } });
 
