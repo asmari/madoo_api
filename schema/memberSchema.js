@@ -62,8 +62,7 @@ exports.pinValidationSchema = {
 			},
 		],
 		description: 'Rest API for validate pin',
-		querystring: {
-			type: 'object',
+		body: {
 			properties: {
 				pin: {
 					type: 'string',
