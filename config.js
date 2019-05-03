@@ -16,4 +16,5 @@ exports.get = {
 		key: process.env.FIREBASE_KEY,
 		url: process.env.FIREBASE_URL,
 	},
+	app_env: process.env.APP_ENV,
 };
