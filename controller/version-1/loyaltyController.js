@@ -1,7 +1,7 @@
 const sequelize = require('sequelize');
 const helper = require('../../helper');
 const model = require('../../models');
-const RestClient = require('../../restclient');
+const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 
 const { Op } = sequelize;
@@ -94,42 +94,73 @@ exports.doSaveMemberCard = async (request) => {
 	throw new ErrorResponse(41700);
 };
 
+// Check required field loyalty
+exports.doCheckRequired = async (request) => {
+	const { query } = request;
+
+	const loyaltyId = query.loyalty_id;
+	const typeId = query.type_id;
+
+	const loyaltyRequest = new LoyaltyRequest();
+
+	try {
+		await loyaltyRequest.setLoyaltyId(loyaltyId);
+
+		return new Response(20044, loyaltyRequest.checkRequiredField(typeId));
+	} catch (err) {
+		switch (err.message) {
+		case LoyaltyRequest.STATUS.NO_LOYALTY:
+			return new ErrorResponse(41709);
+
+		case LoyaltyRequest.STATUS.NO_VALUE:
+			return new ErrorResponse(41710);
+
+		default:
+			return new ErrorResponse(42298, {
+				message: err.message,
+			});
+		}
+	}
+};
 
 // Check membercard loyalty
 exports.doCheckMemberCard = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query)) || {};
+	const { headers } = request;
 
-	const loyalty = await Loyalty.findOne({
-		where: {
-			id: params.loyalty_id,
-		},
-	});
+	const loyaltyRequest = new LoyaltyRequest();
 
-	let json = null;
+	try {
+		await loyaltyRequest.setLoyaltyId(params.loyalty_id);
 
-	if (loyalty.api_user_detail !== null) {
-		try {
-			json = JSON.parse(loyalty.api_user_detail);
-		} catch (err) {
-			throw new ErrorResponse(42208, {
-				error: err.toString(),
+		// eslint-disable-next-line max-len
+		const requiredField = loyaltyRequest.matchRequiredField(LoyaltyRequest.TYPE.GET_PROFILE, params);
+
+		if (requiredField.length > 0) {
+			return new ErrorResponse(42200, {
+				field: requiredField[0],
 			});
 		}
 
-		const rest = new RestClient(json);
+		if (Object.prototype.hasOwnProperty.call(headers, 'lang')) {
+			loyaltyRequest.setLang(headers.lang);
+		}
 
-		rest.insertBody(params);
+		return loyaltyRequest.getMemberProfile(params);
+	} catch (err) {
+		switch (err.message) {
+		case LoyaltyRequest.STATUS.NO_LOYALTY:
+			return new ErrorResponse(41709);
 
-		const response = await rest.request();
+		case LoyaltyRequest.STATUS.NO_VALUE:
+			return new ErrorResponse(41710);
 
-		if (response instanceof Error) {
-			throw new ErrorResponse(42298, {
-				message: response.toString(),
+		default:
+			return new ErrorResponse(42298, {
+				message: err.message,
 			});
 		}
-		return new Response(20027, response);
 	}
-	return new ErrorResponse(42209);
 };
 
 // Delete Membercard loyalty
