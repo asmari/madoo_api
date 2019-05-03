@@ -11,4 +11,6 @@ module.exports = {
 		message: 'Wording for :lang not found!',
 		params: ['lang'],
 	},
+	41709: 'Loyalty not found',
+	41710: 'Loyalty value for spesific type not found',
 };
