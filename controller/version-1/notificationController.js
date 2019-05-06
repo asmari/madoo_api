@@ -107,7 +107,7 @@ exports.doSendNotification = async (request) => {
 
 // save notification token
 exports.doRegisterToken = async (request) => {
-	const params = JSON.parse(JSON.stringify(request.query));
+	const params = request.body;
 
 	const fcmToken = await DeviceNotification.findOne({ fcmToken: params.fcmToken });
 
