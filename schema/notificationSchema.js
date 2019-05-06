@@ -1,18 +1,15 @@
 exports.fcmTokenSchema = {
 	schema: {
-		security: [
-			{
-				BearerAuth: [],
-			},
-		],
+		// security: [
+		// 	{
+		// 		BearerAuth: [],
+		// 	},
+		// ],
 		description: 'Rest API for save device token member',
 		body: {
 			properties: {
-				members_id: {
-					type: 'integer',
-				},
 				device_id: {
-					type: 'integer',
+					type: 'string',
 				},
 				fcm_token: {
 					type: 'string',
