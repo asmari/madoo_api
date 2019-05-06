@@ -6,8 +6,7 @@ exports.fcmTokenSchema = {
 			},
 		],
 		description: 'Rest API for save device token member',
-		querystring: {
-			type: 'object',
+		body: {
 			properties: {
 				members_id: {
 					type: 'integer',
