@@ -22,6 +22,12 @@ async function routes(fastify) {
 	}, loyaltyController.doCheckRequired);
 
 	// check member card
+	fastify.get('/check/card/point', {
+		...loyaltySchema.loyaltyCheckMemberSchema,
+		beforeHandler: [fastify.authenticate],
+	}, loyaltyController.doCheckMemberCardPoint);
+
+	// check member card
 	fastify.get('/check/card', {
 		...loyaltySchema.loyaltyCheckMemberSchema,
 		beforeHandler: [fastify.authenticate],
