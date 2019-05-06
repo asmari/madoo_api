@@ -109,6 +109,20 @@ exports.doSendNotification = async (request) => {
 exports.doRegisterToken = async (request) => {
 	const params = request.body;
 
+	try {
+		await request.jwtVerify();
+	} catch (err) {
+		console.error(err);
+	}
+
+	const userToken = request.user;
+
+	if (userToken) {
+		params.members_id = userToken.id;
+	} else {
+		params.members_id = null;
+	}
+
 	const fcmToken = await DeviceNotification.findOne({ fcmToken: params.fcmToken });
 
 	let token = null;
