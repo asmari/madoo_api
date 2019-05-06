@@ -109,6 +109,21 @@ exports.getTypeUnlinkSocialMaster = async () => new Response(20099, [
 	},
 ]);
 
+exports.getMasterTypeMembersSaveCard = async () => new Response(20099, [
+	{
+		id: 1,
+		name: 'Email',
+	},
+	{
+		id: 2,
+		name: 'Card Number',
+	},
+	{
+		id: 3,
+		name: 'Mobile Phone',
+	},
+]);
+
 
 exports.getForgotMaster = async () => {
 	ForgotPassword.Get.hasMany(Members.Get, {

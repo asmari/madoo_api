@@ -59,12 +59,12 @@ module.exports = class Request {
 				});
 
 				res.on('end', () => {
-					let parsedData = '';
+					let parsedData = null;
 
 					switch (contentType) {
 					case 'text/xml':
 					case 'application/xml':
-						parsedData = parser.toJson(chunkData);
+						parsedData = JSON.parse(parser.toJson(chunkData));
 						break;
 
 					case 'text/html':

@@ -18,7 +18,7 @@ exports.doSaveMemberCard = async (request) => {
 	const { user, body } = request;
 
 	switch (body.type_id) {
-	case 'card_number':
+	case 2:
 		if (!Object.prototype.hasOwnProperty.call(body, 'card_number')) {
 			throw new ErrorResponse(42200, {
 				field: 'card_number',
@@ -26,7 +26,7 @@ exports.doSaveMemberCard = async (request) => {
 		}
 		break;
 
-	case 'email':
+	case 1:
 		if (!Object.prototype.hasOwnProperty.call(body, 'email')) {
 			throw new ErrorResponse(42200, {
 				field: 'email',
@@ -34,7 +34,7 @@ exports.doSaveMemberCard = async (request) => {
 		}
 		break;
 
-	case 'mobile_number':
+	case 3:
 		if (!Object.prototype.hasOwnProperty.call(body, 'mobile_number')) {
 			throw new ErrorResponse(42200, {
 				field: 'mobile_number',
@@ -49,8 +49,7 @@ exports.doSaveMemberCard = async (request) => {
 
 	const signupDate = Date.parse(body.signup_date);
 
-	// eslint-disable-next-line no-restricted-globals
-	if (isNaN(signupDate)) {
+	if (Number.isNaN(signupDate)) {
 		throw new ErrorResponse(42210, {
 			field: 'signup_date',
 		});
@@ -107,6 +106,46 @@ exports.doCheckRequired = async (request) => {
 		await loyaltyRequest.setLoyaltyId(loyaltyId);
 
 		return new Response(20044, loyaltyRequest.checkRequiredField(typeId));
+	} catch (err) {
+		switch (err.message) {
+		case LoyaltyRequest.STATUS.NO_LOYALTY:
+			return new ErrorResponse(41709);
+
+		case LoyaltyRequest.STATUS.NO_VALUE:
+			return new ErrorResponse(41710);
+
+		default:
+			return new ErrorResponse(42298, {
+				message: err.message,
+			});
+		}
+	}
+};
+
+// Check membercard balancepoint
+exports.doCheckMemberCardPoint = async (request) => {
+	const params = JSON.parse(JSON.stringify(request.query)) || {};
+	const { headers } = request;
+
+	const loyaltyRequest = new LoyaltyRequest();
+
+	try {
+		await loyaltyRequest.setLoyaltyId(params.loyalty_id);
+
+		// eslint-disable-next-line max-len
+		const requiredField = loyaltyRequest.matchRequiredField(LoyaltyRequest.TYPE.POINT_BALANCE, params);
+
+		if (requiredField.length > 0) {
+			return new ErrorResponse(42200, {
+				field: requiredField[0],
+			});
+		}
+
+		if (Object.prototype.hasOwnProperty.call(headers, 'lang')) {
+			loyaltyRequest.setLang(headers.lang);
+		}
+
+		return loyaltyRequest.getMemberPoint(params);
 	} catch (err) {
 		switch (err.message) {
 		case LoyaltyRequest.STATUS.NO_LOYALTY:

@@ -93,8 +93,8 @@ exports.loyaltySaveMemberCardSchema = {
 					type: 'integer',
 				},
 				type_id: {
-					type: 'string',
-					enum: ['email', 'card_number', 'mobile_number'],
+					type: 'integer',
+					enum: [1, 2, 3],
 				},
 				card_number: {
 					type: ['string', 'null'],

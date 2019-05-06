@@ -70,6 +70,18 @@ module.exports = class RestClient extends Request {
 		}
 	}
 
+	getContentType() {
+		let contentType = 'application/json';
+
+		Object.keys(this.getHeaders()).forEach((key) => {
+			if (key.toLocaleLowerCase() === 'content-type') {
+				contentType = this.getHeader(key);
+			}
+		});
+
+		return contentType;
+	}
+
 	parsingBody() {
 		let contentType = 'application/json';
 		let parsedBody = {};
@@ -209,6 +221,19 @@ module.exports = class RestClient extends Request {
 		return value;
 	}
 
+	static tryParsingByType(type, value) {
+		switch (type) {
+		case 'number':
+			return Number.isNaN(value) ? 0 : parseInt(value, 10);
+
+		case 'string':
+			return typeof value === 'string' ? value : '';
+
+		default:
+			return value;
+		}
+	}
+
 	getFilterValue(response) {
 		let resultResponse = {};
 
@@ -216,6 +241,7 @@ module.exports = class RestClient extends Request {
 			const filter = this.responseFilter;
 			const flatened = flat.flatten(response);
 			let code = null;
+			let valueType = 'string';
 
 			if (Object.prototype.hasOwnProperty.call(flatened, filter.code)) {
 				code = flatened[filter.code];
@@ -238,6 +264,10 @@ module.exports = class RestClient extends Request {
 
 					if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
 						keyLink = objValue.value;
+					}
+
+					if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
+						valueType = objValue.type;
 					}
 
 					if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
@@ -276,6 +306,21 @@ module.exports = class RestClient extends Request {
 					resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
 				} else {
 					resultResponse[key] = flatened[keyLink];
+				}
+
+				switch (valueType) {
+				case 'number':
+					// eslint-disable-next-line max-len
+					resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
+					break;
+
+				case 'double':
+				case 'float':
+					resultResponse[key] = parseFloat(resultResponse[key]);
+					break;
+
+				default:
+					break;
 				}
 
 				if (displayName == null) {
