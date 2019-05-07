@@ -247,23 +247,39 @@ exports.doChangePin = async (request) => {
 
 exports.doUpdateMember = async (request) => {
 	const { user, body } = request;
-
-	const member = await Members.findOne({ where: { id: user.id } });
-
-	if (member) {
-		const emailExist = await Members.findOne({ where: { email: body.email } });
-
-		await member.update({
-			full_name: body.full_name,
+	if (!body.email && !body.mobile_phone) {
+		throw new ErrorResponse(42200, {
+			field: 'mobile_phone or email',
 		});
-
-		if (!emailExist) {
+	}
+	const member = await Members.findOne({ where: { id: user.id } });
+	if (member) {
+		if (body.full_name) {
 			await member.update({
-				email: body.email,
+				full_name: body.full_name,
 			});
-			body.email_exists = false;
-		} else {
-			body.email_exists = true;
+		}
+		if (body.email) {
+			const emailExist = await Members.findOne({ where: { email: body.email } });
+			if (!emailExist) {
+				await member.update({
+					email: body.email,
+				});
+				body.email_exists = false;
+			} else {
+				body.email_exists = true;
+			}
+		}
+		if (body.mobile_phone) {
+			// const phoneExist = await Members.findOne({ where: { mobile_phone: body.mobile_phone } });
+			// if (!phoneExist) {
+			// 	await member.update({
+			// 		mobile_phone: body.mobile_phone,
+			// 	});
+			// 	body.phone_exists = false;
+			// } else {
+			body.phone_exists = true;
+			// }
 		}
 		return new Response(20047, body);
 	}

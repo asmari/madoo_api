@@ -113,8 +113,11 @@ exports.updateMemberSchema = {
 				email: {
 					type: 'string', format: 'email',
 				},
+				mobile_phone: {
+					type: 'string', maxLength: 20, minLength: 9,
+				},
 			},
-			required: ['full_name', 'email'],
+			// required: ['full_name', 'email'],
 		},
 	},
 };
