@@ -319,8 +319,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 
 // link social media
 exports.doLinkSocialMedia = async (request) => {
-	const { user } = request;
-	const body = JSON.parse(JSON.stringify(request.query));
+	const { user, body } = request;
 	const members = await Members.findOne({
 		where: {
 			id: user.id,

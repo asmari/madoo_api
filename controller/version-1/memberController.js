@@ -246,17 +246,26 @@ exports.doChangePin = async (request) => {
 };
 
 exports.doUpdateMember = async (request) => {
-	const { user } = request;
-	const param = JSON.parse(JSON.stringify(request.query));
+	const { user, body } = request;
 
 	const member = await Members.findOne({ where: { id: user.id } });
 
 	if (member) {
+		const emailExist = await Members.findOne({ where: { email: body.email } });
+
 		await member.update({
-			full_name: param.full_name,
-			email: param.email,
+			full_name: body.full_name,
 		});
-		return new Response(20047, member);
+
+		if (!emailExist) {
+			await member.update({
+				email: body.email,
+			});
+			body.email_exists = false;
+		} else {
+			body.email_exists = true;
+		}
+		return new Response(20047, body);
 	}
 
 	// Error: Member not found

@@ -105,8 +105,7 @@ exports.updateMemberSchema = {
 			},
 		],
 		description: 'Rest API for update member without phone number',
-		querystring: {
-			type: 'object',
+		body: {
 			properties: {
 				full_name: {
 					type: 'string', maxLength: 50, minLength: 3,

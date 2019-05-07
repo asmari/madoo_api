@@ -113,8 +113,7 @@ exports.authLinkSocialSchema = {
 			},
 		],
 		description: 'Rest API for linking social media',
-		querystring: {
-			type: 'object',
+		body: {
 			properties: {
 				type: {
 					type: 'integer',
