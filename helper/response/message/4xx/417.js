@@ -13,4 +13,5 @@ module.exports = {
 	},
 	41709: 'Loyalty not found',
 	41710: 'Loyalty value for spesific type not found',
+	41711: 'Autocomplete promos not found',
 };
