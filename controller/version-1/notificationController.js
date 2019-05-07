@@ -117,18 +117,26 @@ exports.doRegisterToken = async (request) => {
 
 	const userToken = request.user;
 
+	let whereFix = {
+		fcm_token: params.fcm_token,
+	};
+
 	if (userToken) {
 		params.members_id = userToken.id;
-	} else {
-		params.members_id = null;
+
+		whereFix = {
+			members_id: userToken.id,
+		};
 	}
 
-	const fcmToken = await DeviceNotification.findOne({ fcmToken: params.fcmToken });
+	const fcmToken = await DeviceNotification.findOne({
+		where: whereFix,
+	});
 
 	let token = null;
 
 	if (fcmToken) {
-		fcmToken.update(params);
+		await fcmToken.update(params);
 		token = fcmToken;
 	} else {
 		token = await DeviceNotification.create(params);
