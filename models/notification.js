@@ -54,6 +54,11 @@ Notification.hasOne(NotificationMember, {
 	foreignKey: 'notification_id',
 });
 
+Notification.hasMany(NotificationMember, {
+	foreignKey: 'notification_id',
+	as: 'notification_members',
+});
+
 sequelizePaginate.paginate(Notification);
 
 exports.Get = Notification;
