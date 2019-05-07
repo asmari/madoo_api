@@ -1,12 +1,32 @@
 const moment = require('moment');
 const sequelize = require('sequelize');
 
-const { Response, ResponsePaginate } = require('../../helper/response');
+const { Response, ResponsePaginate, ErrorResponse } = require('../../helper/response');
 const model = require('../../models');
 
 const { Op } = sequelize;
 const Loyalty = model.Loyalty.Get;
 const Promo = model.Promo.Get;
+
+// get autocomplete suggestion promo
+exports.getAutoCompletePromo = async (request) => {
+	const { query } = request;
+
+	const promos = await Promo.findAll({
+		where: {
+			title: {
+				[Op.like]: `${query.query}%`,
+			},
+		},
+		attributes: ['id', 'title'],
+	});
+
+	if (promos.length > 0) {
+		return new Response(20048, promos);
+	}
+
+	return new ErrorResponse(41711);
+};
 
 // get featured random
 exports.getFeaturedPromo = async (request) => {

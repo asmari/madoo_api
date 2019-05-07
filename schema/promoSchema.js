@@ -69,3 +69,69 @@ exports.promoFeaturedSchema = {
 		},
 	},
 };
+
+
+exports.promoAutoCompleteSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for autocomplete promos',
+		querystring: {
+			type: 'object',
+			properties: {
+				query: {
+					type: 'string',
+					minLength: 3,
+				},
+			},
+			required: ['query'],
+		},
+		response: {
+			200: {
+				type: 'object',
+				properties: {
+					message: {
+						type: 'string',
+						example: 'Autocomplete Promos Success',
+					},
+					code: {
+						type: 'integer',
+						example: 20048,
+					},
+					data: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								id: {
+									type: 'integer',
+									example: 1,
+								},
+								title: {
+									type: 'string',
+									example: 'Lorem Ipsum',
+								},
+							},
+						},
+					},
+				},
+			},
+			417: {
+				type: 'object',
+				properties: {
+					code: {
+						type: 'integer',
+						example: 41711,
+					},
+					message: {
+						type: 'string',
+						example: 'Autocomplete promos not found',
+					},
+				},
+			},
+		},
+	},
+};
