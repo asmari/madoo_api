@@ -47,5 +47,6 @@ module.exports = {
 	20045: 'Loyalty Member Field success',
 	20046: 'Link Social Media Success',
 	20047: 'Update member without phone Success',
+	20048: 'Autocomplete Promos success',
 	20099: 'Success',
 };
