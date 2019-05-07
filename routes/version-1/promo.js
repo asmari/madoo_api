@@ -19,6 +19,12 @@ async function routes(fastify) {
 		...promoListschema.promoDetailSchema,
 		beforeHandler: [fastify.authenticate],
 	}, promoController.getDetailPromo);
+
+	// autocomplete promos
+	fastify.get('/autocomplete', {
+		...promoListschema.promoAutoCompleteSchema,
+		beforeHandler: [fastify.authenticate],
+	}, promoController.getAutoCompletePromo);
 }
 
 module.exports = routes;
