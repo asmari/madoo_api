@@ -22,13 +22,17 @@ Notification.findOne({
 	include: [
 		{
 			model: NotificationMember,
+			as: 'notification_members',
+			group: [
+				'members_id',
+			],
 		},
 	],
 }).then((notification) => {
 	if (notification) {
 		let doneMember = [];
-		if (notification.notification_member !== null) {
-			doneMember = notification.notification_member.map(value => value.members_id);
+		if (notification.notification_members) {
+			doneMember = notification.notification_members.map(value => value.members_id);
 		}
 
 		let whereNotificationSettings = {};
@@ -54,6 +58,10 @@ Notification.findOne({
 			break;
 		}
 
+		whereNotificationSettings.id = {
+			[Op.not]: null,
+		};
+
 		let whereMembersId = {
 			id: {
 				[Op.notIn]: doneMember,
@@ -77,10 +85,10 @@ Notification.findOne({
 						},
 					},
 				},
-				{
-					model: NotificationSettings,
-					where: whereNotificationSettings,
-				},
+				// {
+				// 	model: NotificationSettings,
+				// 	where: whereNotificationSettings,
+				// },
 			],
 		});
 
@@ -120,7 +128,7 @@ Notification.findOne({
 
 	return Promise.reject(new Error('members not found'));
 }).then((values) => {
-	const resFcm = values[0];
+	const resFcm = JSON.parse(values[0]);
 	const memberId = values[1];
 	const notification = values[2];
 
@@ -134,7 +142,7 @@ Notification.findOne({
 		return NotificationMember.bulkCreate(bulkCreate);
 	}
 
-	return Promise.reject(new Error(`Notification error not send, ${resFcm}`));
+	return Promise.reject(new Error(`Notification error not send, ${JSON.stringify(resFcm)}`));
 })
 	.catch((error) => {
 		console.error(error);
