@@ -136,14 +136,34 @@ exports.setForgotPinOtp = async (request) => {
 		// 	members_id: member.id,
 		// }, params.mobile_phone);
 
-		const resOtp = await otpNewHelper.sendOtp(params.mobile_phone, {
-			type: 'forgot',
-			data: {
-				memberId: member.id,
-			},
-		});
+		try {
+			const resOtp = await otpNewHelper.sendOtp(params.mobile_phone, {
+				type: 'forgot',
+				data: {
+					memberId: member.id,
+				},
+			});
 
-		return new Response(20001, resOtp);
+			return new Response(20001, resOtp);
+		} catch (err) {
+			const errMessage = err.message.replace('Error', '').trim();
+			switch (errMessage) {
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH:
+				return new ErrorResponse(40107);
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES:
+				return new ErrorResponse(40108);
+			case OtpNewHelper.STATUS.OTP_EXPIRED:
+				return new ErrorResponse(40109);
+			case OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS:
+				return new ErrorResponse(40111, {
+					time: '1 x 24 hour',
+				});
+			default:
+				return new ErrorResponse(40198, {
+					message: errMessage,
+				});
+			}
+		}
 	}
 
 	// Error: Member not found
