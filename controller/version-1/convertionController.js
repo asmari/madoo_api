@@ -66,8 +66,8 @@ exports.getConvertionRate = async (request) => {
 	const whereCondition = {};
 	const whereSource = {};
 	const whereTarget = {};
-	const prohibitedTo = [];
-	const prohibitedFrom = [];
+	const allowedTo = [];
+	const allowedFrom = [];
 
 	const params = JSON.parse(JSON.stringify(request.query));
 
@@ -81,22 +81,15 @@ exports.getConvertionRate = async (request) => {
 
 		if (conversionData.loyalty_from != null) {
 			conversionData.loyalty_from.forEach((id) => {
-				prohibitedFrom.push(id);
+				allowedFrom.push(id);
 			});
 		}
 		if (conversionData.loyalty_to != null) {
 			conversionData.loyalty_to.forEach((id) => {
-				prohibitedTo.push(id);
+				allowedTo.push(id);
 			});
 		}
 		if (params.conversion_type === 'from') {
-			if (conversionData.category_to != null) {
-				const whereCategoryTo = { type_loyalty_id: { [Op.in]: conversionData.category_to } };
-				const loyaltyTo = await Loyalty.findAll({ attributes: ['id'], where: whereCategoryTo, raw: true });
-				loyaltyTo.forEach((id) => {
-					prohibitedTo.push(id.id);
-				});
-			}
 			whereCondition.loyalty_id = params.loyalty_id;
 			if (params.search != null && typeof (params.search) === 'string') {
 				whereTarget.name = {
@@ -104,14 +97,6 @@ exports.getConvertionRate = async (request) => {
 				};
 			}
 		} else {
-			if (conversionData.category_from != null) {
-				const whereCategoryFrom = { type_loyalty_id: { [Op.in]: conversionData.category_from } };
-				const loyaltyFrom = await Loyalty.findAll({ attributes: ['id'], where: whereCategoryFrom });
-				loyaltyFrom.forEach((id) => {
-					prohibitedFrom.push(id.id);
-				});
-			}
-
 			whereCondition.conversion_loyalty = params.loyalty_id;
 			if (params.search != null && typeof (params.search) === 'string') {
 				whereSource.name = {
@@ -121,17 +106,17 @@ exports.getConvertionRate = async (request) => {
 		}
 	}
 
-	if (prohibitedFrom.length !== 0) {
+	if (allowedFrom.length !== 0) {
 		whereCondition[Op.and] = {
 			loyalty_id: {
-				[Op.notIn]: prohibitedFrom,
+				[Op.in]: allowedFrom,
 			},
 		};
 	}
-	if (prohibitedTo.length !== 0) {
+	if (allowedTo.length !== 0) {
 		whereCondition[Op.and] = {
 			conversion_loyalty: {
-				[Op.notIn]: prohibitedTo,
+				[Op.in]: allowedTo,
 			},
 		};
 	}
@@ -155,7 +140,6 @@ exports.getConvertionRate = async (request) => {
 	};
 
 	const conversion = await ConvertionRate.paginate({ ...dataOptions });
-	console.log(conversion);
 	if (conversion) {
 		return new ResponsePaginate(20042, {
 			item: params.item,
@@ -169,7 +153,7 @@ exports.getConvertionRate = async (request) => {
 
 exports.getConversionDestination = async (request) => {
 	const whereCondition = {};
-	const prohibitedTo = [];
+	const allowedTo = [];
 	const loyaltyId = [];
 
 	const params = JSON.parse(JSON.stringify(request.query));
@@ -184,14 +168,7 @@ exports.getConversionDestination = async (request) => {
 
 		if (conversionData.loyalty_to != null) {
 			conversionData.loyalty_to.forEach((id) => {
-				prohibitedTo.push(id);
-			});
-		}
-		if (conversionData.category_to != null) {
-			const whereCategoryTo = { type_loyalty_id: { [Op.in]: conversionData.category_to } };
-			const loyaltyTo = await Loyalty.findAll({ attributes: ['id'], where: whereCategoryTo, raw: true });
-			loyaltyTo.forEach((id) => {
-				prohibitedTo.push(id.id);
+				allowedTo.push(id);
 			});
 		}
 		whereCondition.loyalty_id = params.loyalty_id;
@@ -202,10 +179,10 @@ exports.getConversionDestination = async (request) => {
 		// }
 	}
 
-	if (prohibitedTo.length !== 0) {
+	if (allowedTo.length !== 0) {
 		whereCondition[Op.and] = {
 			conversion_loyalty: {
-				[Op.notIn]: prohibitedTo,
+				[Op.in]: allowedTo,
 			},
 		};
 	}
