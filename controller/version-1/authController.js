@@ -98,7 +98,9 @@ exports.doLogin = async (request, reply) => {
 
 	if (pin) {
 		const pinMember = await Pins.findOne({
-			members_id: member.id,
+			where: {
+				members_id: member.id,
+			},
 		});
 
 		const wrong = pinMember.wrong == null ? 0 : pinMember.wrong;
