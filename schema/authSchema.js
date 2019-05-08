@@ -126,8 +126,11 @@ exports.authLinkSocialSchema = {
 				token: {
 					type: 'string',
 				},
+				name: {
+					type: 'string',
+				},
 			},
-			required: ['type', 'id', 'token'],
+			required: ['type', 'id', 'name', 'token'],
 		},
 	},
 };
