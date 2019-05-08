@@ -78,6 +78,14 @@ const Members = model.define('members', {
 		type: Sequelize.TEXT,
 		allowNull: true,
 	},
+	fb_name: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
+	g_name: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,

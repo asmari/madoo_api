@@ -354,6 +354,7 @@ exports.doLinkSocialMedia = async (request) => {
 			await members.update({
 				fb_id: body.id,
 				fb_token: body.token,
+				fb_name: body.name,
 			});
 			break;
 
@@ -361,6 +362,7 @@ exports.doLinkSocialMedia = async (request) => {
 			await members.update({
 				g_id: body.id,
 				g_token: body.token,
+				g_name: body.name,
 			});
 			break;
 
