@@ -2,7 +2,7 @@ const WaveCellSender = require('./WaveCellSender');
 const model = require('../models');
 
 const OtpMembers = model.Otp.Get;
-const ForgotPassword = model.ForgotPassword.Get;
+const OtpRequests = model.OtpRequests.Get;
 
 module.exports = class OtpNewHelper {
 	constructor() {
@@ -65,10 +65,12 @@ module.exports = class OtpNewHelper {
 			return Promise.reject(new Error('memberId or otp not found!'));
 
 		case 'forgot':
+		case 'update_member':
 			if (Object.prototype.hasOwnProperty.call(data, 'memberId') && Object.prototype.hasOwnProperty.call(data, 'otp')) {
-				const member = await ForgotPassword.findOne({
+				const member = await OtpRequests.findOne({
 					where: {
 						members_id: data.memberId,
+						type,
 					},
 				});
 
@@ -94,6 +96,7 @@ module.exports = class OtpNewHelper {
 					return Promise.reject(OtpNewHelper.STATUS.OTP_NOT_MATCH);
 				}
 			}
+			console.log(data);
 
 			return Promise.reject(new Error('memberId or otp not found!'));
 
@@ -159,12 +162,14 @@ module.exports = class OtpNewHelper {
 			return instance.send(phone, message, `${randNumb}_otp`);
 
 		case 'forgot':
+		case 'update_member':
 			message = `Your SWAPZ code is ${randNumb}`;
 
 			if (Object.prototype.hasOwnProperty.call(data, 'memberId')) {
-				const member = await ForgotPassword.findOne({
+				const member = await OtpRequests.findOne({
 					where: {
 						members_id: data.memberId,
+						type,
 					},
 				});
 
@@ -182,15 +187,19 @@ module.exports = class OtpNewHelper {
 						expiresAt: time,
 						webhook_status: '',
 						resend_count: resendCount,
+						type,
+						wrong: 0,
 						last_resend: new Date(),
 					});
 				} else {
-					await ForgotPassword.create({
+					await OtpRequests.create({
 						otp: randNumb,
 						members_id: data.memberId,
 						expiresAt: time,
 						webhook_status: '',
 						last_resend: new Date(),
+						type,
+						wrong: 0,
 						resend_count: 0,
 					});
 				}
