@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const model = require('./conn/sequelize').sequelize;
 
-const UpdateMemberLogs = model.define('update_member_logs', {
+const UpdateMemberLogs = model.define('update_members_log', {
 	type: {
 		type: Sequelize.STRING,
 		allowNull: false,
@@ -31,7 +31,7 @@ const UpdateMemberLogs = model.define('update_member_logs', {
 	deletedAt: 'deleted_at',
 	paranoid: true,
 	underscored: true,
-	tableName: 'update_member_logs',
+	tableName: 'update_members_log',
 	freezeTableName: true,
 });
 
