@@ -9,6 +9,7 @@ const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 const Otp = model.Otp.Get;
+const UpdateMemberLogs = model.UpdateMemberLogs.Get;
 
 // Index Auth member
 exports.memberIndex = async () => {
@@ -262,6 +263,14 @@ exports.doUpdateMember = async (request) => {
 		if (body.email) {
 			const emailExist = await Members.findOne({ where: { email: body.email } });
 			if (!emailExist) {
+				await UpdateMemberLogs.create({
+					type: 'email',
+					members_id: member.id,
+					value_before: member.email,
+					value_after: body.email,
+					is_verified: 0,
+				});
+
 				await member.update({
 					email: body.email,
 				});
@@ -271,19 +280,133 @@ exports.doUpdateMember = async (request) => {
 			}
 		}
 		if (body.mobile_phone) {
-			// const phoneExist = await Members.findOne({ where: { mobile_phone: body.mobile_phone } });
-			// if (!phoneExist) {
-			// 	await member.update({
-			// 		mobile_phone: body.mobile_phone,
-			// 	});
-			// 	body.phone_exists = false;
-			// } else {
-			body.phone_exists = true;
-			// }
+			const phoneExist = await Members.findOne({ where: { mobile_phone: body.mobile_phone } });
+			if (!phoneExist) {
+				await UpdateMemberLogs.create({
+					type: 'mobile_phone',
+					members_id: member.id,
+					value_before: member.mobile_phone,
+					value_after: body.mobile_phone,
+					is_verified: 0,
+				});
+
+				body.phone_exists = false;
+			} else {
+				body.phone_exists = true;
+			}
 		}
 		return new Response(20047, body);
 	}
 
 	// Error: Member not found
 	throw new ErrorResponse(41700);
+};
+
+// send otp update member phone
+exports.doSendOtpUpdateMember = async (request) => {
+	const { user, body } = request;
+
+	const otpNewHelper = new OtpNewHelper();
+
+	const member = await Members.findOne({
+		where: {
+			id: user.id,
+		},
+	});
+
+	if (member) {
+		try {
+			const res = await otpNewHelper.sendOtp(body.mobile_phone, {
+				type: 'update_member',
+				data: {
+					memberId: user.id,
+				},
+			});
+
+			switch (res.toString()) {
+			case OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS:
+				return new ErrorResponse(40111, res);
+			default:
+				return new Response(20001, res);
+			}
+		} catch (err) {
+			console.log(err);
+			return new ErrorResponse(40111, {
+				time: '1 x 24 hour',
+			});
+		}
+	}
+
+	return new ErrorResponse(41700);
+};
+
+
+// check otp update member
+exports.doCheckOtpUpdateMember = async (request) => {
+	const { user, body } = request;
+
+	const otpNewHelper = new OtpNewHelper();
+
+	const members = await Members.findOne({
+		where: {
+			id: user.id,
+		},
+	});
+
+	if (members) {
+		try {
+			const res = await otpNewHelper.checkOtp('', {
+				type: 'update_member',
+				data: {
+					memberId: members.id,
+					otp: body.otp,
+				},
+			});
+
+			switch (res.toString()) {
+			case OtpNewHelper.STATUS.OTP_MATCH:
+
+				// eslint-disable-next-line no-case-declarations
+				const logs = await UpdateMemberLogs.findOne({
+					where: {
+						type: 'mobile_phone',
+						members_id: members.id,
+						value_after: body.mobile_phone,
+					},
+					order: [
+						['created_at', 'DESC'],
+					],
+				});
+
+				if (logs) {
+					await logs.update({
+						is_verified: 1,
+					});
+				}
+
+				await members.update({
+					mobile_phone: body.mobile_phone,
+				});
+
+				return new Response(20049, members);
+			default:
+				return res;
+			}
+		} catch (err) {
+			switch (err.toString()) {
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH:
+				return new ErrorResponse(40107);
+			case OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES:
+				return new ErrorResponse(40108);
+			case OtpNewHelper.STATUS.OTP_EXPIRED:
+				return new ErrorResponse(40109);
+			default:
+				return new ErrorResponse(40198, {
+					message: err.toString(),
+				});
+			}
+		}
+	}
+
+	return new ErrorResponse(41700);
 };

@@ -37,6 +37,18 @@ async function routes(fastify) {
 		...memberSchema.updateMemberSchema,
 		beforeHandler: [fastify.authenticate],
 	}, memberController.doUpdateMember);
+
+	// send otp update mobile phone
+	fastify.post('/update/otp/send', {
+		...memberSchema.sendOtpUpdateSchema,
+		beforeHandler: [fastify.authenticate],
+	}, memberController.doSendOtpUpdateMember);
+
+	// check otp update mobile phone
+	fastify.post('/update/otp/check', {
+		...memberSchema.checkOtpUpdateSchema,
+		beforeHandler: [fastify.authenticate],
+	}, memberController.doCheckOtpUpdateMember);
 }
 
 module.exports = routes;

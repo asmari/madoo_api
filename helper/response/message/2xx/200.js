@@ -48,5 +48,6 @@ module.exports = {
 	20046: 'Link Social Media Success',
 	20047: 'Update member without phone Success',
 	20048: 'Autocomplete Promos success',
+	20049: 'Update phone number success',
 	20099: 'Success',
 };
