@@ -117,7 +117,59 @@ exports.updateMemberSchema = {
 					type: 'string', maxLength: 20, minLength: 9,
 				},
 			},
-			// required: ['full_name', 'email'],
+			required: ['full_name'],
+		},
+	},
+};
+
+exports.sendOtpUpdateSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for send otp when update phone number',
+		body: {
+			properties: {
+				mobile_phone: {
+					type: 'string',
+				},
+				country_code: {
+					type: 'string',
+				},
+			},
+			required: ['mobile_phone'],
+		},
+	},
+};
+
+exports.checkOtpUpdateSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+			},
+		],
+		description: 'Rest API for check otp update phone number',
+		body: {
+			properties: {
+				mobile_phone: {
+					type: 'string',
+				},
+				country_code: {
+					type: 'string',
+				},
+				otp: {
+					type: 'string',
+					maxLength: 6,
+					minLength: 6,
+				},
+			},
+			required: [
+				'otp',
+				'mobile_phone',
+			],
 		},
 	},
 };
