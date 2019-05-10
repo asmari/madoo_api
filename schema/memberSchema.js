@@ -173,3 +173,20 @@ exports.checkOtpUpdateSchema = {
 		},
 	},
 };
+
+exports.verificationEmail = {
+	schema: {
+		description: 'Rest Api Verify Email',
+		querystring: {
+			type: 'object',
+			properties: {
+				token: {
+					type: 'string',
+				},
+			},
+			required: [
+				'token',
+			],
+		},
+	},
+};
