@@ -20,6 +20,7 @@ exports.get = {
 	email: {
 		account: process.env.EMAIL,
 		password: process.env.EMAIL_PASSWORD,
+		verificationUrl: process.env.EMAIL_VERIFICATION_URL,
 	},
 	cms: process.env.CMS_URL,
 };
