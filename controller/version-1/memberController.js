@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const model = require('../../models');
 const { ErrorResponse, Response } = require('../../helper/response');
+const EmailSender = require('../../helper/EmailSender');
 const OtpNewHelper = require('../../helper/OtpNewHelper');
 
 const Members = model.Members.Get;
@@ -273,6 +274,10 @@ exports.doUpdateMember = async (request) => {
 					value_after: body.email,
 					is_verified: 0,
 				});
+
+				const emailer = new EmailSender();
+
+				await emailer.send(body.email, 'Email Verification');
 
 				await member.update({
 					email: body.email,
