@@ -33,6 +33,7 @@
     "fastify-swagger": "^1.2.0",
     "flat": "^4.1.0",
     "is-buffer": "^2.0.3",
+    "jsonwebtoken": "^8.5.1",
     "mail": "^0.2.3",
     "moment": "^2.24.0",
     "mysql2": "^1.6.5",
