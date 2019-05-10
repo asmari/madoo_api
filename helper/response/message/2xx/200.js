@@ -49,5 +49,6 @@ module.exports = {
 	20047: 'Update member without phone Success',
 	20048: 'Autocomplete Promos success',
 	20049: 'Update phone number success',
+	20050: 'Email Verification success',
 	20099: 'Success',
 };
