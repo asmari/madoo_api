@@ -46,7 +46,7 @@ module.exports = class OtpNewHelper {
 
 					const wrong = member.wrong === null ? 0 : member.wrong;
 
-					if (wrong >= 5) {
+					if (wrong >= 4) {
 						return Promise.reject(OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES);
 					}
 
@@ -81,7 +81,7 @@ module.exports = class OtpNewHelper {
 
 					const wrong = member.wrong === null ? 0 : member.wrong;
 
-					if (wrong >= 5) {
+					if (wrong >= 4) {
 						return Promise.reject(OtpNewHelper.STATUS.OTP_NOT_MATCH_5_TIMES);
 					}
 
@@ -134,7 +134,7 @@ module.exports = class OtpNewHelper {
 					// eslint-disable-next-line max-len
 					const compare = Math.round((currentTime / 1000) - (new Date(member.last_resend).getTime() / 1000));
 
-					if (member.resend_count >= 5 && compare <= 86400) {
+					if (member.resend_count >= 4 && compare <= 86400) {
 						return Promise.reject(new Error(OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS));
 					}
 
@@ -177,7 +177,7 @@ module.exports = class OtpNewHelper {
 					// eslint-disable-next-line max-len
 					const compare = Math.round((currentTime / 1000) - (new Date(member.last_resend).getTime() / 1000));
 
-					if (member.resend_count >= 5 && compare <= 86400) {
+					if (member.resend_count >= 4 && compare <= 86400) {
 						return Promise.reject(new Error(OtpNewHelper.STATUS.OTP_CANT_RESEND_24_HOURS));
 					}
 
