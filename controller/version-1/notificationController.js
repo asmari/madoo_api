@@ -13,7 +13,7 @@ const NotificationSetting = model.NotificationSettings.Get;
 
 // get detail notification members
 exports.getDetailNotification = async (request) => {
-	const { query } = request;
+	const { user, query } = request;
 
 	const notification = await Notification.findOne({
 		where: {
@@ -22,6 +22,19 @@ exports.getDetailNotification = async (request) => {
 	});
 
 	if (notification) {
+		const notificationMembers = await NotificationMembers.findOne({
+			where: {
+				members_id: user.id,
+				notification_id: notification.id,
+			},
+		});
+
+		if (notificationMembers) {
+			await notificationMembers.update({
+				read: 1,
+			});
+		}
+
 		return new Response(20037, notification);
 	}
 	return new ErrorResponse(41706);
