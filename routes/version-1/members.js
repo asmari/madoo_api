@@ -49,6 +49,11 @@ async function routes(fastify) {
 		...memberSchema.checkOtpUpdateSchema,
 		beforeHandler: [fastify.authenticate],
 	}, memberController.doCheckOtpUpdateMember);
+
+	// verification email by token
+	fastify.get('/email/verification', {
+		...memberSchema.verificationEmail,
+	}, memberController.doVerifyEmail);
 }
 
 module.exports = routes;
