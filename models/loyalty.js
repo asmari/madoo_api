@@ -29,6 +29,10 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
+	image_url: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
 	bg_color: {
 		type: Sequelize.STRING,
 		allowNull: true,

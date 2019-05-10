@@ -36,6 +36,10 @@ const Notification = model.define('notification', {
 		type: sequelize.STRING,
 		allowNull: true,
 	},
+	image_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
 	click: {
 		type: sequelize.STRING,
 		allowNull: true,
