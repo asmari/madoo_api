@@ -277,7 +277,7 @@ exports.doUpdateMember = async (request) => {
 
 				const emailer = new EmailSender();
 
-				await emailer.send(body.email, 'Email Verification');
+				await emailer.send(body.email, member.id);
 
 				await member.update({
 					email: body.email,
@@ -417,4 +417,18 @@ exports.doCheckOtpUpdateMember = async (request) => {
 	}
 
 	return new ErrorResponse(41700);
+};
+
+exports.doVerifyEmail = async (request) => {
+	const { query } = request;
+
+	const emailSender = new EmailSender();
+
+	try {
+		const info = await emailSender.checkVerification(query.token);
+		console.log(info);
+		return new Response(20050);
+	} catch (err) {
+		return new ErrorResponse(41713);
+	}
 };
