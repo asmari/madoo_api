@@ -348,6 +348,10 @@ exports.doLinkSocialMedia = async (request) => {
 		},
 	});
 
+	if (!Object.prototype.hasOwnProperty.call(body, 'name')) {
+		body.name = '';
+	}
+
 	if (members) {
 		switch (body.type) {
 		case 1:
