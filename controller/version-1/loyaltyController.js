@@ -1,5 +1,6 @@
 const sequelize = require('sequelize');
 const helper = require('../../helper');
+const AuthRefresher = require('../../services/authRefresherServices');
 const model = require('../../models');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
@@ -12,48 +13,26 @@ const LoyaltyType = model.LoyaltyType.Get;
 const MemberCards = model.MembersCards.Get;
 const Promo = model.Promo.Get;
 const Members = model.Members.Get;
+const MemberCardsAuthToken = model.MemberCardsAuthToken.Get;
 
 // Save Membercard loyalty
 exports.doSaveMemberCard = async (request) => {
 	const { user, body } = request;
+	let typeId = -1;
 
-	switch (body.type_id) {
-	case 2:
-		if (!Object.prototype.hasOwnProperty.call(body, 'card_number')) {
-			throw new ErrorResponse(42200, {
-				field: 'card_number',
-			});
-		}
-		break;
-
-	case 1:
-		if (!Object.prototype.hasOwnProperty.call(body, 'email')) {
-			throw new ErrorResponse(42200, {
-				field: 'email',
-			});
-		}
-		break;
-
-	case 3:
-		if (!Object.prototype.hasOwnProperty.call(body, 'mobile_number')) {
-			throw new ErrorResponse(42200, {
-				field: 'mobile_number',
-			});
-		}
-		break;
-
-	default:
-
-		break;
+	if (Object.prototype.hasOwnProperty.call(body, 'card_number')) {
+		typeId = 2;
 	}
 
-	const signupDate = Date.parse(body.signup_date);
-
-	if (Number.isNaN(signupDate)) {
-		throw new ErrorResponse(42210, {
-			field: 'signup_date',
-		});
+	if (Object.prototype.hasOwnProperty.call(body, 'email')) {
+		typeId = 1;
 	}
+
+	if (Object.prototype.hasOwnProperty.call(body, 'mobile_number')) {
+		typeId = 3;
+	}
+
+	const signupDate = new Date();
 
 	const member = await Members.findOne({
 		where: {
@@ -71,9 +50,9 @@ exports.doSaveMemberCard = async (request) => {
 				mobile_number: body.mobile_number || '',
 				date_birth: body.date_birth || null,
 				member_level: body.member_level || '',
-				signup_date: body.signup_date,
+				signup_date: signupDate,
 				expiry_date: body.expiry_date || null,
-				type_id: body.type_id,
+				type_id: typeId,
 				point_balance: body.point_balance,
 			});
 
@@ -81,6 +60,28 @@ exports.doSaveMemberCard = async (request) => {
 				loyalty_id: body.loyalty_id,
 				member_cards_id: memberCard.id,
 			});
+
+			if (memberCard && Object.prototype.hasOwnProperty.call(body, 'auth')) {
+				let memberCardsAuth = await MemberCardsAuthToken.findOne({
+					members_id: member.id,
+					member_cards_id: memberCard.id,
+				});
+
+				if (!memberCardsAuth) {
+					const { auth } = body;
+
+					if (Object.keys(auth).length > 0) {
+						const key = Object.keys(auth)[0];
+
+						memberCardsAuth = await MemberCardsAuthToken.create({
+							members_id: member.id,
+							member_cards_id: memberCard.id,
+							type_auth: key,
+							auth_value: JSON.stringify(auth[key]),
+						});
+					}
+				}
+			}
 
 			return new Response(20028, memberCard);
 		} catch (err) {
@@ -105,7 +106,7 @@ exports.doCheckRequired = async (request) => {
 	try {
 		await loyaltyRequest.setLoyaltyId(loyaltyId);
 
-		return new Response(20044, loyaltyRequest.checkRequiredField(typeId));
+		return new Response(20045, loyaltyRequest.checkRequiredField(typeId));
 	} catch (err) {
 		switch (err.message) {
 		case LoyaltyRequest.STATUS.NO_LOYALTY:
@@ -136,16 +137,20 @@ exports.doCheckMemberCardPoint = async (request) => {
 		const requiredField = loyaltyRequest.matchRequiredField(LoyaltyRequest.TYPE.POINT_BALANCE, params);
 
 		if (requiredField.length > 0) {
-			return new ErrorResponse(42200, {
-				field: requiredField[0],
-			});
+			return new ErrorResponse(42211, {}, requiredField);
 		}
 
 		if (Object.prototype.hasOwnProperty.call(headers, 'lang')) {
 			loyaltyRequest.setLang(headers.lang);
 		}
 
-		return loyaltyRequest.getMemberPoint(params);
+		const res = await loyaltyRequest.getMemberPoint(params);
+
+		if (res.status) {
+			return res;
+		}
+
+		return new ErrorResponse(40114);
 	} catch (err) {
 		switch (err.message) {
 		case LoyaltyRequest.STATUS.NO_LOYALTY:
@@ -176,16 +181,20 @@ exports.doCheckMemberCard = async (request) => {
 		const requiredField = loyaltyRequest.matchRequiredField(LoyaltyRequest.TYPE.GET_PROFILE, params);
 
 		if (requiredField.length > 0) {
-			return new ErrorResponse(42200, {
-				field: requiredField[0],
-			});
+			return new ErrorResponse(42211, {}, requiredField);
 		}
 
 		if (Object.prototype.hasOwnProperty.call(headers, 'lang')) {
 			loyaltyRequest.setLang(headers.lang);
 		}
 
-		return loyaltyRequest.getMemberProfile(params);
+		const res = await loyaltyRequest.getMemberProfile(params);
+
+		if (res.status) {
+			return res;
+		}
+
+		return new ErrorResponse(40114);
 	} catch (err) {
 		switch (err.message) {
 		case LoyaltyRequest.STATUS.NO_LOYALTY:
@@ -436,4 +445,12 @@ exports.getDetailLoyalty = async (request) => {
 	});
 
 	return new Response(20015, loyalty);
+};
+
+
+// refresh loyalty auth card
+exports.doRefreshLoyaltyAuthCard = async () => {
+	AuthRefresher.refresh();
+
+	return new Response(20051);
 };
