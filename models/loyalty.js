@@ -50,6 +50,9 @@ const Loyalty = model.define('loyalty', {
 	api_point_minus: {
 		type: Sequelize.TEXT,
 	},
+	api_refresh_token: {
+		type: Sequelize.TEXT,
+	},
 	// company: {
 	// 	type: Sequelize.STRING,
 	// 	len: 100,
