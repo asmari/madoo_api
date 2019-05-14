@@ -50,5 +50,6 @@ module.exports = {
 	20048: 'Autocomplete Promos success',
 	20049: 'Update phone number success',
 	20050: 'Email Verification success',
+	20051: 'Trigger Refresh Auth success',
 	20099: 'Success',
 };
