@@ -93,6 +93,10 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.TEXT,
 		allowNull: true,
 	},
+	unit: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
