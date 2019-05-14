@@ -72,7 +72,7 @@ const MemberCards = model.define('member_cards', {
 	},
 	expiry_date: {
 		type: Sequelize.DATE,
-		allowNull: false,
+		allowNull: true,
 	},
 	point_balance: {
 		type: Sequelize.INTEGER,
