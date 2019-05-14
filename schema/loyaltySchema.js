@@ -92,10 +92,10 @@ exports.loyaltySaveMemberCardSchema = {
 				loyalty_id: {
 					type: 'integer',
 				},
-				type_id: {
-					type: 'integer',
-					enum: [1, 2, 3],
-				},
+				// type_id: {
+				// 	type: 'integer',
+				// 	enum: [1, 2, 3],
+				// },
 				card_number: {
 					type: ['string', 'null'],
 				},
@@ -111,17 +111,18 @@ exports.loyaltySaveMemberCardSchema = {
 				member_level: {
 					type: ['string', 'null'],
 				},
-				signup_date: {
-					type: 'string',
-				},
 				expiry_date: {
 					type: ['string', 'null'],
 				},
 				point_balance: {
 					type: 'integer',
 				},
+				auth: {
+					description: 'Put auth object here if api using auth',
+					type: 'object',
+				},
 			},
-			required: ['loyalty_id', 'type_id', 'signup_date', 'point_balance', 'expiry_date'],
+			required: ['loyalty_id', 'point_balance'],
 		},
 	},
 };
