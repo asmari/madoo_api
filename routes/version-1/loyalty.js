@@ -51,11 +51,13 @@ async function routes(fastify) {
 		beforeHandler: [fastify.authenticate],
 	}, loyaltyController.getDetailLoyalty);
 
-
-	fastify.post('/delete/member', {
+	fastify.post('/delete/card', {
 		...loyaltySchema.loyaltyDeleteMembercard,
 		beforeHandler: [fastify.authenticate],
 	}, loyaltyController.doDeleteLoyaltyMemberCard);
+
+	// trigger refresh token all member cards
+	fastify.get('/refresh/auth', loyaltyController.doRefreshLoyaltyAuthCard);
 }
 
 module.exports = routes;

@@ -22,6 +22,7 @@ module.exports = {
 	},
 	40112: 'Account suspended',
 	40113: 'Email already registered',
+	40114: 'Authorization failed',
 	40198: {
 		message: 'Error :message',
 		params: ['message'],

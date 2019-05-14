@@ -40,6 +40,7 @@ module.exports = {
 		message: ':field is not date or datetime type',
 		params: ['field'],
 	},
+	42211: 'Required this field',
 
 	42298: {
 		message: ':message',
