@@ -74,7 +74,21 @@ module.exports = class LoyaltyRequest {
 			if (Object.prototype.hasOwnProperty.call(auth[key], 'body')) {
 				if (Object.prototype.hasOwnProperty.call(auth[key].body, 'required')) {
 					auth[key].body.required.forEach((value) => {
-						dataField[value] = '';
+						let keyValue = value;
+						let valValue = value;
+						if (typeof value === 'object') {
+							if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
+								keyValue = value.keyName;
+							}
+
+							if (Object.prototype.hasOwnProperty.call(value, 'displayName')) {
+								valValue = value.displayName;
+							} else {
+								valValue = keyValue;
+							}
+						}
+
+						dataField[keyValue] = valValue;
 					});
 				}
 			}
@@ -88,7 +102,21 @@ module.exports = class LoyaltyRequest {
 
 		if (Object.prototype.hasOwnProperty.call(body, 'required')) {
 			body.required.forEach((value) => {
-				dataField[value] = '';
+				let keyValue = value;
+				let valValue = value;
+				if (typeof value === 'object') {
+					if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
+						keyValue = value.keyName;
+					}
+
+					if (Object.prototype.hasOwnProperty.call(value, 'displayName')) {
+						valValue = value.displayName;
+					} else {
+						valValue = keyValue;
+					}
+				}
+
+				dataField[keyValue] = valValue;
 			});
 		}
 
@@ -100,8 +128,16 @@ module.exports = class LoyaltyRequest {
 		const notExists = [];
 
 		requiredField.forEach((value) => {
-			if (!Object.prototype.hasOwnProperty.call(data, value)) {
-				notExists.push(value);
+			let keyValue = value;
+
+			if (typeof value === 'object') {
+				if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
+					keyValue = value.keyName;
+				}
+			}
+
+			if (!Object.prototype.hasOwnProperty.call(data, keyValue)) {
+				notExists.push(keyValue);
 			}
 		});
 
@@ -139,7 +175,11 @@ module.exports = class LoyaltyRequest {
 			Object.assign(requiredField, bodyField);
 		}
 
-		return Object.keys(requiredField);
+
+		return Object.keys(requiredField).map(value => ({
+			keyName: value,
+			displayName: requiredField[value],
+		}));
 	}
 
 	async process(type = 0, data) {
