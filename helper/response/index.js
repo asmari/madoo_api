@@ -1,11 +1,12 @@
 const messageBag = require('./message');
 
 exports.ErrorResponse = class ErrorResponse extends Error {
-	constructor(code, params) {
+	constructor(code, params, data = null) {
 		super();
 		this.statusCode = parseInt(code.toString().substring(0, 3), 10);
 		this.code = code;
 		this.message = messageBag.getMessage(code, params);
+		this.data = data;
 	}
 };
 
