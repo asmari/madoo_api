@@ -100,8 +100,16 @@ module.exports = class RestClient extends Request {
 
 			if (required.length > 0) {
 				required.forEach((value) => {
-					if (!Object.prototype.hasOwnProperty.call(body, value)) {
-						throw new Error(`${value} is not found`);
+					let keyValue = value;
+
+					if (typeof value === 'object') {
+						if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
+							keyValue = value.keyName;
+						}
+					}
+
+					if (!Object.prototype.hasOwnProperty.call(body, keyValue)) {
+						throw new Error(`${keyValue} is not found`);
 					}
 				});
 			}
@@ -166,7 +174,9 @@ module.exports = class RestClient extends Request {
 					this.changeHeader('Authorization', `Bearer ${responseAuth.data.token.value}`);
 
 					Object.assign(responseAll, {
-						auth: responseAuth.data,
+						auth: {
+							oauth2: responseAuth.data,
+						},
 					});
 					break;
 
