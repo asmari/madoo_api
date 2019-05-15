@@ -5,7 +5,7 @@ const MemberCardsAuthToken = model.define('member_card_auth_tokens', {
 	members_id: {
 		type: sequelize.INTEGER,
 	},
-	member_cards_id: {
+	members_cards_id: {
 		type: sequelize.INTEGER,
 	},
 	type_auth: {
