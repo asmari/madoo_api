@@ -84,6 +84,9 @@ exports.getNotificationList = async (request) => {
 		page: params.page,
 		paginate: params.item,
 		where: whereNotificationFilter,
+		order: [
+			['id', 'DESC'],
+		],
 		include: [
 			{
 				model: NotificationMembers,
