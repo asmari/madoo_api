@@ -51,6 +51,10 @@ module.exports = class OtpNewHelper {
 					}
 
 					if (member.otp === parseInt(data.otp, 10)) {
+						await member.update({
+							wrong: 0,
+							resend_count: 0,
+						});
 						return Promise.resolve(OtpNewHelper.STATUS.OTP_MATCH);
 					}
 
@@ -86,6 +90,10 @@ module.exports = class OtpNewHelper {
 					}
 
 					if (member.otp === parseInt(data.otp, 10)) {
+						await member.update({
+							wrong: 0,
+							resend_count: 0,
+						});
 						return Promise.resolve(OtpNewHelper.STATUS.OTP_MATCH);
 					}
 
@@ -96,7 +104,6 @@ module.exports = class OtpNewHelper {
 					return Promise.reject(OtpNewHelper.STATUS.OTP_NOT_MATCH);
 				}
 			}
-			console.log(data);
 
 			return Promise.reject(new Error('memberId or otp not found!'));
 
