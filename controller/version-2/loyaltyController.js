@@ -25,7 +25,14 @@ exports.doGetListLoyalty = async (request) => {
 	}
 
 	if (params.filter !== 0) {
-		whereSearch.type_loyalty_id = params.filter;
+		let loyaltyFilter = params.filter;
+		if (!Array.isArray(params.filter)) {
+			loyaltyFilter = [params.filter];
+		}
+
+		whereSearch.type_loyalty_id = {
+			[Op.or]: loyaltyFilter,
+		};
 	}
 
 	const loyaltyList = await Loyalty.paginate({
@@ -34,8 +41,19 @@ exports.doGetListLoyalty = async (request) => {
 		where: {
 			...whereSearch,
 		},
+		order: [
+			['name', 'ASC'],
+		],
 		attributes: {
-			exclude: ['api_user_detail', 'api_user_point', 'api_point_plus', 'api_point_minus'],
+			exclude: [
+				'api_user_detail',
+				'api_user_point',
+				'api_point_plus',
+				'api_point_minus',
+				'api_refresh_token',
+				'auth_field',
+				'confirm_field',
+			],
 		},
 	});
 
