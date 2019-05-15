@@ -116,6 +116,8 @@ exports.getPromo = async (request) => {
 	whereCondition.valid_until_end = { [Op.gte]: currentDate };
 	whereCondition.valid_until = { [Op.lte]: currentDate };
 
+	whereCondition.status = 1;
+
 	if (params.search != null && typeof (params.search) === 'string') {
 		whereCondition.title = {
 			[Op.like]: `%${params.search}%`,
