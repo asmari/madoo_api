@@ -19,7 +19,10 @@ exports.loyaltyListSchema = {
 					type: 'string',
 				},
 				filter: {
-					type: 'integer',
+					type: ['array', 'integer'],
+					items: {
+						type: 'integer',
+					},
 				},
 			},
 		},
