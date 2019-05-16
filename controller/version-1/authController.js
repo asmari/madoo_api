@@ -318,6 +318,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 			await members.update({
 				fb_id: null,
 				fb_token: null,
+				fb_name: null,
 			});
 			break;
 
@@ -325,6 +326,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 			await members.update({
 				g_id: null,
 				g_token: null,
+				g_name: null,
 			});
 			break;
 
