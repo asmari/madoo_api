@@ -10,6 +10,8 @@ module.exports = fp(async (fastify, opts, next) => {
 	fastify.addHook('onRequest', async (request) => {
 		const { headers } = request;
 
+		AuthApi.info(headers);
+
 		if (Object.prototype.hasOwnProperty.call(headers, 'skip-auth')) {
 			return this;
 		}
