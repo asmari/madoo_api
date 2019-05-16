@@ -52,7 +52,7 @@ exports.doSaveMemberCard = async (request) => {
 				member_level: body.member_level || '',
 				signup_date: signupDate,
 				expiry_date: body.expiry_date || null,
-				type_id: typeId,
+				type_id: typeId.toString(),
 				point_balance: body.point_balance,
 			});
 
