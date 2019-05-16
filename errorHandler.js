@@ -9,6 +9,7 @@ module.exports = fp((fastify, _, next) => {
 				.send({
 					code: error.code,
 					message: error.message,
+					data: error.data || null,
 				});
 		} else if (error.validation && error.validation.length > 0) {
 			let errBag = new Error('');

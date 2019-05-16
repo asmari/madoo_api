@@ -1,9 +1,9 @@
 #BackEnd Swaps 
 
-## install dependencies
+## Install dependencies
 npm install
 
-## configuration
+## Configuration
 copy the `.env.sample` file to `.env` and put the configuration for DB and server port
 
 - DB_HOST= host name/ip for database (default : 127.0.0.1)
@@ -32,5 +32,24 @@ Security for api is using JWT. To add security for each route, you can add `fast
 This project support using ESLint with `airbnb-base` and `babel-eslint`. Install eslint module on your favorite IDE, restart it and the Eslint will be detected automatically. [AirBnb Style Guide](https://github.com/airbnb/javascript)
 
 
-## run at localhost:3000
+## Run at localhost:3000
 npm start
+
+------
+
+## Auth Key Header
+Swapz Backend api need client_id with client_secret to access the api to prevent hot link access the api. Use the command utility to create or list auth keys.
+
+### Command Utility
+##### Create auth key
+```console
+node command create --name=name_your_auth
+
+Config: 
+-n, --name : Name for the auth
+```
+
+##### List auth keys
+```console
+node command list
+```

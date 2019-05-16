@@ -22,6 +22,7 @@
   "dependencies": {
     "bcrypt": "^3.0.6",
     "boom": "^7.3.0",
+    "cli-table": "^0.3.1",
     "dotenv": "^7.0.0",
     "fastify": "^1.14.1",
     "fastify-file-upload": "^1.0.0",
@@ -39,11 +40,13 @@
     "moment": "^2.24.0",
     "mysql2": "^1.6.5",
     "nodemailer": "^6.1.1",
+    "randomstring": "^1.1.5",
     "sequelize": "^4.42.0",
     "sequelize-paginate": "^1.1.5",
     "uid-generator": "^1.0.0",
     "xml2json": "^0.11.2",
-    "xmlbuilder": "^12.0.0"
+    "xmlbuilder": "^12.0.0",
+    "yargs": "^13.2.4"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",

@@ -22,3 +22,4 @@ exports.Wording = require('./wording');
 exports.OtpRequests = require('./otp_requests');
 exports.UpdateMemberLogs = require('./update_member_logs');
 exports.MemberCardsAuthToken = require('./memberCardsAuthToken');
+exports.AuthApiKeys = require('./authApiKeys');
