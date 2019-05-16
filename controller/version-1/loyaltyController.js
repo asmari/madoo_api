@@ -64,7 +64,7 @@ exports.doSaveMemberCard = async (request) => {
 			if (memberCard && Object.prototype.hasOwnProperty.call(body, 'auth')) {
 				let memberCardsAuth = await MemberCardsAuthToken.findOne({
 					members_id: member.id,
-					member_cards_id: memberCard.id,
+					members_cards_id: memberCard.id,
 				});
 
 				if (!memberCardsAuth) {
