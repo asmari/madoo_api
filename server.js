@@ -14,10 +14,15 @@ const fastifyFileUpload = require('fastify-file-upload');
 
 require('dotenv').config();
 
+const authKeyMiddleware = require('./middleware/authKeyMiddleware');
 const security = require('./security');
 const errorHandler = require('./errorHandler');
 const documentations = require('./documentations');
 const config = require('./config').get;
+const { logger } = require('./helper/Logger');
+
+// register auth key api
+fastify.register(authKeyMiddleware);
 
 // register jwt security
 fastify.register(security);
@@ -51,7 +56,7 @@ if (!fs.existsSync('./upload')) {
 // Run the server!
 fastify.listen(config.serverPort, (err) => {
 	if (err) {
-		console.trace(err);
+		logger.trace(err);
 		// fastify.log.error(err);
 		process.exit(1);
 	}
