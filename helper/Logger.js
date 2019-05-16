@@ -14,16 +14,23 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/OTP_LOG.log',
 		},
+		AUTH_API: {
+			type: 'file',
+			filename: 'logs/AUTH_API.log',
+		},
 	},
 	categories: {
 		default: {
-			appenders: ['GENERAL_LOG'], level: 'ERROR',
+			appenders: ['GENERAL_LOG'], level: 'ALL',
 		},
 		REFRESH_AUTH: {
-			appenders: ['REFRESH_AUTH'], level: 'DEBUG',
+			appenders: ['REFRESH_AUTH'], level: 'ALL',
 		},
 		OTP_LOG: {
-			appenders: ['OTP_LOG'], level: 'DEBUG',
+			appenders: ['OTP_LOG'], level: 'ALL',
+		},
+		AUTH_API: {
+			appenders: ['AUTH_API'], level: 'ALL',
 		},
 	},
 });
@@ -33,3 +40,4 @@ exports.logger = log4js.getLogger();
 exports.General = log4js.getLogger('GENERAL_LOG');
 exports.RefreshAuth = log4js.getLogger('REFRESH_AUTH');
 exports.OtpLog = log4js.getLogger('OTP_LOG');
+exports.AuthApi = log4js.getLogger('AUTH_API');
