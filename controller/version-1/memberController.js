@@ -200,7 +200,19 @@ exports.memberDetail = async (request) => {
 	const token = await request.jwtVerify();
 
 	const member = await Members.findOne({
-		attributes: ['full_name', 'email', 'country_code', 'mobile_phone', 'image', 'fb_id', 'fb_token', 'g_id', 'g_token'],
+		attributes: [
+			'full_name',
+			'email',
+			'country_code',
+			'mobile_phone',
+			'image',
+			'fb_id',
+			'fb_token',
+			'g_id',
+			'g_token',
+			'fb_name',
+			'g_name',
+		],
 		where: { id: token.id },
 	});
 
