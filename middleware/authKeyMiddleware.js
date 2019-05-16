@@ -16,7 +16,7 @@ module.exports = fp(async (fastify, opts, next) => {
 			return this;
 		}
 
-		if (Object.prototype.hasOwnProperty.call(headers, 'client_id') && Object.prototype.hasOwnProperty.call(headers, 'client_secret')) {
+		if (Object.prototype.hasOwnProperty.call(headers, 'clientid') && Object.prototype.hasOwnProperty.call(headers, 'clientsecret')) {
 			const authApi = await AuthApiKeys.findOne({
 				where: {
 					client_id: headers.client_id,
