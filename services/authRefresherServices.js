@@ -52,7 +52,7 @@ module.exports = class AuthRefresher {
 
 				switch (type) {
 				case 'oauth2':
-					expiresAt = new Date(val.expires_at.value);
+					expiresAt = new Date(RestClient.findFromArray(val, 'expires_at').value);
 					break;
 
 				default:
@@ -71,8 +71,8 @@ module.exports = class AuthRefresher {
 					const authValue = {};
 					switch (type) {
 					case 'oauth2':
-						authValue.refresh_token = val.refresh_token.value;
-						restclient.changeHeader('Authorization', `Bearer ${val.token.value}`);
+						authValue.refresh_token = RestClient.findFromArray(val, 'refresh_token').refresh_token.value;
+						restclient.changeHeader('Authorization', `Bearer ${RestClient.findFromArray(val, 'token').value}`);
 						break;
 
 					default:
