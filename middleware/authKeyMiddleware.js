@@ -6,9 +6,33 @@ const { AuthApi } = require('../helper/Logger');
 
 const AuthApiKeys = model.AuthApiKeys.Get;
 
+const isContain = (url, keys) => {
+	let isTrue = false;
+
+	keys.forEach((value) => {
+		const t = url.match(value);
+
+		if (t) {
+			isTrue = true;
+		}
+	});
+
+	return isTrue;
+};
+
 module.exports = fp(async (fastify, opts, next) => {
 	fastify.addHook('onRequest', async (request) => {
 		const { headers } = request;
+
+		if (request.originalUrl === '/') {
+			return this;
+		}
+
+		if (isContain(request.originalUrl, [
+			'/docs',
+		])) {
+			return this;
+		}
 
 		AuthApi.info(headers);
 
