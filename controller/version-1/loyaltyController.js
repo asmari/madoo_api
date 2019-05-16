@@ -75,7 +75,7 @@ exports.doSaveMemberCard = async (request) => {
 
 						memberCardsAuth = await MemberCardsAuthToken.create({
 							members_id: member.id,
-							member_cards_id: memberCard.id,
+							members_cards_id: memberCard.id,
 							type_auth: key,
 							auth_value: JSON.stringify(auth[key]),
 						});
