@@ -162,6 +162,10 @@ module.exports = class RestClient extends Request {
 		return true;
 	}
 
+	static findFromArray($array, key) {
+		return $array.find(value => value.keyName === key);
+	}
+
 	async request() {
 		const responseAll = {};
 
@@ -171,7 +175,11 @@ module.exports = class RestClient extends Request {
 
 				switch (this.authType) {
 				case 'oauth2':
-					this.changeHeader('Authorization', `Bearer ${responseAuth.data.token.value}`);
+
+					// eslint-disable-next-line no-case-declarations
+					const token = RestClient.findFromArray(responseAuth.data, 'token');
+
+					this.changeHeader('Authorization', `Bearer ${token.value}`);
 
 					Object.assign(responseAll, {
 						auth: {
@@ -246,6 +254,7 @@ module.exports = class RestClient extends Request {
 
 	getFilterValue(response) {
 		let resultResponse = {};
+		const resultResponses = [];
 
 		try {
 			const filter = this.responseFilter;
@@ -337,15 +346,16 @@ module.exports = class RestClient extends Request {
 					displayName = key;
 				}
 
-				resultResponse[key] = {
+				resultResponses.push({
 					value: resultResponse[key],
 					displayName,
-				};
+					keyName: key,
+				});
 			});
 
 			resultResponse = {
 				status: propResponse.success,
-				data: resultResponse,
+				data: resultResponses,
 			};
 		} catch (err) {
 			console.error(err);
