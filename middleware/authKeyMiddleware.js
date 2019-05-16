@@ -19,8 +19,8 @@ module.exports = fp(async (fastify, opts, next) => {
 		if (Object.prototype.hasOwnProperty.call(headers, 'clientid') && Object.prototype.hasOwnProperty.call(headers, 'clientsecret')) {
 			const authApi = await AuthApiKeys.findOne({
 				where: {
-					client_id: headers.client_id,
-					client_secret: headers.client_secret,
+					client_id: headers.clientid,
+					client_secret: headers.clientsecret,
 				},
 			});
 
@@ -29,7 +29,7 @@ module.exports = fp(async (fastify, opts, next) => {
 				return this;
 			}
 
-			AuthApi.warn('Failed Api Key', headers.client_id, ':', headers.client_secret);
+			AuthApi.warn('Failed Api Key', headers.clientid, ':', headers.clientsecret);
 			throw new ErrorResponse(40115);
 		} else {
 			throw new ErrorResponse(40116);
