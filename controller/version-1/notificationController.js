@@ -56,7 +56,7 @@ exports.getNotificationList = async (request) => {
 
 	params.filter = params.filter.map((value) => {
 		if (value === 1) {
-			return 'promotion';
+			return 'promo';
 		}
 
 		if (value === 2) {
