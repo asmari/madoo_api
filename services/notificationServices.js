@@ -6,11 +6,12 @@ const { Op } = require('sequelize');
 
 const model = require('../models/index');
 const FcmSender = require('../helper/FcmSender');
+const logger = require('../helper/Logger').Notifications;
 
 const Members = model.Members.Get;
 const Notification = model.Notification.Get;
 const NotificationMember = model.NotificationMembers.Get;
-const NotificationSettings = model.NotificationSettings.Get;
+// const NotificationSettings = model.NotificationSettings.Get;
 const DeviceNotification = model.DeviceNotification.Get;
 
 const data = workerData;
@@ -145,5 +146,5 @@ Notification.findOne({
 	return Promise.reject(new Error(`Notification error not send, ${JSON.stringify(resFcm)}`));
 })
 	.catch((error) => {
-		console.error(error);
+		logger.error(error);
 	});
