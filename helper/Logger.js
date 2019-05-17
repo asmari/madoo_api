@@ -18,6 +18,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/AUTH_API.log',
 		},
+		NOTIFICATIONS: {
+			type: 'file',
+			filename: 'logs/NOTIFICATIONS.log',
+		},
 	},
 	categories: {
 		default: {
@@ -32,6 +36,9 @@ log4js.configure({
 		AUTH_API: {
 			appenders: ['AUTH_API'], level: 'ALL',
 		},
+		NOTIFICATIONS: {
+			appenders: ['NOTIFICATIONS'], level: 'ALL',
+		},
 	},
 });
 
@@ -41,3 +48,4 @@ exports.General = log4js.getLogger('GENERAL_LOG');
 exports.RefreshAuth = log4js.getLogger('REFRESH_AUTH');
 exports.OtpLog = log4js.getLogger('OTP_LOG');
 exports.AuthApi = log4js.getLogger('AUTH_API');
+exports.Notifications = log4js.getLogger('NOTIFICATIONS');
