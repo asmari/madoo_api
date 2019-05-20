@@ -338,11 +338,11 @@ exports.getLoyaltyMember = async (request) => {
 			break;
 
 		case 2:
-			orderCards = ['point', 'ASC'];
+			orderCards = ['point_balance', 'ASC'];
 			break;
 
 		case 3:
-			orderCards = ['point', 'DESC'];
+			orderCards = ['point_balance', 'DESC'];
 			break;
 
 		default:
