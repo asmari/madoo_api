@@ -15,6 +15,7 @@ module.exports = async (fastify) => {
 			security: [
 				{
 					BearerAuth: [],
+					'skip-auth': [],
 				},
 			],
 		},
@@ -27,6 +28,7 @@ module.exports = async (fastify) => {
 			security: [
 				{
 					BearerAuth: [],
+					'skip-auth': [],
 				},
 			],
 		},
@@ -39,6 +41,7 @@ module.exports = async (fastify) => {
 			security: [
 				{
 					BearerAuth: [],
+					'skip-auth': [],
 				},
 			],
 		},
@@ -51,6 +54,7 @@ module.exports = async (fastify) => {
 			security: [
 				{
 					BearerAuth: [],
+					'skip-auth': [],
 				},
 			],
 		},
@@ -63,6 +67,7 @@ module.exports = async (fastify) => {
 			security: [
 				{
 					BearerAuth: [],
+					'skip-auth': [],
 				},
 			],
 		},
