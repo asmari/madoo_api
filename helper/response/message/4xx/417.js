@@ -16,4 +16,8 @@ module.exports = {
 	41711: 'Autocomplete promos not found',
 	41712: 'Email verification failed, please try again',
 	41713: 'Email verification token invalid',
+	41714: {
+		message: 'Check response :field not match',
+		params: ['field'],
+	},
 };
