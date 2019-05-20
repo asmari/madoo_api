@@ -3,10 +3,13 @@ const model = require('../../models');
 const { ResponsePaginate, Response } = require('../../helper/response');
 
 const Loyalty = model.Loyalty.Get;
+const MemberCards = model.MembersCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
+const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
 
 // get list loyalty v2
 exports.doGetListLoyalty = async (request) => {
+	const { user } = request;
 	const query = JSON.parse(JSON.stringify(request.query));
 
 	const params = {
@@ -14,9 +17,36 @@ exports.doGetListLoyalty = async (request) => {
 		item: parseInt(query.item, 10) || 10,
 		search: query.search || null,
 		filter: query.filter || 0,
+		with_user: Object.prototype.hasOwnProperty.call(query, 'with_user') ? query.with_user : 0,
 	};
 
 	const whereSearch = {};
+
+	if (params.with_user !== 0) {
+		const cards = await MemberCards.findAll({
+			where: {
+				members_id: user.id,
+			},
+			attributes: ['id'],
+		});
+
+		const cardsId = cards.map(value => value.id);
+
+		const loyaltyHasCards = await LoyaltyHasMemberCards.findAll({
+			where: {
+				member_cards_id: {
+					[Op.in]: cardsId,
+				},
+			},
+			attributes: ['loyalty_id'],
+		});
+
+		const loyaltyId = loyaltyHasCards.map(value => value.loyalty_id);
+
+		whereSearch.id = {
+			[Op.notIn]: loyaltyId,
+		};
+	}
 
 	if (params.search !== null) {
 		whereSearch.name = {
@@ -62,6 +92,7 @@ exports.doGetListLoyalty = async (request) => {
 		item: params.item,
 	});
 };
+
 
 // get list type loyalty
 exports.doGetListTypeLoyalty = async () => {
