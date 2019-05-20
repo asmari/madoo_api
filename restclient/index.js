@@ -4,7 +4,7 @@ const querystring = require('querystring');
 const flat = require('flat');
 const isBuffer = require('is-buffer');
 
-// const { ErrorResponse, Response } = require('../helper/response');
+const { ErrorResponse } = require('../helper/response');
 const Request = require('./request');
 
 module.exports = class RestClient extends Request {
@@ -47,6 +47,8 @@ module.exports = class RestClient extends Request {
 		if (Object.prototype.hasOwnProperty.call(obj, 'response')) {
 			this.responseFilter = obj.response;
 		}
+
+		this.checkResponse = [];
 
 		this.lang = 'en';
 	}
@@ -95,7 +97,7 @@ module.exports = class RestClient extends Request {
 		contentType = contentType.split(';')[0] || contentType;
 
 		if (this.reqBody != null) {
-			const { required, properties } = this.reqBody;
+			const { required, properties, checkResponse } = this.reqBody;
 			const body = this.bodyData;
 
 			if (required.length > 0) {
@@ -110,6 +112,32 @@ module.exports = class RestClient extends Request {
 
 					if (!Object.prototype.hasOwnProperty.call(body, keyValue)) {
 						throw new Error(`${keyValue} is not found`);
+					}
+				});
+			}
+
+			if (Object.prototype.hasOwnProperty.call(this.reqBody, 'checkResponse') && checkResponse.length > 0) {
+				checkResponse.forEach((value) => {
+					let keyValue = value;
+					let typeValue = 'string';
+
+					if (typeof value === 'object') {
+						if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
+							keyValue = value.keyName;
+						}
+
+						if (Object.prototype.hasOwnProperty.call(value, 'type')) {
+							typeValue = value.type;
+						}
+					}
+
+					if (!Object.prototype.hasOwnProperty.call(body, keyValue)) {
+						throw new Error(`${keyValue} is not found`);
+					} else {
+						this.checkResponse.push({
+							keyName: keyValue,
+							value: RestClient.tryParsingByType(typeValue, body[keyValue]),
+						});
 					}
 				});
 			}
@@ -200,8 +228,6 @@ module.exports = class RestClient extends Request {
 
 		const responseFiltered = this.getFilterValue(response);
 
-		console.log(responseFiltered);
-
 		Object.assign(responseAll, responseFiltered);
 
 		return responseAll;
@@ -247,6 +273,9 @@ module.exports = class RestClient extends Request {
 		case 'string':
 			return typeof value === 'string' ? value : '';
 
+		case 'date':
+		case 'datetime':
+			return new Date(value);
 		default:
 			return value;
 		}
@@ -256,110 +285,154 @@ module.exports = class RestClient extends Request {
 		let resultResponse = {};
 		const resultResponses = [];
 
-		try {
-			const filter = this.responseFilter;
-			const flatened = flat.flatten(response);
-			let code = null;
-			let valueType = 'string';
+		const filter = this.responseFilter;
+		const flatened = flat.flatten(response);
+		let code = null;
+		let valueType = 'string';
 
-			if (Object.prototype.hasOwnProperty.call(flatened, filter.code)) {
-				code = flatened[filter.code];
-			}
+		if (Object.prototype.hasOwnProperty.call(flatened, filter.code)) {
+			code = flatened[filter.code];
+		}
 
-			let propResponse = {};
+		let propResponse = {};
 
-			if (Object.prototype.hasOwnProperty.call(filter.status, code)) {
-				propResponse = filter.status[code];
-			} else {
-				propResponse = filter.status.$default;
-			}
+		if (Object.prototype.hasOwnProperty.call(filter.status, code)) {
+			propResponse = filter.status[code];
+		} else {
+			propResponse = filter.status.$default;
+		}
 
-			Object.keys(propResponse.properties).forEach((key) => {
-				let keyLink = propResponse.properties[key];
-				let displayName = null;
+		Object.keys(propResponse.properties).forEach((key) => {
+			let keyLink = propResponse.properties[key];
+			let displayName = null;
 
-				if (typeof keyLink === 'object') {
-					const objValue = keyLink;
+			if (typeof keyLink === 'object') {
+				const objValue = keyLink;
 
-					if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
-						keyLink = objValue.value;
-					}
+				if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
+					keyLink = objValue.value;
+				}
 
-					if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
-						valueType = objValue.type;
-					}
+				if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
+					valueType = objValue.type;
+				}
 
-					if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
-						switch (typeof objValue.displayName) {
-						case 'string':
-							// eslint-disable-next-line prefer-destructuring
-							displayName = objValue.displayName;
-							break;
-						case 'object':
-							// eslint-disable-next-line no-case-declarations
-							const keyData = Object.keys(objValue.displayName);
+				if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
+					switch (typeof objValue.displayName) {
+					case 'string':
+						// eslint-disable-next-line prefer-destructuring
+						displayName = objValue.displayName;
+						break;
+					case 'object':
+						// eslint-disable-next-line no-case-declarations
+						const keyData = Object.keys(objValue.displayName);
 
-							keyData.forEach((value) => {
-								if (value === this.lang) {
-									displayName = objValue.displayName[value];
-								}
-							});
-
-							if (displayName == null && keyData.length > 0) {
-								displayName = objValue.displayName[keyData[0]];
+						keyData.forEach((value) => {
+							if (value === this.lang) {
+								displayName = objValue.displayName[value];
 							}
+						});
 
+						if (displayName == null && keyData.length > 0) {
+							displayName = objValue.displayName[keyData[0]];
+						}
+
+						break;
+
+					default:
+						break;
+					}
+				}
+			}
+
+			const keyLinkSplit = keyLink.split('.');
+
+			const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
+
+			if (filterIndex !== -1) {
+				resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
+			} else {
+				resultResponse[key] = flatened[keyLink];
+			}
+
+			switch (valueType) {
+			case 'number':
+				// eslint-disable-next-line max-len
+				resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
+				break;
+
+			case 'double':
+			case 'float':
+				resultResponse[key] = parseFloat(resultResponse[key]);
+				break;
+
+			case 'date':
+			case 'datetime':
+				resultResponse[key] = new Date(resultResponse[key]);
+				break;
+
+			default:
+				break;
+			}
+
+			if (displayName == null) {
+				displayName = key;
+			}
+
+			if (this.checkResponse.length > 0) {
+				this.checkResponse.forEach((valKey) => {
+					if (key === valKey.keyName) {
+						switch (valueType) {
+						case 'date':
+							// eslint-disable-next-line no-case-declarations
+							const d1 = resultResponse[key];
+							// eslint-disable-next-line no-case-declarations
+							const d = new Date(`${valKey.value.getFullYear()}-${valKey.value.getMonth() + 1}-${valKey.value.getDate()}`);
+
+							// eslint-disable-next-line no-case-declarations
+							const isValid = {
+								date: d1.getDate() === d.getDate(),
+								month: d1.getMonth() === d.getMonth(),
+								year: d1.getFullYear() === d.getFullYear(),
+							};
+
+							if (!isValid.date || !isValid.month || !isValid.year) {
+								throw new ErrorResponse(41714, {
+									field: displayName,
+								});
+							}
+							break;
+						case 'datetime':
+							if (resultResponse[key].getTime() !== valKey.value.getTime()) {
+								throw new ErrorResponse(41714, {
+									field: displayName,
+								});
+							}
 							break;
 
 						default:
+							if (resultResponse[key] !== valKey.value) {
+								throw new ErrorResponse(41714, {
+									field: displayName,
+								});
+							}
 							break;
 						}
 					}
-				}
-
-				const keyLinkSplit = keyLink.split('.');
-
-				const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
-
-				if (filterIndex !== -1) {
-					resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
-				} else {
-					resultResponse[key] = flatened[keyLink];
-				}
-
-				switch (valueType) {
-				case 'number':
-					// eslint-disable-next-line max-len
-					resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
-					break;
-
-				case 'double':
-				case 'float':
-					resultResponse[key] = parseFloat(resultResponse[key]);
-					break;
-
-				default:
-					break;
-				}
-
-				if (displayName == null) {
-					displayName = key;
-				}
-
-				resultResponses.push({
-					value: resultResponse[key],
-					displayName,
-					keyName: key,
 				});
-			});
+			}
 
-			resultResponse = {
-				status: propResponse.success,
-				data: resultResponses,
-			};
-		} catch (err) {
-			console.error(err);
-		}
+			resultResponses.push({
+				value: resultResponse[key],
+				displayName,
+				keyName: key,
+			});
+		});
+
+		resultResponse = {
+			status: propResponse.success,
+			data: resultResponses,
+		};
 
 		return resultResponse;
 	}
