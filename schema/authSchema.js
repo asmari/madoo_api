@@ -1,5 +1,10 @@
 exports.authLoginSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for members login',
 		body: {
 			// Required body paramter for login
@@ -18,6 +23,11 @@ exports.authLoginSchema = {
 
 exports.authForgotPinOtp = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for forgot pin',
 		body: {
 			required: ['mobile_phone'],
@@ -32,6 +42,11 @@ exports.authForgotPinOtp = {
 
 exports.authForgotPinOtpCheck = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for forgot pin verify OTP',
 		body: {
 			required: ['mobile_phone', 'otp'],
@@ -49,6 +64,11 @@ exports.authForgotPinOtpCheck = {
 
 exports.authChangePin = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for forgot pin save new',
 		body: {
 			required: ['mobile_phone', 'pin', 'confirm_pin'],
@@ -75,6 +95,11 @@ exports.authChangePin = {
 
 exports.authCheckSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for validate mobile phone',
 		body: {
 			required: ['mobile_phone'],
@@ -90,6 +115,7 @@ exports.authUnlinkSocialSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for unlink social media from member',
@@ -110,6 +136,7 @@ exports.authLinkSocialSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for linking social media',

@@ -1,5 +1,10 @@
 exports.registerSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for check user and sent OTP',
 		body: {
 			// Required body paramter for register
@@ -15,6 +20,11 @@ exports.registerSchema = {
 };
 exports.otpSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for user validate otp',
 		body: {
 			// Required body paramter for register
@@ -30,6 +40,11 @@ exports.otpSchema = {
 
 exports.memberSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for register user and auto login',
 		body: {
 			// Required body paramter for save member
@@ -49,6 +64,7 @@ exports.memberDetailSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 	},
@@ -59,6 +75,7 @@ exports.pinValidationSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for validate pin',
@@ -78,6 +95,7 @@ exports.changePinSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for chagnge pin',
@@ -102,6 +120,7 @@ exports.updateMemberSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for update member without phone number',
@@ -127,6 +146,7 @@ exports.sendOtpUpdateSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for send otp when update phone number',
@@ -149,6 +169,7 @@ exports.checkOtpUpdateSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for check otp update phone number',

@@ -22,9 +22,9 @@ module.exports = fp(async (fastify) => {
 					type: 'http',
 					scheme: 'bearer',
 				},
-				apiKey: {
+				'skip-auth': {
 					type: 'apiKey',
-					name: 'apiKey',
+					name: 'skip-auth',
 					in: 'header',
 				},
 			},

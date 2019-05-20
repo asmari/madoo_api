@@ -3,6 +3,7 @@ exports.transactionListSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Transaction History for member card',

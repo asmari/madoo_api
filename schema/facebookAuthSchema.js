@@ -1,5 +1,10 @@
 exports.facebookLoginSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for login with facebook',
 		body: {
 			// Required body paramter for login
@@ -15,6 +20,11 @@ exports.facebookLoginSchema = {
 
 exports.facebookSaveMemberSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for register user & auto login',
 		body: {
 			required: ['full_name', 'email', 'mobile_phone', 'pin', 'fb_id', 'fb_token'],
@@ -56,6 +66,11 @@ exports.facebookSaveMemberSchema = {
 
 exports.facebookOtpSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for validate otp register with facebook',
 		body: {
 			type: 'object',
@@ -83,6 +98,11 @@ exports.facebookOtpSchema = {
 
 exports.facebookRegisterSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		consumes: ['multipart/form-data'],
 		description: 'Rest API for validate user & send otp',
 		body: {

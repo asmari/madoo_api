@@ -3,6 +3,7 @@ exports.promoListSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for List Promo',
@@ -43,6 +44,7 @@ exports.promoDetailSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for detail promo',
@@ -62,6 +64,7 @@ exports.promoFeaturedSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for featured promo',
@@ -76,6 +79,7 @@ exports.promoAutoCompleteSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for autocomplete promos',

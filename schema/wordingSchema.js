@@ -3,6 +3,7 @@ exports.wordingListSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		querystring: {

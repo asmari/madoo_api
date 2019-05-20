@@ -3,6 +3,7 @@ exports.checkConvertion = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for validate conversion role',
@@ -28,6 +29,7 @@ exports.getConvertion = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for check conversion point between loyalty',
@@ -60,6 +62,7 @@ exports.getDestination = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for get all available conversion destination',

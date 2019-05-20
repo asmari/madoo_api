@@ -1,10 +1,10 @@
 exports.fcmTokenSchema = {
 	schema: {
-		// security: [
-		// 	{
-		// 		BearerAuth: [],
-		// 	},
-		// ],
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for save device token member',
 		body: {
 			properties: {
@@ -30,6 +30,11 @@ exports.fcmTokenSchema = {
 
 exports.fcmTriggerSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest api to send trigger notification',
 		querystring: {
 			type: 'object',
@@ -52,6 +57,7 @@ exports.notificationDetailSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		querystring: {
@@ -72,6 +78,7 @@ exports.notificationListSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		querystring: {
@@ -101,6 +108,7 @@ exports.notifSettingSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for Create or Update Notification Setting',

@@ -3,6 +3,7 @@ exports.listCard = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 	},

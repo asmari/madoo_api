@@ -2,6 +2,7 @@ exports.loyaltyListSchema = {
 	schema: {
 		security: [
 			{
+				'skip-auth': [],
 				BearerAuth: [],
 			},
 		],
@@ -38,6 +39,7 @@ exports.loyaltyListTypeSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for loyalty type list v2',

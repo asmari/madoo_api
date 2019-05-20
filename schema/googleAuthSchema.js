@@ -1,5 +1,10 @@
 exports.googleLoginSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for login with google',
 		body: {
 			// Required body paramter for login
@@ -15,6 +20,11 @@ exports.googleLoginSchema = {
 
 exports.googleRegisterSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		consumes: ['multipart/form-data'],
 		description: 'Rest API for validate user & send otp',
 		body: {
@@ -36,6 +46,11 @@ exports.googleRegisterSchema = {
 
 exports.googleSaveMemberSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for register user & auto login',
 		body: {
 			required: ['full_name', 'email', 'mobile_phone', 'pin', 'g_id', 'g_token'],
@@ -77,6 +92,11 @@ exports.googleSaveMemberSchema = {
 
 exports.googleOtpSchema = {
 	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
 		description: 'Rest API for validate otp register with google',
 		body: {
 			type: 'object',

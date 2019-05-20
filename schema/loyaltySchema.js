@@ -3,6 +3,7 @@ exports.loyaltyMemberListSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for members loyalty program list',
@@ -41,6 +42,7 @@ exports.loyaltyCheckRequiredField = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		querystring: {
@@ -65,6 +67,7 @@ exports.loyaltyCheckMemberSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		querystring: {
@@ -85,6 +88,7 @@ exports.loyaltySaveMemberCardSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		body: {
@@ -132,6 +136,7 @@ exports.loyaltyMemberDetailSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for members loyalty program datail',
@@ -153,6 +158,7 @@ exports.loyaltyListSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for Loyalty Program list',
@@ -172,6 +178,7 @@ exports.loyaltyDetailSchema = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for Loyalty Program detail',
@@ -192,6 +199,7 @@ exports.loyaltyDeleteMembercard = {
 		security: [
 			{
 				BearerAuth: [],
+				'skip-auth': [],
 			},
 		],
 		description: 'Rest API for members delete loyalty program',
