@@ -75,16 +75,23 @@ module.exports = class LoyaltyRequest {
 				if (Object.prototype.hasOwnProperty.call(auth[key].body, 'required')) {
 					auth[key].body.required.forEach((value) => {
 						let keyValue = value;
-						let valValue = value;
+						const valValue = {
+							displayName: value,
+							typeValue: 'string',
+						};
 						if (typeof value === 'object') {
 							if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
 								keyValue = value.keyName;
 							}
 
 							if (Object.prototype.hasOwnProperty.call(value, 'displayName')) {
-								valValue = value.displayName;
+								valValue.displayName = value.displayName;
 							} else {
-								valValue = keyValue;
+								valValue.displayName = keyValue;
+							}
+
+							if (Object.prototype.hasOwnProperty.call(value, 'type')) {
+								valValue.typeValue = value.type;
 							}
 						}
 
@@ -100,25 +107,37 @@ module.exports = class LoyaltyRequest {
 	static getFieldFromBody(body = {}) {
 		const dataField = {};
 
-		if (Object.prototype.hasOwnProperty.call(body, 'required')) {
-			body.required.forEach((value) => {
-				let keyValue = value;
-				let valValue = value;
-				if (typeof value === 'object') {
-					if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
-						keyValue = value.keyName;
+		const checkAgainst = ['required', 'checkResponse'];
+
+		checkAgainst.forEach((key) => {
+			if (Object.prototype.hasOwnProperty.call(body, key)) {
+				body[key].forEach((value) => {
+					let keyValue = value;
+					const valValue = {
+						displayName: value,
+						typeValue: 'string',
+					};
+
+					if (typeof value === 'object') {
+						if (Object.prototype.hasOwnProperty.call(value, 'keyName')) {
+							keyValue = value.keyName;
+						}
+
+						if (Object.prototype.hasOwnProperty.call(value, 'displayName')) {
+							valValue.displayName = value.displayName;
+						} else {
+							valValue.displayName = keyValue;
+						}
+
+						if (Object.prototype.hasOwnProperty.call(value, 'type')) {
+							valValue.typeValue = value.type;
+						}
 					}
 
-					if (Object.prototype.hasOwnProperty.call(value, 'displayName')) {
-						valValue = value.displayName;
-					} else {
-						valValue = keyValue;
-					}
-				}
-
-				dataField[keyValue] = valValue;
-			});
-		}
+					dataField[keyValue] = valValue;
+				});
+			}
+		});
 
 		return dataField;
 	}
@@ -175,29 +194,33 @@ module.exports = class LoyaltyRequest {
 			Object.assign(requiredField, bodyField);
 		}
 
-
 		return Object.keys(requiredField).map(value => ({
 			keyName: value,
-			displayName: requiredField[value],
+			displayName: requiredField[value].displayName,
+			typeValue: requiredField[value].typeValue,
 		}));
 	}
 
 	async process(type = 0, data) {
-		if (type === 0) {
-			throw new Error(LoyaltyRequest.STATUS.TYPE_NO_CHOICE);
+		try {
+			if (type === 0) {
+				throw new Error(LoyaltyRequest.STATUS.TYPE_NO_CHOICE);
+			}
+
+			const dataJson = JSON.parse(this.getFieldFromType(type));
+
+			const restClient = new RestClient(dataJson);
+
+			if (this.lang != null) {
+				restClient.setLanguage(this.lang);
+			}
+
+			restClient.insertBody(data);
+
+			return restClient.request();
+		} catch (err) {
+			return err;
 		}
-
-		const dataJson = JSON.parse(this.getFieldFromType(type));
-
-		const restClient = new RestClient(dataJson);
-
-		if (this.lang != null) {
-			restClient.setLanguage(this.lang);
-		}
-
-		restClient.insertBody(data);
-
-		return restClient.request();
 	}
 
 
