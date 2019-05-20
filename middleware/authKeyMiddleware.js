@@ -30,6 +30,8 @@ module.exports = fp(async (fastify, opts, next) => {
 
 		if (isContain(request.originalUrl, [
 			'/docs',
+			'/v1/members/email/verification',
+			'/v1/loyalty/refresh/auth',
 		])) {
 			return this;
 		}
