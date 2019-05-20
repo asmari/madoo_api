@@ -18,6 +18,9 @@ exports.loyaltyListSchema = {
 				search: {
 					type: 'string',
 				},
+				with_user: {
+					type: 'integer',
+				},
 				filter: {
 					type: ['array', 'integer'],
 					items: {
