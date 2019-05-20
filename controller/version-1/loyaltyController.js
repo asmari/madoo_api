@@ -367,18 +367,16 @@ exports.getLoyaltyMember = async (request) => {
 		orderLoyalty = sequelize.literal(`FIELD(member_cards_id, ${cardsId.join(',')}) ASC`);
 	}
 
-	if (typeof (params.filter) !== 'string' && params.filter.length > 0) {
+	if (Array.isArray(params.filter)) {
 		const loyaltyId = params.filter.map(value => parseInt(value, 10));
 
 		whereLoyalty.id = {
-			[Op.in]: loyaltyId,
+			[Op.or]: loyaltyId,
 		};
-	} else if (typeof params.filter !== 'undefined' && params.filter.length > 0) {
-		if (!parseInt(params.filter, 10)) {
-			whereLoyalty.id = {
-				[Op.in]: [parseInt(params.filter, 10)],
-			};
-		}
+	} else {
+		whereLoyalty.id = {
+			[Op.or]: [parseInt(params.filter, 10)],
+		};
 	}
 
 	if (params.search != null && typeof (params.search) === 'string') {
