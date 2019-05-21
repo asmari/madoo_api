@@ -97,6 +97,26 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
+	longlogo: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
+	image_url_longlog: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
+	bglogo: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
+	image_url_bglogo: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
+	text_color: {
+		type: Sequelize.STRING,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
