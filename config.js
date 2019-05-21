@@ -17,10 +17,8 @@ exports.get = {
 		url: process.env.FIREBASE_URL,
 	},
 	app_env: process.env.APP_ENV,
-	email: {
-		account: process.env.EMAIL,
-		password: process.env.EMAIL_PASSWORD,
-		verificationUrl: process.env.EMAIL_VERIFICATION_URL,
-	},
 	cms: process.env.CMS_URL,
+	mail: {
+		apiKey: process.env.SENDINBLUE_APIKEY,
+	},
 };

@@ -1,4 +1,5 @@
-const nodeMailer = require('nodemailer');
+const https = require('https');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const config = require('../config').get;
 const model = require('../models/index');
@@ -7,44 +8,75 @@ const UpdateMemberLogs = model.UpdateMemberLogs.Get;
 
 module.exports = class EmailSender {
 	constructor() {
-		this.email = config.email.account;
-		this.password = config.email.password;
+		this.apiKey = config.mail.apiKey;
 		this.privateKey = 'RQa0Acew3nasbf6I5kIUI1kfSTqhrEsF';
+		this.url = 'https://api.sendinblue.com/v3/smtp/email';
+		console.log(this);
 	}
 
 
 	async send(to, memberId) {
-		const transporter = nodeMailer.createTransport({
-			service: 'gmail',
-			auth: {
-				user: this.email,
-				pass: this.password,
-			},
-		});
-
-		const token = jwt.sign({
-			email: to,
-			id: memberId,
-		}, this.privateKey);
-
-		const mailOptions = {
-			from: '"Email Verification" <floorveft@gmail.com>',
-			to,
-			subject: 'Email Verification',
-			html: `Email Verification : <a href="${config.email.verificationUrl}?token=${token}">Click Here</a>`,
-		};
-
+		const { apiKey } = this;
 		return new Promise((resolve, reject) => {
-			transporter.sendMail(mailOptions, (error, info) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve(info);
-				}
+			const token = jwt.sign({
+				email: to,
+				id: memberId,
+			}, this.privateKey);
+
+			const file = EmailSender.replaceString(fs.readFileSync(`${__dirname}/../templates/email.html`, 'utf-8'), {
+				url: `${config.cms}?token=${token}`,
 			});
+
+			const data = {
+				name: 'Email Verification Sent',
+				subject: 'Email Verification',
+				sender: {
+					email: 'swapz@member.id',
+					name: 'From Swapz',
+				},
+				htmlContent: file,
+				textContent: 'test',
+				to: [
+					{
+						email: to,
+						name: 'test',
+					},
+				],
+				replyTo: {
+					email: 'swapz@member.id',
+					name: 'From Swapz',
+				},
+				tags: ['email_verification'],
+			};
+
+			const req = https.request(this.url, {
+				headers: {
+					'api-key': apiKey,
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}, (res) => {
+				let chunk = '';
+
+				res.on('data', (d) => {
+					chunk += d;
+				});
+
+				res.on('error', reject);
+
+				res.on('end', () => {
+					resolve(chunk);
+				});
+			});
+
+			req.write(JSON.stringify(data));
+			req.end();
 		});
 	}
 
+	static replaceString(file, obj) {
+		return file.replace(/\${([^}]*)}/g, (r, k) => obj[k]);
+	}
 
 	async checkVerification(token) {
 		return new Promise((resolve, reject) => {
