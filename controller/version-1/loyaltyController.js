@@ -1,5 +1,4 @@
 const sequelize = require('sequelize');
-const helper = require('../../helper');
 const AuthRefresher = require('../../services/authRefresherServices');
 const model = require('../../models');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
@@ -11,6 +10,7 @@ const Loyalty = model.Loyalty.Get;
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
 const MemberCards = model.MembersCards.Get;
+const MemberCardsLog = model.MembersCardsLog.Get;
 const Promo = model.Promo.Get;
 const Members = model.Members.Get;
 const MemberCardsAuthToken = model.MemberCardsAuthToken.Get;
@@ -208,7 +208,7 @@ exports.doCheckMemberCard = async (request) => {
 };
 
 // Delete Membercard loyalty
-exports.doDeleteLoyaltyMemberCard = async (request, reply) => {
+exports.doDeleteLoyaltyMemberCard = async (request) => {
 	const { user } = request;
 	const params = request.body || {};
 
@@ -227,12 +227,20 @@ exports.doDeleteLoyaltyMemberCard = async (request, reply) => {
 		include: [LoyaltyMemberCards],
 	});
 
+	console.log(memberCard.dataValues);
+
 	if (memberCard != null) {
-		memberCard.destroy();
-		reply.send(helper.Success({
+		await MemberCardsLog.create(memberCard.dataValues);
+
+		memberCard.destroy({
+			force: true,
+		});
+
+		return new Response(20010, {
 			delete: true,
-		}));
+		});
 	}
+
 	return new Response(20010, {
 		delete: false,
 	});
