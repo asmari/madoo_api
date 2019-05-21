@@ -69,10 +69,10 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		len: 20,
 	},
-	manage: {
-		type: Sequelize.INTEGER,
-		len: 11,
-	},
+	// manage: {
+	// 	type: Sequelize.INTEGER,
+	// 	len: 11,
+	// },
 	new_link: {
 		type: Sequelize.STRING,
 		allowNull: true,
