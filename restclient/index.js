@@ -290,6 +290,8 @@ module.exports = class RestClient extends Request {
 		let code = null;
 		let valueType = 'string';
 
+		console.log(flatened);
+
 		if (Object.prototype.hasOwnProperty.call(flatened, filter.code)) {
 			code = flatened[filter.code];
 		}
@@ -305,6 +307,8 @@ module.exports = class RestClient extends Request {
 		Object.keys(propResponse.properties).forEach((key) => {
 			let keyLink = propResponse.properties[key];
 			let displayName = null;
+
+			valueType = 'string';
 
 			if (typeof keyLink === 'object') {
 				const objValue = keyLink;
@@ -421,6 +425,9 @@ module.exports = class RestClient extends Request {
 					}
 				});
 			}
+
+			console.log(resultResponse[key]);
+
 
 			resultResponses.push({
 				value: resultResponse[key],
