@@ -101,7 +101,7 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
-	image_url_longlog: {
+	image_url_longlogo: {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
