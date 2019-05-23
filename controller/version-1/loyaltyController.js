@@ -40,8 +40,29 @@ exports.doSaveMemberCard = async (request) => {
 		},
 	});
 
-	if (member) {
+	const loyalty = await Loyalty.findOne({
+		where: {
+			id: body.loyalty_id,
+		},
+	});
+
+
+	if (member && loyalty) {
 		try {
+			const typeIdMember = loyalty.type_id;
+
+			const where = {};
+
+			where[typeIdMember] = body[typeIdMember];
+
+			const checkMemberCard = await MemberCards.findOne({
+				where,
+			});
+
+			if (checkMemberCard) {
+				return new ErrorResponse(41718);
+			}
+
 			const memberCard = await MemberCards.create({
 				members_id: member.id,
 				card_number: body.card_number || '',
@@ -63,8 +84,10 @@ exports.doSaveMemberCard = async (request) => {
 
 			if (memberCard && Object.prototype.hasOwnProperty.call(body, 'auth')) {
 				let memberCardsAuth = await MemberCardsAuthToken.findOne({
-					members_id: member.id,
-					members_cards_id: memberCard.id,
+					where: {
+						members_id: member.id,
+						members_cards_id: memberCard.id,
+					},
 				});
 
 				if (!memberCardsAuth) {
