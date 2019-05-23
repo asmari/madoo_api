@@ -79,12 +79,12 @@ exports.getConvertionRate = async (request) => {
 		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
 		const conversionData = JSON.parse(conversionRule.data_conversion);
 
-		if (conversionData.loyalty_from != null) {
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
 			conversionData.loyalty_from.forEach((id) => {
 				allowedFrom.push(id);
 			});
 		}
-		if (conversionData.loyalty_to != null) {
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
 			conversionData.loyalty_to.forEach((id) => {
 				allowedTo.push(id);
 			});
@@ -121,18 +121,22 @@ exports.getConvertionRate = async (request) => {
 		};
 	}
 
+	const targetConversion = 'minimum';
+
 	const dataOptions = {
-		attributes: [['point_loyalty', 'source_point'], [sequelize.literal('((point_loyalty * rate_from) - fee) * rate_to'), 'target_point']],
+		attributes: [[targetConversion, 'source_point'], [sequelize.literal(`((point_conversion/point_loyalty)) * ${targetConversion}`), 'target_point']],
 		include: [{
 			model: Loyalty,
 			as: 'Source',
 			required: true,
 			where: whereSource,
+			attributes: ['id', 'name', 'unit'],
 		}, {
 			model: Loyalty,
 			as: 'Target',
 			required: true,
 			where: whereTarget,
+			attributes: ['id', 'name', 'unit'],
 		}],
 		page: params.page,
 		paginate: params.item,
