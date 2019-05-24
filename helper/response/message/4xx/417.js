@@ -20,4 +20,18 @@ module.exports = {
 		message: 'Check response :field not match',
 		params: ['field'],
 	},
+	41715: {
+		message: 'You don\'t have :loyalty member card',
+		params: ['loyalty'],
+	},
+	41716: {
+		message: 'Loyalty :loyalty card seems doesn\'t have enough point',
+		params: ['loyalty'],
+	},
+	41717: {
+		message: 'Convertion rate from :source to :target not allowed or not found',
+		params: ['source', 'target'],
+	},
+	41718: 'Member card already been used',
+	41719: 'Member card with this loyalty already created.',
 };
