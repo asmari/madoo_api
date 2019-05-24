@@ -63,6 +63,24 @@ exports.doSaveMemberCard = async (request) => {
 				return new ErrorResponse(41718);
 			}
 
+			const hasMemberCard = await LoyaltyMemberCards.findOne({
+				where: {
+					loyalty_id: body.loyalty_id,
+				},
+				include: [
+					{
+						model: MemberCards,
+						where: {
+							members_id: user.id,
+						},
+					},
+				],
+			});
+
+			if (hasMemberCard) {
+				return new ErrorResponse(41719);
+			}
+
 			const memberCard = await MemberCards.create({
 				members_id: member.id,
 				card_number: body.card_number || '',
