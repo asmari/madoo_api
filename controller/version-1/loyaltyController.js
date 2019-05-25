@@ -417,11 +417,11 @@ exports.getLoyaltyMember = async (request) => {
 	if (Array.isArray(params.filter)) {
 		const loyaltyId = params.filter.map(value => parseInt(value, 10));
 
-		whereLoyalty.id = {
+		whereLoyalty.type_loyalty_id = {
 			[Op.or]: loyaltyId,
 		};
 	} else {
-		whereLoyalty.id = {
+		whereLoyalty.type_loyalty_id = {
 			[Op.or]: [parseInt(params.filter, 10)],
 		};
 	}
