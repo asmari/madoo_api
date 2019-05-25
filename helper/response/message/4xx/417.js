@@ -34,4 +34,12 @@ module.exports = {
 	},
 	41718: 'Member card already been used',
 	41719: 'Member card with this loyalty already created.',
+	41720: {
+		message: 'Point is less than :point',
+		params: ['point'],
+	},
+	41721: {
+		message: 'Point not multiply by :point',
+		params: ['point'],
+	},
 };
