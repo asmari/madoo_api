@@ -1,20 +1,91 @@
 const sequelize = require('sequelize');
+const randomstring = require('randomstring');
 const model = require('../../models');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
+const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
 
 const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
 const Conversion = model.Conversion.Get;
 const Loyalty = model.Loyalty.Get;
+const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
+const MemberCards = model.MembersCards.Get;
+const Transaction = model.Transaction.Get;
+const TransactionLog = model.TransactionLog.Get;
 
 exports.checkConvertionRate = async (request) => {
+	const whereCondition = {};
+	// const whereSource = {};
+	const whereTarget = {};
+	const allowedTo = [];
+	const allowedFrom = [];
+
 	const params = JSON.parse(JSON.stringify(request.query));
+
+
+	if (params.loyalty_id != null) {
+		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
+		const conversionData = JSON.parse(conversionRule.data_conversion);
+
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
+			conversionData.loyalty_from.forEach((id) => {
+				allowedFrom.push(id);
+			});
+		}
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
+			conversionData.loyalty_to.forEach((id) => {
+				allowedTo.push(id);
+			});
+		}
+		if (params.conversion_type === 'from') {
+			whereCondition.loyalty_id = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereTarget.name = {
+					[Op.like]: `%${params.search}%`,
+				};
+			}
+		} else {
+			// whereCondition.conversion_loyalty = params.loyalty_id;
+			// if (params.search != null && typeof (params.search) === 'string') {
+			// 	whereSource.name = {
+			// 		[Op.like]: `%${params.search}%`,
+			// 	};
+			// }
+		}
+	}
+
+	if (allowedFrom.length !== 0) {
+		whereCondition[Op.and] = {
+			loyalty_id: {
+				[Op.in]: allowedFrom,
+			},
+		};
+	}
+	if (allowedTo.length !== 0) {
+		whereCondition[Op.and] = {
+			conversion_loyalty: {
+				[Op.in]: allowedTo,
+			},
+		};
+	}
 
 	const rate = await ConvertionRate.findOne({
 		where: {
 			loyalty_id: params.loyalty_id_source,
 			conversion_loyalty: params.loyalty_id_target,
+			...whereCondition,
 		},
+		include: [{
+			model: Loyalty,
+			as: 'Source',
+			required: true,
+			attributes: ['id', 'name', 'unit'],
+		}, {
+			model: Loyalty,
+			as: 'Target',
+			required: true,
+			attributes: ['id', 'name', 'unit'],
+		}],
 	});
 
 	if (rate) {
@@ -40,16 +111,13 @@ exports.checkConvertionRate = async (request) => {
 			});
 		}
 
-		const fromRate = rate.mid_from_rate / rate.point_loyalty;
-		const toRate = rate.mid_to_rate / rate.point_conversion;
-
-		let newPoint = point * fromRate;
-		newPoint -= rate.fee;
-		newPoint *= toRate;
+		const newPoint = (rate.point_conversion / rate.point_loyalty) * point;
 
 		return new Response(20003, {
 			...params,
 			point_converted: newPoint,
+			from: rate.Source || {},
+			to: rate.Target || {},
 		});
 	}
 	// Error: Convertion rate not found
@@ -57,8 +125,302 @@ exports.checkConvertionRate = async (request) => {
 };
 
 
-exports.doConvertionPoint = async () => {
+exports.doConvertionPoint = async (request) => {
+	const whereCondition = {};
+	// const whereSource = {};
+	const whereTarget = {};
+	const allowedTo = [];
+	const allowedFrom = [];
+	const { user } = request;
 
+	const params = request.body;
+
+
+	if (params.loyalty_id != null) {
+		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
+		const conversionData = JSON.parse(conversionRule.data_conversion);
+
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
+			conversionData.loyalty_from.forEach((id) => {
+				allowedFrom.push(id);
+			});
+		}
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
+			conversionData.loyalty_to.forEach((id) => {
+				allowedTo.push(id);
+			});
+		}
+		if (params.conversion_type === 'from') {
+			whereCondition.loyalty_id = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereTarget.name = {
+					[Op.like]: `%${params.search}%`,
+				};
+			}
+		} else {
+			// whereCondition.conversion_loyalty = params.loyalty_id;
+			// if (params.search != null && typeof (params.search) === 'string') {
+			// 	whereSource.name = {
+			// 		[Op.like]: `%${params.search}%`,
+			// 	};
+			// }
+		}
+	}
+
+	if (allowedFrom.length !== 0) {
+		whereCondition[Op.and] = {
+			loyalty_id: {
+				[Op.in]: allowedFrom,
+			},
+		};
+	}
+	if (allowedTo.length !== 0) {
+		whereCondition[Op.and] = {
+			conversion_loyalty: {
+				[Op.in]: allowedTo,
+			},
+		};
+	}
+
+	const loyaltySource = await Loyalty.findOne({
+		where: {
+			id: params.loyalty_id_source,
+		},
+		attributes: ['id', 'name'],
+	});
+
+	const loyaltyTarget = await Loyalty.findOne({
+		where: {
+			id: params.loyalty_id_target,
+		},
+		attributes: ['id', 'name'],
+	});
+
+	const memberCardSource = await LoyaltyMemberCards.findOne({
+		where: {
+			loyalty_id: params.loyalty_id_source,
+		},
+		include: [
+			{
+				model: MemberCards,
+				where: {
+					members_id: user.id,
+				},
+			},
+		],
+	});
+
+	if (memberCardSource == null) {
+		return new ErrorResponse(41715, {
+			loyalty: loyaltySource.name,
+		});
+	}
+
+	const memberCardTarget = await LoyaltyMemberCards.findOne({
+		where: {
+			loyalty_id: params.loyalty_id_target,
+		},
+		include: [
+			{
+				model: MemberCards,
+				where: {
+					members_id: user.id,
+				},
+			},
+		],
+	});
+
+	if (memberCardTarget == null) {
+		return new ErrorResponse(41715, {
+			loyalty: loyaltyTarget.name,
+		});
+	}
+
+	const cardSource = memberCardSource.member_cards[0];
+	const cardTarget = memberCardTarget.member_cards[0];
+
+	const sourceRequest = new LoyaltyRequest();
+	await sourceRequest.setLoyaltyId(loyaltySource.id);
+	sourceRequest.setMemberCardId(cardSource.id);
+
+	const sourceNewPoint = await sourceRequest.getMemberPoint();
+
+	if (sourceNewPoint.status) {
+		let sourcePoint = cardSource.point_balance;
+
+		sourceNewPoint.data.forEach((val) => {
+			if (val.keyName === 'point_balance') {
+				sourcePoint = val.value;
+			}
+		});
+
+		await cardSource.update({
+			point_balance: sourcePoint,
+		});
+	}
+
+	const targetRequest = new LoyaltyRequest();
+	await targetRequest.setLoyaltyId(loyaltyTarget.id);
+	targetRequest.setMemberCardId(cardTarget.id);
+
+	const targetNewPoint = await targetRequest.getMemberPoint();
+
+	if (targetNewPoint.status) {
+		let targetPoint = cardTarget.point_balance;
+
+		targetNewPoint.data.forEach((val) => {
+			if (val.keyName === 'point_balance') {
+				targetPoint = val.value;
+			}
+		});
+
+		await cardTarget.update({
+			point_balance: targetPoint,
+		});
+	}
+
+	if (cardSource.point_balance < params.point_to_convert) {
+		return new ErrorResponse(41716, {
+			loyalty: loyaltySource.name,
+		});
+	}
+
+	const rate = await ConvertionRate.findOne({
+		where: {
+			loyalty_id: params.loyalty_id_source,
+			conversion_loyalty: params.loyalty_id_target,
+			...whereCondition,
+		},
+		include: [{
+			model: Loyalty,
+			as: 'Source',
+			required: true,
+			attributes: ['id', 'name', 'unit'],
+		}, {
+			model: Loyalty,
+			as: 'Target',
+			required: true,
+			attributes: ['id', 'name', 'unit'],
+		}],
+	});
+
+
+	if (rate) {
+		if (params.point_to_convert % rate.multiple !== 0) {
+			// Error: :message
+			throw new ErrorResponse(41721, {
+				point: rate.multiple,
+			});
+		}
+
+		if (params.point_to_convert < rate.minimum) {
+			// Error: :message
+			throw new ErrorResponse(41720, {
+				point: rate.minimum,
+			});
+		}
+
+		const rateWithFee = (rate.point_conversion / rate.point_loyalty);
+		const rateWithoutFee = (rate.mid_from_rate / rate.mid_to_rate);
+		const pointWithFee = rateWithFee * params.point_to_convert;
+		const pointWoFee = rateWithoutFee * params.point_to_convert;
+		const fee = pointWoFee - pointWithFee;
+
+		const transaction = await Transaction.create({
+			unix_id: randomstring.generate({
+				length: 8,
+				charset: 'numeric',
+			}),
+			member_cards_id: cardSource.id,
+			conversion_member_cards_id: cardTarget.id,
+			point: params.point_to_convert,
+			conversion_point: pointWithFee,
+			point_balance: cardSource.point_balance,
+			point_balance_after: (cardSource.point_balance - params.point_to_convert),
+			conversion_point_balance: cardTarget.point_balance,
+			conversion_point_balance_after: (cardTarget.point_balance + pointWithFee),
+			status: 'pending',
+			fee,
+		});
+
+		const successResponse = {
+			deduct: false,
+			add: false,
+		};
+
+		const resMinusPoint = await sourceRequest.pointMinus({
+			point: params.point_to_convert,
+		});
+
+		successResponse.deduct = resMinusPoint.status;
+
+		await TransactionLog.create({
+			unix_id: transaction.unix_id,
+			type_trx: 'point_minus',
+			status: resMinusPoint.status ? 1 : 0,
+			member_cards_id: cardSource.id,
+			point_balance: params.point_to_convert,
+		});
+
+		if (resMinusPoint.status) {
+			let pointMinus = cardSource.point_balance;
+
+			resMinusPoint.data.forEach((val) => {
+				if (val.keyName === 'point_balance') {
+					pointMinus = val.value;
+				}
+			});
+
+			await cardSource.update({
+				point_balance: pointMinus,
+			});
+		}
+
+		const resAddPoint = await targetRequest.pointAdd({
+			point: pointWithFee,
+		});
+
+		successResponse.add = resAddPoint.status;
+
+		await TransactionLog.create({
+			unix_id: transaction.unix_id,
+			type_trx: 'point_add',
+			status: resAddPoint.status ? 1 : 0,
+			member_cards_id: cardTarget.id,
+			point_balance: pointWithFee,
+		});
+
+		if (resAddPoint.status) {
+			let pointAdd = cardSource.point_balance;
+
+			resAddPoint.data.forEach((val) => {
+				if (val.keyName === 'point_balance') {
+					pointAdd = val.value;
+				}
+			});
+
+			await cardTarget.update({
+				point_balance: pointAdd,
+			});
+		}
+
+		if (successResponse.add && successResponse.deduct) {
+			await transaction.update({
+				status: 'success',
+			});
+		} else {
+			await transaction.update({
+				status: 'failed',
+			});
+		}
+
+		return new Response(20052, transaction);
+	}
+
+	return new ErrorResponse(41717, {
+		source: loyaltySource.name,
+		target: loyaltyTarget.name,
+	});
 };
 
 

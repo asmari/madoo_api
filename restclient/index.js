@@ -2,6 +2,7 @@
 const xmlBuilder = require('xmlbuilder');
 const querystring = require('querystring');
 const flat = require('flat');
+const randomstring = require('randomstring');
 const isBuffer = require('is-buffer');
 
 const { ErrorResponse } = require('../helper/response');
@@ -55,6 +56,19 @@ module.exports = class RestClient extends Request {
 
 	setLanguage(lang) {
 		this.lang = lang;
+	}
+
+	setAuthToken() {
+		this.hasAuthToken = true;
+	}
+
+	hasAuth() {
+		return Object.prototype.hasOwnProperty.call(this, 'auth');
+	}
+
+	removeAuth() {
+		this.auth = null;
+		this.authType = null;
 	}
 
 	insertBody(data = {}) {
@@ -197,7 +211,7 @@ module.exports = class RestClient extends Request {
 	async request() {
 		const responseAll = {};
 
-		if (this.auth != null) {
+		if (this.auth != null && !Object.prototype.hasOwnProperty.call(this, 'hasAuthToken')) {
 			try {
 				const responseAuth = await this.auth.request();
 
@@ -248,6 +262,8 @@ module.exports = class RestClient extends Request {
 
 	static getAnnotationFunc(funcName) {
 		let value = '';
+		const date = new Date();
+
 		switch (funcName) {
 		case 'NOWATOM':
 			value = new Date().toISOString();
@@ -255,6 +271,14 @@ module.exports = class RestClient extends Request {
 
 		case 'RANDNUM':
 			value = Math.floor(Math.random() * (9999999 - 1000000 + 1)) + 1000000;
+			break;
+
+		case 'RANDALPHA':
+			value = randomstring.generate({ length: 20 });
+			break;
+
+		case 'TODAY':
+			value = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
 			break;
 
 		default:

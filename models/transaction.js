@@ -65,6 +65,11 @@ const Transaction = model.define('transaction', {
 		allowNull: true,
 		maxLength: 45,
 	},
+	fee: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+		maxLength: 11,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
