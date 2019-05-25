@@ -22,6 +22,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/NOTIFICATIONS.log',
 		},
+		RESTCLIENT: {
+			type: 'file',
+			filename: 'logs/RESTCLIENT.log',
+		},
 	},
 	categories: {
 		default: {
@@ -39,6 +43,9 @@ log4js.configure({
 		NOTIFICATIONS: {
 			appenders: ['NOTIFICATIONS'], level: 'ALL',
 		},
+		RESTCLIENT: {
+			appenders: ['RESTCLIENT'], level: 'ALL',
+		},
 	},
 });
 
@@ -49,3 +56,4 @@ exports.RefreshAuth = log4js.getLogger('REFRESH_AUTH');
 exports.OtpLog = log4js.getLogger('OTP_LOG');
 exports.AuthApi = log4js.getLogger('AUTH_API');
 exports.Notifications = log4js.getLogger('NOTIFICATIONS');
+exports.RestClient = log4js.getLogger('RESTCLIENT');
