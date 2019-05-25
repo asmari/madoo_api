@@ -98,6 +98,7 @@ exports.doRegisterGoogle = async (request) => {
 			email: params.email,
 			g_id: params.g_id,
 			g_token: params.g_token,
+			g_name: params.full_name,
 			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		});
@@ -107,6 +108,7 @@ exports.doRegisterGoogle = async (request) => {
 			email: params.email,
 			g_id: params.g_id,
 			g_token: params.g_token,
+			g_name: params.full_name,
 			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		});
@@ -154,6 +156,7 @@ exports.doSaveMember = async (request, reply) => {
 			...params,
 			g_id: params.g_id,
 			g_token: params.g_token,
+			g_name: params.full_name,
 		});
 
 		await Pins.create({

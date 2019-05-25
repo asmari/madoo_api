@@ -96,6 +96,7 @@ exports.doRegisterFacebook = async (request) => {
 			email: params.email,
 			fb_id: params.fb_id,
 			fb_token: params.fb_token,
+			fb_name: params.full_name,
 			mobile_phone: params.mobile_phone,
 			// pin: params.pin,
 			status: 'pending',
@@ -106,6 +107,7 @@ exports.doRegisterFacebook = async (request) => {
 			email: params.email,
 			fb_id: params.fb_id,
 			fb_token: params.fb_token,
+			fb_name: params.full_name,
 			mobile_phone: params.mobile_phone,
 			// pin: params.pin,
 			status: 'pending',
@@ -154,6 +156,7 @@ exports.doSaveMember = async (request, reply) => {
 			...params,
 			fb_id: memberRegister.fb_id,
 			fb_token: memberRegister.fb_token,
+			fb_name: params.full_name,
 		});
 
 		await Pins.create({
