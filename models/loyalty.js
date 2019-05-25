@@ -117,6 +117,11 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
+	wording_note: {
+		type: Sequelize.TEXT,
+		allowNull: true,
+		require: false,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
