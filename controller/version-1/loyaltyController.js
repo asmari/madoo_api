@@ -268,10 +268,8 @@ exports.doDeleteLoyaltyMemberCard = async (request) => {
 		include: [LoyaltyMemberCards],
 	});
 
-	console.log(memberCard.dataValues);
-
 	if (memberCard != null) {
-		await MemberCardsLog.create(memberCard);
+		await MemberCardsLog.create(memberCard.toJSON());
 
 		memberCard.destroy({
 			force: true,
