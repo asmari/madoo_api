@@ -12,7 +12,7 @@ exports.registerSchema = {
 			properties: {
 				full_name: { type: 'string', maxLength: 50 },
 				email: { type: 'string' },
-				mobile_phone: { type: 'string', maxLength: 20, minLength: 9 },
+				mobile_phone: { type: 'string', maxLength: 15, minLength: 9 },
 
 			},
 		},
@@ -30,7 +30,7 @@ exports.otpSchema = {
 			// Required body paramter for register
 			required: ['mobile_phone', 'otp'],
 			properties: {
-				mobile_phone: { type: 'string', maxLength: 20, minLength: 9 },
+				mobile_phone: { type: 'string', maxLength: 15, minLength: 9 },
 				otp: { type: 'integer', maxLength: 6, minLength: 6 },
 
 			},
@@ -52,7 +52,7 @@ exports.memberSchema = {
 			properties: {
 				full_name: { type: 'string', maxLength: 50, minLength: 3 },
 				email: { type: 'string', maxLength: 50, minLength: 3 },
-				mobile_phone: { type: 'string', maxLength: 20, minLength: 9 },
+				mobile_phone: { type: 'string', maxLength: 15, minLength: 9 },
 				pin: { type: 'string', maxLength: 6, minLength: 6 },
 				fingerprint: { type: 'integer', default: 0 },
 			},
@@ -133,7 +133,7 @@ exports.updateMemberSchema = {
 					type: 'string', format: 'email',
 				},
 				mobile_phone: {
-					type: 'string', maxLength: 20, minLength: 9,
+					type: 'string', maxLength: 15, minLength: 9,
 				},
 			},
 			required: ['full_name'],
