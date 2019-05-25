@@ -7,11 +7,16 @@ const isBuffer = require('is-buffer');
 
 const { ErrorResponse } = require('../helper/response');
 const Request = require('./request');
+const Logger = require('../helper/Logger').RestClient;
 
 module.exports = class RestClient extends Request {
 	constructor(obj) {
 		super();
 		this.api = null;
+
+		Logger.info('========================================================================');
+
+		Logger.info('RUN LOYALTY', obj);
 
 		if (Object.prototype.hasOwnProperty.call(obj, 'auth')) {
 			const supportedAuth = ['oauth2', 'oauth', 'jwt'];
@@ -73,6 +78,8 @@ module.exports = class RestClient extends Request {
 
 	insertBody(data = {}) {
 		this.bodyData = data;
+
+		Logger.info('INSERT BODY', data);
 
 		if (this.auth != null) {
 			this.auth.insertBody(data);
@@ -215,6 +222,8 @@ module.exports = class RestClient extends Request {
 			try {
 				const responseAuth = await this.auth.request();
 
+				Logger.info('DOING AUTH', this.auth);
+
 				switch (this.authType) {
 				case 'oauth2':
 
@@ -240,9 +249,15 @@ module.exports = class RestClient extends Request {
 
 		const response = await super.request(this.api, this.method, this.parsedBody);
 
+		Logger.info('GET RESPONSE', response);
+
 		const responseFiltered = this.getFilterValue(response);
 
+		Logger.info('RESPONSE FILTERED', responseFiltered);
+
 		Object.assign(responseAll, responseFiltered);
+
+		Logger.info('========================================================================');
 
 		return responseAll;
 	}
