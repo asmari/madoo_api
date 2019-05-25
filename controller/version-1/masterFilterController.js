@@ -83,16 +83,19 @@ exports.getFilterListCard = async (request) => {
 		});
 
 
-		const data = loyaltyMemberCards.map((value) => {
-			const innerData = value.loyalties.map(value2 => ({
-				id: value2.id,
-				name: value2.name,
-			}));
+		const data = loyaltyMemberCards.map(value => value.loyalties[0].type_loyalty_id);
 
-			return innerData[0] || [];
+
+		const filter = await LoyaltyType.Get.findAll({
+			where: {
+				id: {
+					[Op.in]: data,
+				},
+			},
+			attributes: ['id', ['title', 'name']],
 		});
 
-		return new Response(20018, data);
+		return new Response(20018, filter);
 	}
 
 	throw new ErrorResponse(41705);
