@@ -2,6 +2,8 @@ const model = require('../models/index');
 const RestClient = require('./index');
 
 const Loyalty = model.Loyalty.Get;
+const MemberCards = model.MembersCards.Get;
+const MemberCardsToken = model.MemberCardsAuthToken.Get;
 
 module.exports = class LoyaltyRequest {
 	static get STATUS() {
@@ -201,6 +203,10 @@ module.exports = class LoyaltyRequest {
 		}));
 	}
 
+	setMemberCardId(id) {
+		this.memberCardId = id;
+	}
+
 	async process(type = 0, data) {
 		try {
 			if (type === 0) {
@@ -211,11 +217,51 @@ module.exports = class LoyaltyRequest {
 
 			const restClient = new RestClient(dataJson);
 
+			if (Object.prototype.hasOwnProperty.call(this, 'memberCardId')) {
+				restClient.setAuthToken();
+				const memberCard = await MemberCards.findOne({
+					where: {
+						id: this.memberCardId,
+					},
+				});
+
+				if (restClient.hasAuth()) {
+					const memberToken = await MemberCardsToken.findOne({
+						where: {
+							members_cards_id: memberCard.id,
+						},
+					});
+
+					const tokenValue = JSON.parse(memberToken.auth_value);
+
+					switch (memberToken.type_auth) {
+					case 'oauth2':
+						if (tokenValue && tokenValue.length > 0) {
+							tokenValue.forEach((value) => {
+								if (value.keyName === 'token') {
+									restClient.changeHeader('Authorization', `Bearer ${value.value}`);
+								}
+							});
+
+							restClient.removeAuth();
+						}
+						break;
+					default:
+						break;
+					}
+				}
+
+				restClient.insertBody({
+					...memberCard.toJSON(),
+					...data,
+				});
+			} else {
+				restClient.insertBody(data);
+			}
+
 			if (this.lang != null) {
 				restClient.setLanguage(this.lang);
 			}
-
-			restClient.insertBody(data);
 
 			return restClient.request();
 		} catch (err) {
@@ -230,5 +276,13 @@ module.exports = class LoyaltyRequest {
 
 	getMemberPoint(data = {}) {
 		return this.process(LoyaltyRequest.TYPE.POINT_BALANCE, data);
+	}
+
+	pointAdd(data = {}) {
+		return this.process(LoyaltyRequest.TYPE.POINT_PLUS, data);
+	}
+
+	pointMinus(data = {}) {
+		return this.process(LoyaltyRequest.TYPE.POINT_MINUS, data);
 	}
 };
