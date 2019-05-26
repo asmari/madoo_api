@@ -8,6 +8,7 @@ const { ErrorResponse, Response } = require('../../helper/response');
 const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
+const NotificationSettings = model.NotificationSettings.Get;
 
 // register google oauth
 exports.doRegisterGoogle = async (request) => {
@@ -173,6 +174,13 @@ exports.doSaveMember = async (request, reply) => {
 			id: member.id,
 			oauth: true,
 		};
+
+		await NotificationSettings.create({
+			members_id: member.id,
+			promotion: 1,
+			conversion: 1,
+			other: 1,
+		});
 
 		const token = await new Promise((resolve, reject) => {
 			reply.jwtSign(payload, (err, accessToken) => {

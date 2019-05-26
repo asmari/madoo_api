@@ -7,6 +7,7 @@ const OtpNewHelper = require('../../helper/OtpNewHelper');
 const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
+const NotificationSettings = model.NotificationSettings.Get;
 
 // register fb oauth
 exports.doRegisterFacebook = async (request) => {
@@ -167,6 +168,13 @@ exports.doSaveMember = async (request, reply) => {
 
 		await memberRegister.update({
 			status: 'registered',
+		});
+
+		await NotificationSettings.create({
+			members_id: member.id,
+			promotion: 1,
+			conversion: 1,
+			other: 1,
 		});
 
 		const payload = {

@@ -11,6 +11,7 @@ const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 const Otp = model.Otp.Get;
 const UpdateMemberLogs = model.UpdateMemberLogs.Get;
+const NotificationSettings = model.NotificationSettings.Get;
 
 // Index Auth member
 exports.memberIndex = async () => {
@@ -174,6 +175,14 @@ exports.doSaveMember = async (request, reply) => {
 			id: member.id,
 			oauth: false,
 		};
+
+		await NotificationSettings.create({
+			members_id: member.id,
+			promotion: 1,
+			conversion: 1,
+			other: 1,
+		});
+
 		const accessToken = await new Promise((resolve, reject) => {
 			reply.jwtSign(payload, (err, token) => {
 				if (err) {
