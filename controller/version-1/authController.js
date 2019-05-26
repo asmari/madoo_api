@@ -78,6 +78,10 @@ exports.doLogin = async (request, reply) => {
 			oauth: false,
 		};
 
+		await pin.update({
+			wrong: 0,
+		});
+
 		const accessToken = await new Promise((resolve, reject) => {
 			reply.jwtSign(payload, (err, token) => {
 				if (err) {
