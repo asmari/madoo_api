@@ -161,17 +161,15 @@ exports.doRegisterToken = async (request) => {
 };
 // save notification token
 exports.doChangeSetting = async (request) => {
+	const { user } = request;
 	const params = JSON.parse(JSON.stringify(request.query));
-	const token = await request.jwtVerify();
-	const setting = await NotificationSetting.findOne({ where: { members_id: token.id } });
+
+	const setting = await NotificationSetting.findOne({ where: { members_id: user.id } });
 
 	let res = null;
 	if (setting) {
 		setting.update(params);
 		res = setting;
-	} else {
-		params.members_id = token.id;
-		res = await NotificationSetting.create(params);
 	}
 	return new Response(20044, res);
 };
