@@ -237,11 +237,21 @@ exports.doPinValidation = async (request) => {
 	const token = await request.jwtVerify();
 	const params = request.body;
 
-	const pinMember = await Pins.findOne({ attributes: ['pin'], where: { members_id: token.id } });
+	const pinMember = await Pins.findOne({ attributes: ['id', 'pin', 'wrong'], where: { members_id: token.id } });
+	const member = await Members.findOne({
+		where: {
+			id: token.id,
+		},
+		paranoid: false,
+	});
+
+	if (member.deleted_at != null) {
+		throw new ErrorResponse(40112);
+	}
+
 
 	if (pinMember) {
 		if (bcrypt.compareSync(params.pin.toString(), pinMember.pin.toString())) {
-
 			await pinMember.update({
 				wrong: 0,
 			});
@@ -249,6 +259,8 @@ exports.doPinValidation = async (request) => {
 			return new Response(20026, { pin_valid: true });
 		}
 		const wrong = pinMember.wrong == null ? 0 : pinMember.wrong;
+
+		console.log(wrong);
 
 		if (wrong >= 4) {
 			await Members.destroy({
@@ -261,6 +273,7 @@ exports.doPinValidation = async (request) => {
 		await pinMember.update({
 			wrong: wrong + 1,
 		});
+
 		return new ErrorResponse(40103);
 	}
 
