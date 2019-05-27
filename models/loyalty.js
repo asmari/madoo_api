@@ -129,6 +129,7 @@ const Loyalty = model.define('loyalty', {
 	paranoid: true,
 	freezeTableName: true,
 	tableName: 'loyalty',
+	timezone: '+07:00',
 	classMethods: {
 		associate: (models) => {
 			Loyalty.belongsTo(models.LoyaltyMemberCards);
