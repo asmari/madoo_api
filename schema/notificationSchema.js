@@ -103,6 +103,18 @@ exports.notificationListSchema = {
 	},
 };
 
+exports.notificationSettingsSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest API for get notification settings',
+	},
+};
+
 exports.notifSettingSchema = {
 	schema: {
 		security: [
@@ -112,8 +124,9 @@ exports.notifSettingSchema = {
 			},
 		],
 		description: 'Rest API for Create or Update Notification Setting',
-		querystring: {
+		body: {
 			type: 'object',
+			required: ['promotion', 'conversion', 'other'],
 			properties: {
 				promotion: {
 					type: 'integer',

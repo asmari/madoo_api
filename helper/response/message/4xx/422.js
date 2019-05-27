@@ -41,7 +41,7 @@ module.exports = {
 		params: ['field'],
 	},
 	42211: 'Required this field',
-
+	42212: 'Notification setting not found',
 	42298: {
 		message: ':message',
 		params: ['message'],

@@ -5,6 +5,12 @@ async function routes(fastify) {
 	// register or update token
 	fastify.post('/token', notificationSchema.fcmTokenSchema, notificationController.doRegisterToken);
 
+	// get notification settings
+	fastify.get('/setting', {
+		...notificationSchema.notificationSettingsSchema,
+		beforeHandler: [fastify.authenticate],
+	}, notificationController.getNotificationSetting);
+
 	// register or update setting notif
 	fastify.post('/setting', {
 		...notificationSchema.notifSettingSchema,
