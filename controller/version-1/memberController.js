@@ -241,8 +241,26 @@ exports.doPinValidation = async (request) => {
 
 	if (pinMember) {
 		if (bcrypt.compareSync(params.pin.toString(), pinMember.pin.toString())) {
+
+			await pinMember.update({
+				wrong: 0,
+			});
+
 			return new Response(20026, { pin_valid: true });
 		}
+		const wrong = pinMember.wrong == null ? 0 : pinMember.wrong;
+
+		if (wrong >= 4) {
+			await Members.destroy({
+				where: {
+					id: token.id,
+				},
+			});
+		}
+
+		await pinMember.update({
+			wrong: wrong + 1,
+		});
 		return new ErrorResponse(40103);
 	}
 
