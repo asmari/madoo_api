@@ -159,17 +159,34 @@ exports.doRegisterToken = async (request) => {
 	}
 	return new Response(20021, token);
 };
+
+exports.getNotificationSetting = async (request) => {
+	const { user } = request;
+
+	const setting = await NotificationSetting.findOne({ where: { members_id: user.id } });
+
+	if (setting) {
+		return new Response(20053, setting);
+	}
+
+	return new ErrorResponse(42212);
+};
+
 // save notification token
 exports.doChangeSetting = async (request) => {
-	const { user } = request;
-	const params = JSON.parse(JSON.stringify(request.query));
+	const { user, body } = request;
 
 	const setting = await NotificationSetting.findOne({ where: { members_id: user.id } });
 
 	let res = null;
 	if (setting) {
-		setting.update(params);
+		setting.update(body);
 		res = setting;
+	} else {
+		res = await NotificationSetting.create({
+			...body,
+			members_id: user.id,
+		});
 	}
 	return new Response(20044, res);
 };
