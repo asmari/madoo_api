@@ -3,12 +3,17 @@ const randomstring = require('randomstring');
 const model = require('../../models');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
+const EmailSender = require('../../helper/EmailSender');
+const FcmSender = require('../../helper/FcmSender');
 
 const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
 const Conversion = model.Conversion.Get;
 const Loyalty = model.Loyalty.Get;
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
+const Member = model.Members.Get;
+const Notification = model.Notification.Get;
+const NotificationMember = model.NotificationMembers.Get;
 const MemberCards = model.MembersCards.Get;
 const Transaction = model.Transaction.Get;
 const TransactionLog = model.TransactionLog.Get;
@@ -186,15 +191,23 @@ exports.doConvertionPoint = async (request) => {
 		where: {
 			id: params.loyalty_id_source,
 		},
-		attributes: ['id', 'name'],
+		attributes: ['id', 'name', 'unit'],
 	});
+
+	if (!loyaltySource) {
+		throw new ErrorResponse(41722);
+	}
 
 	const loyaltyTarget = await Loyalty.findOne({
 		where: {
 			id: params.loyalty_id_target,
 		},
-		attributes: ['id', 'name'],
+		attributes: ['id', 'name', 'unit'],
 	});
+
+	if (!loyaltyTarget) {
+		throw new ErrorResponse(41723);
+	}
 
 	const memberCardSource = await LoyaltyMemberCards.findOne({
 		where: {
@@ -233,55 +246,6 @@ exports.doConvertionPoint = async (request) => {
 	if (memberCardTarget == null) {
 		return new ErrorResponse(41715, {
 			loyalty: loyaltyTarget.name,
-		});
-	}
-
-	const cardSource = memberCardSource.member_cards[0];
-	const cardTarget = memberCardTarget.member_cards[0];
-
-	const sourceRequest = new LoyaltyRequest();
-	await sourceRequest.setLoyaltyId(loyaltySource.id);
-	sourceRequest.setMemberCardId(cardSource.id);
-
-	const sourceNewPoint = await sourceRequest.getMemberPoint();
-
-	if (sourceNewPoint.status) {
-		let sourcePoint = cardSource.point_balance;
-
-		sourceNewPoint.data.forEach((val) => {
-			if (val.keyName === 'point_balance') {
-				sourcePoint = val.value;
-			}
-		});
-
-		await cardSource.update({
-			point_balance: sourcePoint,
-		});
-	}
-
-	const targetRequest = new LoyaltyRequest();
-	await targetRequest.setLoyaltyId(loyaltyTarget.id);
-	targetRequest.setMemberCardId(cardTarget.id);
-
-	const targetNewPoint = await targetRequest.getMemberPoint();
-
-	if (targetNewPoint.status) {
-		let targetPoint = cardTarget.point_balance;
-
-		targetNewPoint.data.forEach((val) => {
-			if (val.keyName === 'point_balance') {
-				targetPoint = val.value;
-			}
-		});
-
-		await cardTarget.update({
-			point_balance: targetPoint,
-		});
-	}
-
-	if (cardSource.point_balance < params.point_to_convert) {
-		return new ErrorResponse(41716, {
-			loyalty: loyaltySource.name,
 		});
 	}
 
@@ -326,6 +290,55 @@ exports.doConvertionPoint = async (request) => {
 		const pointWoFee = rateWithoutFee * params.point_to_convert;
 		const fee = pointWoFee - pointWithFee;
 
+		const cardSource = memberCardSource.member_cards[0];
+		const cardTarget = memberCardTarget.member_cards[0];
+
+		const sourceRequest = new LoyaltyRequest();
+		await sourceRequest.setLoyaltyId(loyaltySource.id);
+		sourceRequest.setMemberCardId(cardSource.id);
+
+		const sourceNewPoint = await sourceRequest.getMemberPoint();
+
+		if (sourceNewPoint.status) {
+			let sourcePoint = cardSource.point_balance;
+
+			sourceNewPoint.data.forEach((val) => {
+				if (val.keyName === 'point_balance') {
+					sourcePoint = val.value;
+				}
+			});
+
+			await cardSource.update({
+				point_balance: sourcePoint,
+			});
+		}
+
+		const targetRequest = new LoyaltyRequest();
+		await targetRequest.setLoyaltyId(loyaltyTarget.id);
+		targetRequest.setMemberCardId(cardTarget.id);
+
+		const targetNewPoint = await targetRequest.getMemberPoint();
+
+		if (targetNewPoint.status) {
+			let targetPoint = cardTarget.point_balance;
+
+			targetNewPoint.data.forEach((val) => {
+				if (val.keyName === 'point_balance') {
+					targetPoint = val.value;
+				}
+			});
+
+			await cardTarget.update({
+				point_balance: targetPoint,
+			});
+		}
+
+		if (cardSource.point_balance < params.point_to_convert) {
+			return new ErrorResponse(41716, {
+				loyalty: loyaltySource.name,
+			});
+		}
+
 		const transaction = await Transaction.create({
 			unix_id: randomstring.generate({
 				length: 8,
@@ -343,78 +356,145 @@ exports.doConvertionPoint = async (request) => {
 			fee,
 		});
 
-		const successResponse = {
-			deduct: false,
-			add: false,
-		};
+		const responseDone = new Promise(async (resolve) => {
+			const successResponse = {
+				deduct: false,
+				add: false,
+			};
 
-		const resMinusPoint = await sourceRequest.pointMinus({
-			point: params.point_to_convert,
-		});
+			const resMinusPoint = await sourceRequest.pointMinus({
+				point: params.point_to_convert,
+			});
 
-		successResponse.deduct = resMinusPoint.status;
+			successResponse.deduct = resMinusPoint.status;
 
-		await TransactionLog.create({
-			unix_id: transaction.unix_id,
-			type_trx: 'point_minus',
-			status: resMinusPoint.status ? 1 : 0,
-			member_cards_id: cardSource.id,
-			point_balance: params.point_to_convert,
-		});
+			await TransactionLog.create({
+				unix_id: transaction.unix_id,
+				type_trx: 'point_minus',
+				status: resMinusPoint.status ? 1 : 0,
+				member_cards_id: cardSource.id,
+				point_balance: params.point_to_convert,
+			});
 
-		if (resMinusPoint.status) {
-			let pointMinus = cardSource.point_balance;
+			if (resMinusPoint.status) {
+				let pointMinus = cardSource.point_balance;
 
-			resMinusPoint.data.forEach((val) => {
-				if (val.keyName === 'point_balance') {
-					pointMinus = val.value;
+				resMinusPoint.data.forEach((val) => {
+					if (val.keyName === 'point_balance') {
+						pointMinus = val.value;
+					}
+				});
+
+				await cardSource.update({
+					point_balance: pointMinus,
+				});
+			}
+
+			const resAddPoint = await targetRequest.pointAdd({
+				point: pointWithFee,
+			});
+
+			successResponse.add = resAddPoint.status;
+
+			await TransactionLog.create({
+				unix_id: transaction.unix_id,
+				type_trx: 'point_add',
+				status: resAddPoint.status ? 1 : 0,
+				member_cards_id: cardTarget.id,
+				point_balance: pointWithFee,
+			});
+
+			if (resAddPoint.status) {
+				let pointAdd = cardSource.point_balance;
+
+				resAddPoint.data.forEach((val) => {
+					if (val.keyName === 'point_balance') {
+						pointAdd = val.value;
+					}
+				});
+
+				await cardTarget.update({
+					point_balance: pointAdd,
+				});
+			}
+
+			if (successResponse.add && successResponse.deduct) {
+				await transaction.update({
+					status: 'success',
+				});
+
+				const member = await Member.findOne({
+					where: {
+						id: user.id,
+					},
+				});
+
+				const date = new Date(transaction.created_at);
+
+				if (member) {
+					const emailSender = new EmailSender();
+					await emailSender.sendConversion(member.email, {
+						name: member.full_name,
+						date: `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}`,
+						conversionId: transaction.unix_id,
+						loyaltySource: loyaltySource.name,
+						pointSource: params.point_to_convert,
+						unitSource: loyaltySource.unit,
+						loyaltyTarget: loyaltyTarget.name,
+						pointTarget: pointWithFee,
+						unitTarget: loyaltyTarget.unit,
+						currentPointSource: transaction.point_balance_after,
+						currentPointTarget: transaction.conversion_point_balance_after,
+					});
 				}
+			} else {
+				await transaction.update({
+					status: 'failed',
+				});
+			}
+
+			const notification = await Notification.create({
+				loyalty_id: loyaltySource.id,
+				type: 'conversion',
+				promo_id: 0,
+				title: `Conversion ${transaction.status}`,
+				valid_until: new Date(),
+				description: 'Conversion Success',
 			});
 
-			await cardSource.update({
-				point_balance: pointMinus,
-			});
-		}
+			if (notification) {
+				await NotificationMember.create({
+					members_id: user.id,
+					notification_id: notification.id,
+					read: 0,
+				});
 
-		const resAddPoint = await targetRequest.pointAdd({
-			point: pointWithFee,
+				await FcmSender.sendToUser(user.id, {
+					data: {
+						param: JSON.stringify({
+							id: notification.id,
+							title: notification.title,
+							type: notification.type,
+							loyalty_id: notification.loyalty_id,
+						}),
+						image: notification.image || null,
+					},
+					priority: 'normal',
+					notification: {
+						title: notification.title,
+						body: notification.description,
+						clickAction: notification.click,
+					},
+				});
+			}
+			resolve(new Response(20052, transaction));
 		});
 
-		successResponse.add = resAddPoint.status;
-
-		await TransactionLog.create({
-			unix_id: transaction.unix_id,
-			type_trx: 'point_add',
-			status: resAddPoint.status ? 1 : 0,
-			member_cards_id: cardTarget.id,
-			point_balance: pointWithFee,
+		const responseTimeout = new Promise((resolve) => {
+			setTimeout(() => resolve(new Response(20200, transaction)), 30000);
 		});
 
-		if (resAddPoint.status) {
-			let pointAdd = cardSource.point_balance;
-
-			resAddPoint.data.forEach((val) => {
-				if (val.keyName === 'point_balance') {
-					pointAdd = val.value;
-				}
-			});
-
-			await cardTarget.update({
-				point_balance: pointAdd,
-			});
-		}
-
-		if (successResponse.add && successResponse.deduct) {
-			await transaction.update({
-				status: 'success',
-			});
-		} else {
-			await transaction.update({
-				status: 'failed',
-			});
-		}
-
-		return new Response(20052, transaction);
+		return Promise.race([responseDone, responseTimeout]);
 	}
 
 	return new ErrorResponse(41717, {

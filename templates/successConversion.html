@@ -1,0 +1,466 @@
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta charset="utf-8"/>
+  <title>ConversionSuccess</title>
+  <style>
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    margin: 0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .invoice-table-wrapper {
+    width: 100%;
+    height: 100%;
+    max-width: 650px;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background: #F2F2F2;
+  }
+
+  .invoice-table {
+    width: 100%;
+    height: 100%;
+    max-width: 600px;
+    border-spacing: 0;
+    border-collapse: collapse;
+    border: 1px solid #E6E7EB;
+    margin: 0 auto;
+  }
+
+  .logo {
+    margin: 0;
+    padding: 20px;
+    text-align: left;
+  }
+
+  .invoice-header-table {
+    border-spacing: 0;
+    border-radius: 10px 10px 0 0;
+    border-collapse: collapse;
+    width: 100%;
+    border: none;
+    height: 64px;
+    background-color: red;
+  }
+
+  .customer-name {
+    padding: 24px 0px 0px 16px;
+  }
+
+  .amount-title {
+    font-size: 11px;
+    color: #AAA;
+    margin: 10px 0;
+  }
+
+  .amount-paid {
+    font-weight: 600;
+    font-size: 32px;
+    display: inline-block;
+    padding: 0 10px 10px 0;
+    margin: 0;
+    vertical-align: -webkit-baseline-middle;
+  }
+
+  .payment-type {
+    display: inline-block;
+    border-radius: 4px;
+    padding: 5px 10px;
+    color: white;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    background: #39B351;
+    margin: 0;
+  }
+
+  .payment-type.payment-type-go {
+    background: #5CA5DA;
+  }
+
+  .payment-tip {
+    color: #777;
+    padding: 10px 0 25px;
+    border-bottom: 1px solid #E6E7EB;
+    margin: 0 0 10px;
+    font-size: 13px;
+  }
+
+  .order-wrapper {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
+    padding: 0 20px;
+
+  }
+
+  .promotion_banner {
+    width: 100%;
+    padding: 0 25px;
+  }
+
+  .order-wrapper span {
+    color: #AAA;
+    font-size: 11px;
+    text-transform: uppercase;
+    display: block;
+    padding-bottom: 7px;
+  }
+
+  .pickup-time {
+    color: #178FFC;
+    text-transform: uppercase;
+    font-size: 11px;
+    vertical-align: text-top;
+    padding-left: 8px;
+  }
+
+  .pickup-time strong {
+    color: #333;
+  }
+
+  .drop-time {
+    color: #EF8F03;
+    text-transform: uppercase;
+    font-size: 11px;
+    vertical-align: text-top;
+    padding-left: 8px;
+  }
+
+  .drop-time strong {
+    color: #333;
+  }
+
+  .location-details {
+    padding: 0 22px;
+    margin: 10px 6px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .location-title {
+    font-weight: bold;
+    text-transform: uppercase;
+    display: block;
+    padding-bottom: 10px;
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  .driver-phone-number {
+    color: #777777;
+    font-size: 10px;
+  }
+
+  .order-rating-text {
+    background: #EEE;
+    color: #999;
+    font-size: 10px;
+    display: inline-block;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 0px;
+  }
+
+  .order-summary-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    padding: 26px 0px 5px;
+    border-top: 1px solid #E6E7EB;
+  }
+
+  .order-summary-details {
+    font-size: 13px;
+    color: #777777;
+    padding-bottom: 18px;
+  }
+
+  .order-summary-value {
+    font-size: 14px;
+    text-align: right;
+    font-weight: 500;
+    padding-bottom: 18px;
+  }
+
+  .total-price {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 15px 0;
+  }
+
+  .total-price-value {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
+    padding: 15px 0;
+  }
+
+  .paid-with-text {
+    font-size: 11px;
+    color: #777;
+    padding: 0 10px 10px 0;
+  }
+
+  .help-text {
+    font-size: 11px;
+    color: #999;
+    text-align: -webkit-right;
+    padding: 5px 25px;
+    font-weight: 300;
+  }
+
+  .address {
+    font-size: 11px;
+    color: #999;
+    text-align: -webkit-center;
+    padding: 5px 0;
+  }
+
+  .service_logo{
+    width: 35%;
+  }
+
+  .brand_logo{
+    height: 20px;
+    margin-top: 25px;
+  }
+
+  .social_site_img{
+    text-decoration: none
+  }
+
+  @media only screen and (max-width: 500px) {
+    td.full {
+      display: block !important;
+      width: 100% !important;
+    }
+
+    .driver-details {
+      padding: 10px !important;
+    }
+
+    .order-wrapper {
+      font-size: 12px !important;
+      padding: 0 0 0 20px !important;
+      vertical-align: -webkit-baseline-middle !important;
+    }
+  }
+
+  @media only screen and (max-width: 640px) {
+    .promotion_banner {
+      padding: 0 20px;
+    }
+  }
+
+  @media screen and (min-width: 500px) {
+    .card-table {
+      width: 50% !important;
+    }
+
+    .user-info {
+      padding: 10px 0 0 10px !important;
+    }
+  }
+
+</style>
+
+</head>
+<body style="font-family:'Lato', sans-serif;
+    font-size:14px;
+    margin:0;
+    box-sizing: border-box;
+    color: black">
+<table style="width: 100%;
+    height: 100%;
+    max-width: 650px;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background: #F2F2F2;" align="center">
+  <tbody>
+  <tr>
+    <td style="padding:20px;">
+      <table style="width: 100%;
+          height: 100%;
+          max-width: 600px;
+          border-spacing: 0;
+          border-collapse: collapse;
+          border: 1px solid #E6E7EB;
+          margin: 0 auto;" align="center">
+        <tbody>
+        <tr>
+  <td>
+    <table width="100%" align="center"
+           style="border-spacing: 0; border-collapse: collapse; width:100%;">
+      <thead>
+      <tr  bgcolor=#161440>
+        <th width="90%">
+          <h2 style="margin:0; padding:20px; text-align: left;">
+            <img alt="SWAPZ" class="service_logo" src="https://res.cloudinary.com/dvwnomp76/image/upload/v1555322124/Swapz%20Email/swapz_horizontal_white_Artboard_17.png" />
+          </h2>
+        </th>
+        <!--<th width="10%">
+          <h2 style="padding:20px; margin:0; box-sizing:border-box;">
+            <img alt="swapz" class="brand_logo" src="" />
+          </h2>
+        </th>-->
+      </tr>
+      </thead>
+    </table>
+  </td>
+</tr>
+        <tr bgcolor="white">
+  <td style="padding:20px 20px 10px;">
+    <table style="border-spacing: 0; border-collapse: collapse; width:100%;">
+      <tbody>
+      <tr>
+        <span style="font-size:15px"> Hi <span style="font-weight:700;">${name}
+          ,</span></span>
+      </tr>
+      <tr>
+        <p style="color: #636363;">
+          Thank you for using swapz. Your point conversion is <span style="font-weight:700;">complete !</span></span>
+        </p>
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+
+
+<tr bgcolor="white">
+  <td>
+    <table width="100%" align="center" style="border-spacing: 0; border-collapse: collapse;">
+      <tbody>
+      <tr>
+        <td width="90%">
+          <h2 style="font-size: 14px; font-weight: 600; margin: 0; padding: 0 20px;"
+              class="order-wrapper">
+            <span style="color: #AAA; font-size: 11px; text-transform: uppercase; display: block; padding-bottom: 10px;">conversion Details</span>
+          ${date}
+          </h2>
+          <h2 style="margin: 0; padding: 12px 0 0 21px; font-weight: 500;">
+            <span style="color: #AAA; font-size: 10px; text-transform: uppercase; display: block; padding-bottom: 7px;">conversion id: ${conversionId}</span>
+          </h2>
+        </td>
+        <!--<td width="10%" style="padding:0 20px;">
+          <img src="https://res.cloudinary.com/dvwnomp76/image/upload/c_scale,w_59/v1558001269/Swapz%20Email/conversion_icon_2_2.png"
+               alt="Conversion Details"
+               style="vertical-align: -webkit-baseline-middle; float:right;"/>
+        </td>-->
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+
+
+<tr bgcolor="white">
+  <td style="padding: 20px 20px 0 20px;">
+    <table width="100%" align="center" style="border-spacing: 0; border-collapse: collapse;">
+      <tbody>
+      <tr>
+        <td>
+          <img src="https://res.cloudinary.com/dvwnomp76/image/upload/c_scale,w_18/v1558005433/Swapz%20Email/minus_icon_2.png"
+               alt="FROM"/>
+          <span style="color: #178FFC; text-transform: uppercase; font-size: 11px; vertical-align: text-top; padding-left: 8px;">CONVERT FROM <strong
+          style="color: #333;"></strong></span>
+          <p style="border-left: 1px dotted #ccc; padding: 0 22px; margin: 10px 6px; font-size: 13px; line-height: 1.4;">
+            <span style="font-weight: 500px; display: block; padding-bottom: 10px; font-size: 14px; line-height: 1;">${loyaltySource}</span>
+            <span style="font-weight: bold; display: block; padding-bottom: 10px; font-size: 14px; line-height: 1;"> -${pointSource} ${unitSource}</span>
+
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td style="border-bottom: 1px solid #E6E7EB;">
+          <img src="https://res.cloudinary.com/dvwnomp76/image/upload/c_scale,w_18/v1558005433/Swapz%20Email/plus_icon_2.png"
+               alt="drop"/>
+          <span style="color: #EF8F03; text-transform: uppercase; font-size: 11px; vertical-align: text-top; padding-left: 8px;">CONVERT TO <strong
+          style="color: #333;"></strong></span>
+          <p style="padding: 0 22px; margin: 10px 6px; font-size: 13px; line-height: 1.4;">
+            <span style="font-weight: 500px; display: block; padding-bottom: 10px; font-size: 14px; line-height: 1;">${loyaltyTarget}</span>
+            <span style="font-weight: bold; display: block; padding-bottom: 10px; font-size: 14px; line-height: 1;">+${pointTarget} ${unitTarget}</span>
+
+          </p>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>
+
+<tr bgcolor="white">
+  <td style="padding:0 20px;">
+    <h2 style="font-size: 11px; font-weight: 600; color: #999; padding: 7px 0 5px; border-top: 0px solid #E6E7EB;">
+    <span style="color: #AAA; font-size: 11px; text-transform: uppercase; display: block; padding-bottom: 10px;">Point balance after conversion </span>
+    </h2>
+  </td>
+</tr>
+
+<tr bgcolor="white">
+  <td style="padding:0 20px;">
+    <table width="100%" align="center" style="border-spacing: 0; border-collapse: collapse;">
+      <tbody>
+      <tr>
+        <td style="font-size: 13px; color: #777777; padding-bottom: 18px;"> ${loyaltySource}
+        </td>
+        <td style="font-size: 14px; text-align: right; font-weight: 500; padding-bottom: 18px;">
+          ${currentPointSource} ${unitSource}
+        </td>
+      </tr>
+          <tr>
+            <td style="font-size: 13px; color: #777777; padding-bottom: 18px;">${loyaltyTarget}</td>
+            <td style="font-size: 14px; text-align: right; font-weight: 500; padding-bottom: 18px;">
+              ${currentPointTarget} ${unitTarget}
+            </td>
+          </tr>
+      </tr>
+
+      </tbody>
+    </table>
+
+        </tbody>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+  <td>
+    <p style="font-size: 11px; color: #999; text-align: right; padding: 10px 25px; font-weight: 300;margin-top: 0px;">
+      Need help? Contact at: <span style="font-weight:500;">support@swapz.co</span>
+    </p>
+  </td>
+</tr>
+
+<tr bgcolor="#E8E8E8">
+  <td style="padding:0 20px;">
+    <h2 style="margin: 0;text-align: center;padding: 8px 0 18px 0;">
+          <a target="_blank" style="text-decoration: none;" href= "https://www.instagram.com/swapzdotco">
+            <img alt="Instagram" class="social_site_img" src="https://res.cloudinary.com/dvwnomp76/image/upload/c_scale,w_38/v1558006194/Swapz%20Email/group_4.png" />
+          </a>
+          <a target="_blank" style="text-decoration: none;" href= "https://www.facebook.com/swapzdotco" >
+            <img alt="Facebook" class="social_site_img" src="https://res.cloudinary.com/dvwnomp76/image/upload/c_scale,w_38/v1558006194/Swapz%20Email/group_2.png" />
+          </a>
+    </h2>
+  </td>
+</tr>
+
+  </tbody>
+</table>
+</body>
+</html>

@@ -42,4 +42,6 @@ module.exports = {
 		message: 'Point not multiply by :point',
 		params: ['point'],
 	},
+	41722: 'Loyalty source not found',
+	41723: 'Loyalty target not found',
 };
