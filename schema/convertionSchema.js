@@ -87,6 +87,29 @@ exports.getDestination = {
 	},
 };
 
+exports.getSource = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest API for get all available conversion source',
+		querystring: {
+			type: 'object',
+			properties: {
+				page: {
+					type: 'integer',
+				},
+				item: {
+					type: 'integer',
+				},
+			},
+		},
+	},
+};
+
 exports.doConvertionSchema = {
 	schema: {
 		description: 'Rest API to convert point',
