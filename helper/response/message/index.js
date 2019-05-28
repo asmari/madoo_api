@@ -3,10 +3,12 @@ const error401 = require('./4xx/401');
 const error417 = require('./4xx/417');
 const error422 = require('./4xx/422');
 const message200 = require('./2xx/200');
+const message202 = require('./2xx/202');
 
 const instance = {
 	validations: {
 		...message200,
+		...message202,
 		...error400,
 		...error401,
 		...error417,
