@@ -11,31 +11,54 @@ module.exports = class EmailSender {
 		this.apiKey = config.mail.apiKey;
 		this.privateKey = 'RQa0Acew3nasbf6I5kIUI1kfSTqhrEsF';
 		this.url = 'https://api.sendinblue.com/v3/smtp/email';
-		console.log(this);
 	}
 
+	async sendConversion(to, data) {
+		return this.process({
+			to,
+			data,
+			template: `${__dirname}/../templates/successConversion.html`,
+			body: {
+				name: 'Conversion Success',
+				subject: 'Conversion Success',
+				sender: {
+					email: 'swapz@member.id',
+					name: 'From Swapz',
+				},
+				to: [
+					{
+						email: to,
+						name: 'test',
+					},
+				],
+				replyTo: {
+					email: 'swapz@member.id',
+					name: 'From Swapz',
+				},
+				tags: ['conversion_success'],
+			},
+		});
+	}
 
 	async send(to, memberId) {
-		const { apiKey } = this;
-		return new Promise((resolve, reject) => {
-			const token = jwt.sign({
-				email: to,
-				id: memberId,
-			}, this.privateKey);
+		const token = jwt.sign({
+			email: to,
+			id: memberId,
+		}, this.privateKey);
 
-			const file = EmailSender.replaceString(fs.readFileSync(`${__dirname}/../templates/email.html`, 'utf-8'), {
+		return this.process({
+			to,
+			data: {
 				url: `${config.cms}?token=${token}`,
-			});
-
-			const data = {
+			},
+			template: `${__dirname}/../templates/email.html`,
+			body: {
 				name: 'Email Verification Sent',
 				subject: 'Email Verification',
 				sender: {
 					email: 'swapz@member.id',
 					name: 'From Swapz',
 				},
-				htmlContent: file,
-				textContent: 'test',
 				to: [
 					{
 						email: to,
@@ -47,6 +70,18 @@ module.exports = class EmailSender {
 					name: 'From Swapz',
 				},
 				tags: ['email_verification'],
+			},
+		});
+	}
+
+	async process(options) {
+		const { apiKey } = this;
+		return new Promise((resolve, reject) => {
+			const file = EmailSender.replaceString(fs.readFileSync(options.template, 'utf-8'), options.data);
+
+			const data = {
+				...options.body,
+				htmlContent: file,
 			};
 
 			const req = https.request(this.url, {
