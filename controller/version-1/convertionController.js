@@ -668,7 +668,66 @@ exports.getKeyboardFieldConversion = async (request) => {
 	throw new ErrorResponse(41701);
 };
 
+exports.getConversionSource = async (request) => {
+	const { user, query } = request;
+
+	query.page = parseInt(query.page, 10) || 1;
+	query.item = parseInt(query.item, 10) || 10;
+
+	const rule = await Conversion.findAll({
+		where: {
+			role: {
+				[Op.or]: ['as_source_only', 'as_source_destination'],
+			},
+		},
+		group: [
+			'loyalty_id',
+		],
+		attributes: ['loyalty_id'],
+	});
+
+	const loyaltyId = rule.map(value => value.loyalty_id);
+
+	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
+		where: {
+			loyalty_id: {
+				[Op.in]: loyaltyId,
+			},
+		},
+		page: query.page,
+		paginate: query.item,
+		include: [
+			{
+				model: MemberCards,
+				where: {
+					members_id: user.id,
+				},
+			}, {
+				model: Loyalty,
+				attributes: {
+					exclude: [
+						'api_user_detail',
+						'api_user_point',
+						'api_point_plus',
+						'api_point_minus',
+						'api_refresh_token',
+						'auth_field',
+						'confirm_field',
+					],
+				},
+			},
+		],
+	});
+
+	return new ResponsePaginate(20055, {
+		item: query.item,
+		pages: query.page,
+		total: loyaltyMemberCards.total,
+	}, loyaltyMemberCards.docs);
+};
+
 exports.getConversionDestination = async (request) => {
+	const { user } = request;
 	const whereCondition = {};
 	const allowedTo = [];
 	const loyaltyId = [];
@@ -716,17 +775,49 @@ exports.getConversionDestination = async (request) => {
 			loyaltyId.push(id.conversion_loyalty);
 		});
 	}
-	const loyalty = await Loyalty.paginate({
+	// const loyalty = await Loyalty.paginate({
+	// 	page: params.page,
+	// 	paginate: params.item,
+	// 	where: { id: { [Op.in]: loyaltyId } },
+	// });
+
+	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
+		where: {
+			loyalty_id: {
+				[Op.in]: loyaltyId,
+			},
+		},
 		page: params.page,
 		paginate: params.item,
-		where: { id: { [Op.in]: loyaltyId } },
+		include: [
+			{
+				model: MemberCards,
+				where: {
+					members_id: user.id,
+				},
+			}, {
+				model: Loyalty,
+				attributes: {
+					exclude: [
+						'api_user_detail',
+						'api_user_point',
+						'api_point_plus',
+						'api_point_minus',
+						'api_refresh_token',
+						'auth_field',
+						'confirm_field',
+					],
+				},
+			},
+		],
 	});
-	if (loyalty) {
+
+	if (loyaltyMemberCards) {
 		return new ResponsePaginate(20043, {
 			item: params.item,
 			pages: params.page,
-			total: loyalty.total,
-		}, loyalty.docs);
+			total: loyaltyMemberCards.total,
+		}, loyaltyMemberCards.docs);
 	}
 
 	throw new ErrorResponse(41701);
