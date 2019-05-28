@@ -21,4 +21,9 @@ module.exports = async (fastify) => {
 		...convertionSchema.getDestination,
 		beforeHandler: [fastify.authenticate],
 	}, convertionController.getConversionDestination);
+
+	fastify.get('/keyboard', {
+		...convertionSchema.getConvertionKeyboard,
+		beforeHandler: [fastify.authenticate],
+	}, convertionController.getKeyboardFieldConversion);
 };

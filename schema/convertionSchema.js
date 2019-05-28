@@ -112,3 +112,27 @@ exports.doConvertionSchema = {
 		},
 	},
 };
+
+exports.getConvertionKeyboard = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest API for validate conversion role',
+		querystring: {
+			type: 'object',
+			required: ['loyalty_id_source', 'loyalty_id_target'],
+			properties: {
+				loyalty_id_source: {
+					type: 'integer',
+				},
+				loyalty_id_target: {
+					type: 'integer',
+				},
+			},
+		},
+	},
+};

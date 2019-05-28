@@ -517,6 +517,77 @@ exports.getConvertionRate = async (request) => {
 	throw new ErrorResponse(41701);
 };
 
+exports.getKeyboardFieldConversion = async (request) => {
+	const whereCondition = {};
+	// const whereSource = {};
+	const whereTarget = {};
+	const allowedTo = [];
+	const allowedFrom = [];
+
+	const params = JSON.parse(JSON.stringify(request.query));
+
+	if (params.loyalty_id != null) {
+		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
+		const conversionData = JSON.parse(conversionRule.data_conversion);
+
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
+			conversionData.loyalty_from.forEach((id) => {
+				allowedFrom.push(id);
+			});
+		}
+		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
+			conversionData.loyalty_to.forEach((id) => {
+				allowedTo.push(id);
+			});
+		}
+		if (params.conversion_type === 'from') {
+			whereCondition.loyalty_id = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereTarget.name = {
+					[Op.like]: `%${params.search}%`,
+				};
+			}
+		} else {
+			// whereCondition.conversion_loyalty = params.loyalty_id;
+			// if (params.search != null && typeof (params.search) === 'string') {
+			// 	whereSource.name = {
+			// 		[Op.like]: `%${params.search}%`,
+			// 	};
+			// }
+		}
+	}
+
+	if (allowedFrom.length !== 0) {
+		whereCondition[Op.and] = {
+			loyalty_id: {
+				[Op.in]: allowedFrom,
+			},
+		};
+	}
+	if (allowedTo.length !== 0) {
+		whereCondition[Op.and] = {
+			conversion_loyalty: {
+				[Op.in]: allowedTo,
+			},
+		};
+	}
+
+	const rate = await ConvertionRate.findOne({
+		where: {
+			loyalty_id: params.loyalty_id_source,
+			conversion_loyalty: params.loyalty_id_target,
+			...whereCondition,
+		},
+		attributes: ['minimum', 'multiple'],
+	});
+
+	if (rate) {
+		return new Response(20054, rate);
+	}
+	// Error: Convertion rate not found
+	throw new ErrorResponse(41701);
+};
+
 exports.getConversionDestination = async (request) => {
 	const whereCondition = {};
 	const allowedTo = [];

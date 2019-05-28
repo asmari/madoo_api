@@ -53,5 +53,6 @@ module.exports = {
 	20051: 'Trigger Refresh Auth success',
 	20052: 'Conversion point success',
 	20053: 'Notifications setting success',
+	20054: 'Conversion rate keyboard success',
 	20099: 'Success',
 };
