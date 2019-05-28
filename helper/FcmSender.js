@@ -20,7 +20,7 @@ module.exports = class FcmSender {
 		if (member) {
 			const newPayload = {
 				...payload,
-				registration_ids: member.map(value => value.fcm_token),
+				registration_ids: [member.fcm_token],
 			};
 			return FcmSender.send(newPayload);
 		}
