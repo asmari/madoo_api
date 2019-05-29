@@ -380,6 +380,7 @@ exports.doConvertionPoint = async (request) => {
 					status: resMinusPoint.status ? 1 : 0,
 					member_cards_id: cardSource.id,
 					point_balance: params.point_to_convert,
+					response_third_party: JSON.stringify(resMinusPoint),
 				});
 
 				if (resMinusPoint.status) {
@@ -410,6 +411,7 @@ exports.doConvertionPoint = async (request) => {
 					status: resAddPoint.status ? 1 : 0,
 					member_cards_id: cardTarget.id,
 					point_balance: pointWithFee,
+					response_third_party: JSON.stringify(resAddPoint),
 				});
 
 				if (resAddPoint.status) {
