@@ -674,6 +674,8 @@ exports.getConversionSource = async (request) => {
 	query.page = parseInt(query.page, 10) || 1;
 	query.item = parseInt(query.item, 10) || 10;
 
+	const where = {};
+
 	const rule = await Conversion.findAll({
 		where: {
 			role: {
@@ -688,12 +690,20 @@ exports.getConversionSource = async (request) => {
 
 	const loyaltyId = rule.map(value => value.loyalty_id);
 
+	where.loyalty_id = {
+		[Op.in]: loyaltyId,
+	};
+
+	const whereLoyalty = {};
+
+	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
+		whereLoyalty.name = {
+			[Op.like]: `%${query.search}%`,
+		};
+	}
+
 	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
-		where: {
-			loyalty_id: {
-				[Op.in]: loyaltyId,
-			},
-		},
+		where,
 		page: query.page,
 		paginate: query.item,
 		include: [
@@ -704,6 +714,7 @@ exports.getConversionSource = async (request) => {
 				},
 			}, {
 				model: Loyalty,
+				where: whereLoyalty,
 				attributes: {
 					exclude: [
 						'api_user_detail',
