@@ -614,6 +614,7 @@ exports.getConvertionRate = async (request) => {
 };
 
 exports.getKeyboardFieldConversion = async (request) => {
+	const { user } = request;
 	const whereCondition = {};
 	// const whereSource = {};
 	const whereTarget = {};
@@ -678,7 +679,80 @@ exports.getKeyboardFieldConversion = async (request) => {
 	});
 
 	if (rate) {
-		return new Response(20054, rate);
+		const res = {
+			point_source: 0,
+			unit_source: 'point',
+			point_target: 0,
+			unit_target: 'point',
+			max: 0,
+			...rate.toJSON(),
+		};
+
+		let memberCardSource = await LoyaltyMemberCards.findOne({
+			where: {
+				loyalty_id: params.loyalty_id_source,
+			},
+			include: [
+				{
+					model: MemberCards,
+					where: {
+						members_id: user.id,
+					},
+					attributes: ['id', 'point_balance'],
+				}, {
+					model: Loyalty,
+					attributes: ['id', 'unit'],
+				},
+			],
+		});
+
+		memberCardSource = memberCardSource.toJSON();
+
+		if (memberCardSource) {
+			if (memberCardSource.loyalties.length > 0) {
+				res.unit_source = memberCardSource.loyalties[0].unit;
+			}
+
+			if (memberCardSource.member_cards.length > 0) {
+				res.point_source = memberCardSource.member_cards[0].point_balance;
+
+				for (let i = rate.multiple; i <= res.point_source; i += rate.multiple) {
+					res.max = i;
+				}
+			}
+		}
+
+		let memberCardTarget = await LoyaltyMemberCards.findOne({
+			where: {
+				loyalty_id: params.loyalty_id_target,
+			},
+			include: [
+				{
+					model: MemberCards,
+					where: {
+						members_id: user.id,
+					},
+					attributes: ['id', 'point_balance'],
+				}, {
+					model: Loyalty,
+					attributes: ['id', 'unit'],
+				},
+			],
+		});
+
+		memberCardTarget = memberCardTarget.toJSON();
+
+		if (memberCardTarget) {
+			if (memberCardTarget.loyalties.length > 0) {
+				res.unit_target = memberCardTarget.loyalties[0].unit;
+			}
+
+			if (memberCardTarget.member_cards.length > 0) {
+				res.point_target = memberCardTarget.member_cards[0].point_balance;
+			}
+		}
+
+		return new Response(20054, res);
 	}
 	// Error: Convertion rate not found
 	throw new ErrorResponse(41701);
