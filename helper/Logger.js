@@ -26,6 +26,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/RESTCLIENT.log',
 		},
+		CONVERTION: {
+			type: 'file',
+			filename: 'logs/CONVERTION.LOG',
+		},
 	},
 	categories: {
 		default: {
@@ -46,6 +50,9 @@ log4js.configure({
 		RESTCLIENT: {
 			appenders: ['RESTCLIENT'], level: 'ALL',
 		},
+		CONVERTION: {
+			appenders: ['CONVERTION'], level: 'ALL',
+		},
 	},
 });
 
@@ -57,3 +64,4 @@ exports.OtpLog = log4js.getLogger('OTP_LOG');
 exports.AuthApi = log4js.getLogger('AUTH_API');
 exports.Notifications = log4js.getLogger('NOTIFICATIONS');
 exports.RestClient = log4js.getLogger('RESTCLIENT');
+exports.Convertion = log4js.getLogger('CONVERTION');
