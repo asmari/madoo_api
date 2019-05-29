@@ -27,6 +27,10 @@ const TransactionLog = model.define('transaction_log', {
 		type: sequelize.INTEGER,
 		allowNull: false,
 	},
+	response_third_party: {
+		type: sequelize.TEXT,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
