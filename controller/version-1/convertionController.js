@@ -5,6 +5,7 @@ const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/resp
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
 const EmailSender = require('../../helper/EmailSender');
 const FcmSender = require('../../helper/FcmSender');
+const Logger = require('../../helper/Logger').Convertion;
 
 const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
@@ -356,138 +357,151 @@ exports.doConvertionPoint = async (request) => {
 			fee,
 		});
 
-		const responseDone = new Promise(async (resolve) => {
+		const responseDone = new Promise(async (resolve, reject) => {
 			const successResponse = {
 				deduct: false,
 				add: false,
 			};
 
-			const resMinusPoint = await sourceRequest.pointMinus({
-				point: params.point_to_convert,
-			});
+			try {
+				Logger.info('Start Convertion', transaction);
 
-			successResponse.deduct = resMinusPoint.status;
-
-			await TransactionLog.create({
-				unix_id: transaction.unix_id,
-				type_trx: 'point_minus',
-				status: resMinusPoint.status ? 1 : 0,
-				member_cards_id: cardSource.id,
-				point_balance: params.point_to_convert,
-			});
-
-			if (resMinusPoint.status) {
-				let pointMinus = cardSource.point_balance;
-
-				resMinusPoint.data.forEach((val) => {
-					if (val.keyName === 'point_balance') {
-						pointMinus = val.value;
-					}
+				const resMinusPoint = await sourceRequest.pointMinus({
+					point: params.point_to_convert,
 				});
 
-				await cardSource.update({
-					point_balance: pointMinus,
-				});
-			}
+				Logger.info('Response Minus', resMinusPoint);
 
-			const resAddPoint = await targetRequest.pointAdd({
-				point: pointWithFee,
-			});
+				successResponse.deduct = resMinusPoint.status;
 
-			successResponse.add = resAddPoint.status;
-
-			await TransactionLog.create({
-				unix_id: transaction.unix_id,
-				type_trx: 'point_add',
-				status: resAddPoint.status ? 1 : 0,
-				member_cards_id: cardTarget.id,
-				point_balance: pointWithFee,
-			});
-
-			if (resAddPoint.status) {
-				let pointAdd = cardSource.point_balance;
-
-				resAddPoint.data.forEach((val) => {
-					if (val.keyName === 'point_balance') {
-						pointAdd = val.value;
-					}
+				await TransactionLog.create({
+					unix_id: transaction.unix_id,
+					type_trx: 'point_minus',
+					status: resMinusPoint.status ? 1 : 0,
+					member_cards_id: cardSource.id,
+					point_balance: params.point_to_convert,
 				});
 
-				await cardTarget.update({
-					point_balance: pointAdd,
-				});
-			}
+				if (resMinusPoint.status) {
+					let pointMinus = cardSource.point_balance;
 
-			if (successResponse.add && successResponse.deduct) {
-				await transaction.update({
-					status: 'success',
-				});
+					resMinusPoint.data.forEach((val) => {
+						if (val.keyName === 'point_balance') {
+							pointMinus = val.value;
+						}
+					});
 
-				const member = await Member.findOne({
-					where: {
-						id: user.id,
-					},
-				});
-
-				const date = new Date(transaction.created_at);
-
-				if (member) {
-					const emailSender = new EmailSender();
-					await emailSender.sendConversion(member.email, {
-						name: member.full_name,
-						date: `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}`,
-						conversionId: transaction.unix_id,
-						loyaltySource: loyaltySource.name,
-						pointSource: params.point_to_convert,
-						unitSource: loyaltySource.unit,
-						loyaltyTarget: loyaltyTarget.name,
-						pointTarget: pointWithFee,
-						unitTarget: loyaltyTarget.unit,
-						currentPointSource: transaction.point_balance_after,
-						currentPointTarget: transaction.conversion_point_balance_after,
+					await cardSource.update({
+						point_balance: pointMinus,
 					});
 				}
-			} else {
-				await transaction.update({
-					status: 'failed',
-				});
-			}
 
-			const notification = await Notification.create({
-				loyalty_id: loyaltySource.id,
-				type: 'conversion',
-				promo_id: 0,
-				title: `Conversion ${transaction.status}`,
-				valid_until: new Date(),
-				description: 'Conversion Success',
-			});
-
-			if (notification) {
-				await NotificationMember.create({
-					members_id: user.id,
-					notification_id: notification.id,
-					read: 0,
+				const resAddPoint = await targetRequest.pointAdd({
+					point: pointWithFee,
 				});
 
-				await FcmSender.sendToUser(user.id, {
-					data: {
-						param: JSON.stringify({
-							id: notification.id,
+				Logger.info('Response Add', resAddPoint);
+
+				successResponse.add = resAddPoint.status;
+
+				await TransactionLog.create({
+					unix_id: transaction.unix_id,
+					type_trx: 'point_add',
+					status: resAddPoint.status ? 1 : 0,
+					member_cards_id: cardTarget.id,
+					point_balance: pointWithFee,
+				});
+
+				if (resAddPoint.status) {
+					let pointAdd = cardSource.point_balance;
+
+					resAddPoint.data.forEach((val) => {
+						if (val.keyName === 'point_balance') {
+							pointAdd = val.value;
+						}
+					});
+
+					await cardTarget.update({
+						point_balance: pointAdd,
+					});
+				}
+
+				if (successResponse.add && successResponse.deduct) {
+					await transaction.update({
+						status: 'success',
+					});
+
+					const member = await Member.findOne({
+						where: {
+							id: user.id,
+						},
+					});
+
+					const date = new Date(transaction.created_at);
+
+					if (member) {
+						const emailSender = new EmailSender();
+						await emailSender.sendConversion(member.email, {
+							name: member.full_name,
+							date: `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}`,
+							conversionId: transaction.unix_id,
+							loyaltySource: loyaltySource.name,
+							pointSource: params.point_to_convert,
+							unitSource: loyaltySource.unit,
+							loyaltyTarget: loyaltyTarget.name,
+							pointTarget: pointWithFee,
+							unitTarget: loyaltyTarget.unit,
+							currentPointSource: transaction.point_balance_after,
+							currentPointTarget: transaction.conversion_point_balance_after,
+						});
+					}
+				} else {
+					await transaction.update({
+						status: 'failed',
+					});
+				}
+
+				const notification = await Notification.create({
+					loyalty_id: loyaltySource.id,
+					type: 'conversion',
+					promo_id: 0,
+					title: `Conversion ${transaction.status}`,
+					valid_until: new Date(),
+					description: 'Conversion Success',
+				});
+
+				if (notification) {
+					await NotificationMember.create({
+						members_id: user.id,
+						notification_id: notification.id,
+						read: 0,
+					});
+
+					await FcmSender.sendToUser(user.id, {
+						data: {
+							param: JSON.stringify({
+								id: notification.id,
+								title: notification.title,
+								type: notification.type,
+								loyalty_id: notification.loyalty_id,
+							}),
+							image: notification.image || null,
+						},
+						priority: 'normal',
+						notification: {
 							title: notification.title,
-							type: notification.type,
-							loyalty_id: notification.loyalty_id,
-						}),
-						image: notification.image || null,
-					},
-					priority: 'normal',
-					notification: {
-						title: notification.title,
-						body: notification.description,
-						clickAction: notification.click,
-					},
-				});
+							body: notification.description,
+							clickAction: notification.click,
+						},
+					});
+				}
+
+				Logger.info('End Transaction', transaction);
+				resolve(new Response(20052, transaction));
+			} catch (err) {
+				Logger.trace(err);
+				reject(err);
 			}
-			resolve(new Response(20052, transaction));
 		});
 
 		const responseTimeout = new Promise((resolve) => {
