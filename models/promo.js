@@ -31,6 +31,18 @@ const Promo = model.define('promo', {
 		type: sequelize.STRING,
 		allowNull: true,
 	},
+	notification_image_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	list_image_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	detail_image_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
 	valid_until: {
 		type: sequelize.DATE,
 		allowNull: false,
