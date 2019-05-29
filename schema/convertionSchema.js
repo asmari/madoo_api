@@ -99,6 +99,9 @@ exports.getSource = {
 		querystring: {
 			type: 'object',
 			properties: {
+				search: {
+					type: 'string',
+				},
 				page: {
 					type: 'integer',
 				},
