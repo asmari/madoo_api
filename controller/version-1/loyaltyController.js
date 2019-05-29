@@ -243,7 +243,7 @@ exports.doCheckMemberCard = async (request) => {
 			return new ErrorResponse(41710);
 
 		default:
-			return err;
+			return new ErrorResponse(40114);
 		}
 	}
 };
