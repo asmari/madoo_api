@@ -113,6 +113,7 @@ Notification.findOne({
 					title: notification.title,
 					type: notification.type,
 					loyalty_id: notification.loyalty_id,
+					promo_id: notification.promo_id,
 				}),
 				image: notification.image,
 			},
