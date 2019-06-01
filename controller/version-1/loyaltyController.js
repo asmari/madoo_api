@@ -3,6 +3,7 @@ const AuthRefresher = require('../../services/authRefresherServices');
 const model = require('../../models');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
+const Logger = require('../../helper/Logger').CheckPoint;
 
 const { Op } = sequelize;
 
@@ -169,30 +170,46 @@ exports.doCheckMemberCardPoint = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query)) || {};
 	const { headers } = request;
 
+	Logger.info('STARTING REQUEST', '==========================================================');
+
 	const loyaltyRequest = new LoyaltyRequest();
 
 	try {
 		await loyaltyRequest.setLoyaltyId(params.loyalty_id);
 
+		Logger.info('Success Set Loyalty', params.loyalty_id);
+
 		// eslint-disable-next-line max-len
 		const requiredField = loyaltyRequest.matchRequiredField(LoyaltyRequest.TYPE.POINT_BALANCE, params);
 
+		Logger.info('Check required field', requiredField);
+
 		if (requiredField.length > 0) {
+			Logger.warn('Failed, there required field', requiredField);
 			return new ErrorResponse(42211, {}, requiredField);
 		}
 
 		if (Object.prototype.hasOwnProperty.call(headers, 'lang')) {
+			Logger.info('Set custom language to', headers.lang);
 			loyaltyRequest.setLang(headers.lang);
 		}
 
 		const res = await loyaltyRequest.getMemberPoint(params);
 
+		Logger.info('Response Member Point', res);
+
 		if (res.status) {
+			Logger.info('Return Member Point Response', res);
+			Logger.info('Done Check Point', '=============================================================');
 			return res;
 		}
 
+		Logger.warn('Error Check Point', res);
+		Logger.info('Done Check Point', '=============================================================');
 		return new ErrorResponse(40114);
 	} catch (err) {
+		Logger.warn('Error Check Point Message', err);
+		Logger.info('Done Check Point', '=============================================================');
 		switch (err.message) {
 		case LoyaltyRequest.STATUS.NO_LOYALTY:
 			return new ErrorResponse(41709);
@@ -243,6 +260,7 @@ exports.doCheckMemberCard = async (request) => {
 			return new ErrorResponse(41710);
 
 		default:
+			console.log(err);
 			return new ErrorResponse(40114);
 		}
 	}
