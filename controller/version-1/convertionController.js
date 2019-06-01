@@ -835,6 +835,17 @@ exports.getConversionDestination = async (request) => {
 
 	const params = JSON.parse(JSON.stringify(request.query));
 
+	const loyaltyExists = await Loyalty.findOne({
+		where: {
+			id: params.loyalty_id,
+		},
+	});
+
+	if (loyaltyExists === null) {
+		return new ErrorResponse(41709);
+	}
+
+
 	params.page = parseInt(params.page, 10) || 1;
 	params.item = parseInt(params.item, 10) || 10;
 
