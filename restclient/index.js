@@ -442,6 +442,8 @@ module.exports = class RestClient extends Request {
 									field: displayName,
 								});
 							}
+
+							resultResponse[key] = `${d1.getFullYear()}/${d1.getMonth() + 1}/${d1.getDate()}`;
 							break;
 						case 'datetime':
 							if (resultResponse[key].getTime() !== valKey.value.getTime()) {
