@@ -30,6 +30,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/CONVERTION.LOG',
 		},
+		CHECK_POINT: {
+			type: 'file',
+			filename: 'logs/CHECK_POINT.log',
+		},
 	},
 	categories: {
 		default: {
@@ -53,6 +57,9 @@ log4js.configure({
 		CONVERTION: {
 			appenders: ['CONVERTION'], level: 'ALL',
 		},
+		CHECK_POINT: {
+			appenders: ['CHECK_POINT'], level: 'ALL',
+		},
 	},
 });
 
@@ -65,3 +72,4 @@ exports.AuthApi = log4js.getLogger('AUTH_API');
 exports.Notifications = log4js.getLogger('NOTIFICATIONS');
 exports.RestClient = log4js.getLogger('RESTCLIENT');
 exports.Convertion = log4js.getLogger('CONVERTION');
+exports.CheckPoint = log4js.getLogger('CHECK_POINT');
