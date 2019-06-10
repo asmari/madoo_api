@@ -712,6 +712,10 @@ exports.getKeyboardFieldConversion = async (request) => {
 			],
 		});
 
+		if (!memberCardSource) {
+			return new ErrorResponse(41724);
+		}
+
 		memberCardSource = memberCardSource.toJSON();
 
 		if (memberCardSource) {
@@ -745,6 +749,10 @@ exports.getKeyboardFieldConversion = async (request) => {
 				},
 			],
 		});
+
+		if (!memberCardTarget) {
+			return new ErrorResponse(41725);
+		}
 
 		memberCardTarget = memberCardTarget.toJSON();
 
