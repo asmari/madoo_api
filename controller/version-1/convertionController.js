@@ -675,7 +675,7 @@ exports.getKeyboardFieldConversion = async (request) => {
 			conversion_loyalty: params.loyalty_id_target,
 			...whereCondition,
 		},
-		attributes: ['minimum', 'multiple'],
+		attributes: ['minimum', 'multiple', 'point_conversion', 'point_loyalty'],
 	});
 
 	if (rate) {
@@ -685,8 +685,14 @@ exports.getKeyboardFieldConversion = async (request) => {
 			point_target: 0,
 			unit_target: 'point',
 			max: 0,
-			...rate.toJSON(),
+			minimum_target: 0,
+			minimum: rate.minimum,
+			multiple: rate.multiple,
 		};
+
+		const rateWithFee = (rate.point_conversion / rate.point_loyalty);
+
+		res.minimum_target = rateWithFee * rate.minimum;
 
 		let memberCardSource = await LoyaltyMemberCards.findOne({
 			where: {
