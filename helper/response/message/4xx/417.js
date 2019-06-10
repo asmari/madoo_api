@@ -44,4 +44,6 @@ module.exports = {
 	},
 	41722: 'Loyalty source not found',
 	41723: 'Loyalty target not found',
+	41724: 'Member card from loyalty source not found',
+	41725: 'Member card from loyalty target not found',
 };
