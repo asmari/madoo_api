@@ -1,6 +1,7 @@
 const https = require('https');
 const config = require('../config').get;
 const model = require('../models/index');
+const logger = require('../helper/Logger').Notifications;
 
 const DeviceNotification = model.DeviceNotification.Get;
 
@@ -10,6 +11,8 @@ module.exports = class FcmSender {
 			return Promise.reject(new Error('Member id cannot zero'));
 		}
 
+		logger.info(`START NOTIFICATION CONVERTION MEMBER ID ${memberId} ======================`);
+
 		const member = await DeviceNotification.findOne({
 			where: {
 				members_id: memberId,
@@ -17,14 +20,19 @@ module.exports = class FcmSender {
 			attributes: ['fcm_token'],
 		});
 
+		logger.info(`GET DEVICE TOKEN ${member}`);
+
 		if (member) {
 			const newPayload = {
 				...payload,
 				registration_ids: [member.fcm_token],
 			};
+
+			logger.info('DONE SENT NOTIFICATION =================================');
 			return FcmSender.send(newPayload);
 		}
 
+		logger.error('ERROR SENT NOTIFICATION ===================================');
 		return Promise.reject(new Error('Member doesnt have device token'));
 	}
 
