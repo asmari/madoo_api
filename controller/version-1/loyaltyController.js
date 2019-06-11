@@ -473,6 +473,49 @@ exports.getLoyaltyMember = async (request) => {
 	const loyaltyCards = await LoyaltyMemberCards.paginate(dataOptions);
 	const data = loyaltyCards.docs;
 
+	// eslint-disable-next-line no-unused-vars
+	const refresh = new Promise((resolve, reject) => {
+		try {
+			const current = new Date();
+			const done = [];
+
+			data.forEach(async (value) => {
+				if (Object.prototype.hasOwnProperty.call(value, 'member_cards') && value.member_cards.length > 0) {
+					const card = value.member_cards[0];
+					const time = new Date(card.updated_at);
+
+					if ((Math.round(((current.getTime() / 1000) - (time.getTime() / 1000))) > 300
+					&& Object.prototype.hasOwnProperty.call(value, 'loyalties')
+					&& value.loyalties.length > 0)
+					|| (
+						Object.prototype.hasOwnProperty.call(params, 'force_refresh_point')
+						&& params.force_refresh_point
+					)) {
+						const dLoyalty = value.loyalties[0];
+
+						const requester = new LoyaltyRequest();
+						await requester.setLoyaltyId(dLoyalty.id);
+						requester.setMemberCardId(card.id);
+
+						const res = await requester.getMemberPoint(card);
+
+						// eslint-disable-next-line max-len
+						if (res.status && res.data != null && res.data[0].value != null && res.data.length > 0) {
+							await card.update({
+								point_balance: res.data[0].value,
+							});
+							done.push(res);
+						}
+					}
+				}
+			});
+
+			resolve(done);
+		} catch (err) {
+			reject(err);
+		}
+	});
+
 	return new ResponsePaginate(20013, {
 		item: params.item,
 		pages: params.page,
