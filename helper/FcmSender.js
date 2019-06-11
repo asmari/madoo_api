@@ -20,7 +20,7 @@ module.exports = class FcmSender {
 			attributes: ['fcm_token'],
 		});
 
-		logger.info(`GET DEVICE TOKEN ${member}`);
+		logger.info(`GET DEVICE TOKEN ${JSON.stringify(member)}`);
 
 		if (member) {
 			const newPayload = {
