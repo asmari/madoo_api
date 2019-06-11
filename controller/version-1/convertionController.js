@@ -526,6 +526,8 @@ exports.getConvertionRate = async (request) => {
 	const whereTarget = {};
 	const allowedTo = [];
 	const allowedFrom = [];
+	let data = [];
+	let convert = {};
 
 	const params = JSON.parse(JSON.stringify(request.query));
 
@@ -535,82 +537,85 @@ exports.getConvertionRate = async (request) => {
 
 	if (params.loyalty_id != null) {
 		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
-		const conversionData = JSON.parse(conversionRule.data_conversion);
 
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
-			conversionData.loyalty_from.forEach((id) => {
-				allowedFrom.push(id);
-			});
-		}
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
-			conversionData.loyalty_to.forEach((id) => {
-				allowedTo.push(id);
-			});
-		}
-		if (params.conversion_type === 'from') {
-			whereCondition.loyalty_id = params.loyalty_id;
-			if (params.search != null && typeof (params.search) === 'string') {
-				whereTarget.name = {
-					[Op.like]: `%${params.search}%`,
-				};
+		if (conversionRule) {
+			const conversionData = JSON.parse(conversionRule.data_conversion);
+
+			if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
+				conversionData.loyalty_from.forEach((id) => {
+					allowedFrom.push(id);
+				});
 			}
-		} else {
-			whereCondition.conversion_loyalty = params.loyalty_id;
-			if (params.search != null && typeof (params.search) === 'string') {
-				whereSource.name = {
-					[Op.like]: `%${params.search}%`,
-				};
+			if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
+				conversionData.loyalty_to.forEach((id) => {
+					allowedTo.push(id);
+				});
+			}
+			if (params.conversion_type === 'from') {
+				whereCondition.loyalty_id = params.loyalty_id;
+				if (params.search != null && typeof (params.search) === 'string') {
+					whereTarget.name = {
+						[Op.like]: `%${params.search}%`,
+					};
+				}
+			} else {
+				whereCondition.conversion_loyalty = params.loyalty_id;
+				if (params.search != null && typeof (params.search) === 'string') {
+					whereSource.name = {
+						[Op.like]: `%${params.search}%`,
+					};
+				}
 			}
 		}
 	}
 
-	if (allowedFrom.length !== 0) {
-		whereCondition[Op.and] = {
-			loyalty_id: {
-				[Op.in]: allowedFrom,
-			},
+	if (allowedFrom.length > 0 || allowedTo.length > 0) {
+		if (allowedFrom.length !== 0) {
+			whereCondition[Op.and] = {
+				loyalty_id: {
+					[Op.in]: allowedFrom,
+				},
+			};
+		}
+		if (allowedTo.length !== 0) {
+			whereCondition[Op.and] = {
+				conversion_loyalty: {
+					[Op.in]: allowedTo,
+				},
+			};
+		}
+
+		const targetConversion = 'minimum';
+
+		const dataOptions = {
+			attributes: [[targetConversion, 'source_point'], [sequelize.literal(`((point_conversion/point_loyalty)) * ${targetConversion}`), 'target_point']],
+			include: [{
+				model: Loyalty,
+				as: 'Source',
+				required: true,
+				where: whereSource,
+				attributes: ['id', 'name', 'unit'],
+			}, {
+				model: Loyalty,
+				as: 'Target',
+				required: true,
+				where: whereTarget,
+				attributes: ['id', 'name', 'unit'],
+			}],
+			page: params.page,
+			paginate: params.item,
+			where: whereCondition,
 		};
-	}
-	if (allowedTo.length !== 0) {
-		whereCondition[Op.and] = {
-			conversion_loyalty: {
-				[Op.in]: allowedTo,
-			},
-		};
+
+		convert = await ConvertionRate.paginate({ ...dataOptions });
+		data = convert.docs;
 	}
 
-	const targetConversion = 'minimum';
-
-	const dataOptions = {
-		attributes: [[targetConversion, 'source_point'], [sequelize.literal(`((point_conversion/point_loyalty)) * ${targetConversion}`), 'target_point']],
-		include: [{
-			model: Loyalty,
-			as: 'Source',
-			required: true,
-			where: whereSource,
-			attributes: ['id', 'name', 'unit'],
-		}, {
-			model: Loyalty,
-			as: 'Target',
-			required: true,
-			where: whereTarget,
-			attributes: ['id', 'name', 'unit'],
-		}],
-		page: params.page,
-		paginate: params.item,
-		where: whereCondition,
-	};
-
-	const conversion = await ConvertionRate.paginate({ ...dataOptions });
-	if (conversion) {
-		return new ResponsePaginate(20042, {
-			item: params.item,
-			pages: params.page,
-			total: conversion.total,
-		}, conversion.docs);
-	}
-
-	throw new ErrorResponse(41701);
+	return new ResponsePaginate(20042, {
+		item: params.item,
+		pages: params.page,
+		total: convert.total || 0,
+	}, data);
 };
 
 exports.getKeyboardFieldConversion = async (request) => {
