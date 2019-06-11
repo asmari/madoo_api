@@ -10,6 +10,9 @@ exports.loyaltyMemberListSchema = {
 		querystring: {
 			type: 'object',
 			properties: {
+				force_refresh_point: {
+					type: 'integer',
+				},
 				page: {
 					type: 'integer',
 				},
