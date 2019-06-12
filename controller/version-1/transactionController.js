@@ -69,7 +69,6 @@ exports.doGetListHistory = async (request) => {
 				{
 					model: MemberCards,
 					as: 'source_member_cards',
-					where: whereOptions,
 					include: [
 						{
 							model: LoyaltyMemberCards,
@@ -127,7 +126,7 @@ exports.doGetListHistory = async (request) => {
 
 				if (Object.prototype.hasOwnProperty.call(value, `${key}_member_cards`) && value[`${key}_member_cards`].length > 0) {
 					const sourceLoyalty = value[`${key}_member_cards`][0].toJSON();
-
+					reVal.card_id = sourceLoyalty.id;
 					reVal.loyalty = 'Not Found';
 					reVal.loyalty_unit = '-';
 
@@ -152,7 +151,11 @@ exports.doGetListHistory = async (request) => {
 
 		responseData.forEach((v) => {
 			v.forEach((v1) => {
-				resFinal.push(v1);
+				if (params.filter_loyalty.length > 0) {
+					if (params.filter_loyalty.find(v2 => v2 === v1.card_id)) {
+						resFinal.push(v1);
+					}
+				}
 			});
 		});
 
