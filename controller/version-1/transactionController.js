@@ -59,6 +59,9 @@ exports.doGetListHistory = async (request) => {
 		const trxList = await Transaction.paginate({
 			page: params.page,
 			paginate: params.item,
+			order: [
+				['id', 'DESC'],
+			],
 			attributes: {
 				exclude: ['trxid', 'trxstatus'],
 			},
@@ -142,7 +145,7 @@ exports.doGetListHistory = async (request) => {
 				dVal.push(reVal);
 			});
 
-			return dVal;
+			return dVal.reverse();
 		});
 
 		const resFinal = [];
