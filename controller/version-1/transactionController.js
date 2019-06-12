@@ -155,6 +155,8 @@ exports.doGetListHistory = async (request) => {
 					if (params.filter_loyalty.find(v2 => v2 === v1.card_id)) {
 						resFinal.push(v1);
 					}
+				} else {
+					resFinal.push(v1);
 				}
 			});
 		});
