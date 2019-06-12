@@ -849,6 +849,7 @@ exports.getConversionSource = async (request) => {
 exports.getConversionDestination = async (request) => {
 	const { user } = request;
 	const whereCondition = {};
+	const whereTarget = {};
 	const allowedTo = [];
 	const loyaltyId = [];
 
@@ -879,11 +880,11 @@ exports.getConversionDestination = async (request) => {
 			});
 		}
 		whereCondition.loyalty_id = params.loyalty_id;
-		// if (params.search != null && typeof (params.search) === 'string') {
-		// 	whereTarget.name = {
-		// 		[Op.like]: `%${params.search}%`,
-		// 	};
-		// }
+		if (params.search != null && typeof (params.search) === 'string') {
+			whereTarget.name = {
+				[Op.like]: `%${params.search}%`,
+			};
+		}
 	}
 
 	if (allowedTo.length !== 0) {
@@ -928,6 +929,7 @@ exports.getConversionDestination = async (request) => {
 				},
 			}, {
 				model: Loyalty,
+				where: whereTarget,
 				attributes: {
 					exclude: [
 						'api_user_detail',
