@@ -75,7 +75,7 @@ exports.doGetListHistory = async (request) => {
 							include: [
 								{
 									model: Loyalty,
-									attributes: ['name', 'unit'],
+									attributes: ['id', 'name', 'unit'],
 								},
 							],
 						},
@@ -90,7 +90,7 @@ exports.doGetListHistory = async (request) => {
 							include: [
 								{
 									model: Loyalty,
-									attributes: ['name', 'unit'],
+									attributes: ['id', 'name', 'unit'],
 								},
 							],
 						},
@@ -122,11 +122,12 @@ exports.doGetListHistory = async (request) => {
 					point: key === 'source' ? -d.point : d.conversion_point,
 					loyalty_unit: '',
 					loyalty: '',
+					loyalty_id: 0,
 				};
 
 				if (Object.prototype.hasOwnProperty.call(value, `${key}_member_cards`) && value[`${key}_member_cards`].length > 0) {
 					const sourceLoyalty = value[`${key}_member_cards`][0].toJSON();
-					reVal.card_id = sourceLoyalty.id;
+					// reVal.card_id = sourceLoyalty.id;
 					reVal.loyalty = 'Not Found';
 					reVal.loyalty_unit = '-';
 
@@ -137,6 +138,7 @@ exports.doGetListHistory = async (request) => {
 							const loyalty = loyaltyCard.loyalties[0];
 							reVal.loyalty = loyalty.name;
 							reVal.loyalty_unit = loyalty.unit;
+							reVal.loyalty_id = loyalty.id;
 						}
 					}
 				}
@@ -152,7 +154,8 @@ exports.doGetListHistory = async (request) => {
 		responseData.forEach((v) => {
 			v.forEach((v1) => {
 				if (params.filter_loyalty.length > 0) {
-					if (params.filter_loyalty.find(v2 => v2 === v1.card_id)) {
+					console.log(v1);
+					if (params.filter_loyalty.find(v2 => v2 === v1.loyalty_id)) {
 						resFinal.push(v1);
 					}
 				} else {
