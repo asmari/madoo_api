@@ -48,6 +48,19 @@ module.exports = async (fastify) => {
 		beforeHandler: [fastify.authenticate],
 	}, masterController.getFilterListPromo);
 
+	// get filter point history
+	fastify.get('/filter/point', {
+		schema: {
+			security: [
+				{
+					BearerAuth: [],
+					'skip-auth': [],
+				},
+			],
+		},
+		beforeHandler: [fastify.authenticate],
+	}, masterController.getFilterPoint);
+
 	// get type unlink social list
 	fastify.get('/type/unlink/social', {
 		schema: {
