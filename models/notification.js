@@ -45,6 +45,34 @@ const Notification = model.define('notification', {
 		allowNull: true,
 		maxLength: 45,
 	},
+	campaign_name: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	template: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	template_url: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
+	recipient: {
+		type: sequelize.TEXT,
+		allowNull: true,
+	},
+	recipient_type: {
+		type: sequelize.STRING,
+		allowNull: false,
+	},
+	recipient_count: {
+		type: sequelize.INTEGER,
+		allowNull: true,
+	},
+	recipient_file: {
+		type: sequelize.STRING,
+		allowNull: true,
+	},
 }, {
 	timestamps: true,
 	paranoid: true,

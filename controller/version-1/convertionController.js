@@ -470,6 +470,7 @@ exports.doConvertionPoint = async (request) => {
 					title: `Conversion ${transaction.status}`,
 					valid_until: new Date(),
 					description: 'Conversion Success',
+					recipient_type: 'member',
 				});
 
 				if (notification) {
