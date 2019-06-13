@@ -51,9 +51,7 @@ exports.getFilterPoint = async (request) => {
 		attributes: ['id', 'name'],
 	});
 
-	return new Response(20016, {
-		loyalty,
-	});
+	return new Response(20016, loyalty);
 };
 
 // list filter promo content
