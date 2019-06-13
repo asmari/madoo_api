@@ -6,6 +6,7 @@ const Loyalty = model.Loyalty.Get;
 const MemberCards = model.MembersCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
 const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
+const ConvertionRule = model.Conversion.Get;
 
 // get list loyalty v2
 exports.doGetListLoyalty = async (request) => {
@@ -17,6 +18,7 @@ exports.doGetListLoyalty = async (request) => {
 		item: parseInt(query.item, 10) || 10,
 		search: query.search || null,
 		filter: query.filter || 0,
+		eligible: query.eligible || 0,
 		with_user: Object.prototype.hasOwnProperty.call(query, 'with_user') ? query.with_user : 0,
 	};
 
@@ -47,6 +49,34 @@ exports.doGetListLoyalty = async (request) => {
 			[Op.notIn]: loyaltyId,
 		};
 	}
+
+	if (params.eligible !== 0) {
+		const rule = await ConvertionRule.findOne({
+			where: {
+				loyalty_id: params.eligible,
+				role: 'as_source_only',
+			},
+		});
+
+		if (rule) {
+			try {
+				const parsed = JSON.parse(rule.data_conversion);
+				if (Object.prototype.hasOwnProperty.call(parsed, 'loyalty_to') && Array.isArray(parsed.loyalty_to)) {
+					const loyaltyEligible = parsed.loyalty_to;
+
+					const id = loyaltyEligible.map(v => parseInt(v, 10));
+
+					whereSearch.id = {
+						[Op.in]: id,
+					};
+				}
+			} catch (err) {
+				console.error(err);
+			}
+		}
+	}
+
+	console.log(whereSearch);
 
 	if (params.search !== null) {
 		whereSearch.name = {
