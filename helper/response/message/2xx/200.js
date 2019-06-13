@@ -55,5 +55,7 @@ module.exports = {
 	20053: 'Notifications setting success',
 	20054: 'Conversion rate keyboard success',
 	20055: 'Conversion source success',
+	20056: 'Notification update success',
+	20057: 'Notification count success',
 	20099: 'Success',
 };
