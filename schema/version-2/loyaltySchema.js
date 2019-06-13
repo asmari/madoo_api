@@ -22,6 +22,9 @@ exports.loyaltyListSchema = {
 				with_user: {
 					type: 'integer',
 				},
+				eligible: {
+					type: 'integer',
+				},
 				filter: {
 					type: ['array', 'integer'],
 					items: {
