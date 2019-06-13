@@ -153,6 +153,10 @@ exports.doGetListHistory = async (request) => {
 
 		responseData.forEach((v) => {
 			v.forEach((v1) => {
+				if (v1.loyalty_id === 0) {
+					return;
+				}
+
 				if (params.filter_loyalty.length > 0) {
 					console.log(v1);
 					if (params.filter_loyalty.find(v2 => v2 === v1.loyalty_id)) {
