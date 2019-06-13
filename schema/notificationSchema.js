@@ -115,6 +115,41 @@ exports.notificationSettingsSchema = {
 	},
 };
 
+exports.notificationUpdateSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest Api update notification status',
+		body: {
+			required: ['notification_id', 'read'],
+			properties: {
+				notification_id: {
+					type: 'integer',
+				},
+				read: {
+					type: 'integer',
+				},
+			},
+		},
+	},
+};
+
+exports.notificationCountSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest api notification count',
+	},
+};
+
 exports.notifSettingSchema = {
 	schema: {
 		security: [
