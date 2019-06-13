@@ -31,6 +31,18 @@ async function routes(fastify) {
 		...notificationSchema.notificationDetailSchema,
 		beforeHandler: [fastify.authenticate],
 	}, notificationController.getDetailNotification);
+
+	// post notification status
+	fastify.post('/status', {
+		...notificationSchema.notificationUpdateSchema,
+		beforeHandler: [fastify.authenticate],
+	}, notificationController.doUpdateNotification);
+
+	// get notification count
+	fastify.get('/count', {
+		...notificationSchema.notificationCountSchema,
+		beforeHandler: [fastify.authenticate],
+	}, notificationController.getCountNotification);
 }
 
 module.exports = routes;

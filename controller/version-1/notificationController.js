@@ -11,6 +11,44 @@ const Notification = model.Notification.Get;
 const NotificationMembers = model.NotificationMembers.Get;
 const NotificationSetting = model.NotificationSettings.Get;
 
+// post update notification status
+exports.doUpdateNotification = async (request) => {
+	const { body, user } = request;
+
+	const notif = await NotificationMembers.findOne({
+		where: {
+			members_id: user.id,
+			notification_id: body.notification_id,
+		},
+	});
+
+	if (notif) {
+		await notif.update({
+			read: body.read,
+		});
+
+		return new Response(20056, notif);
+	}
+
+	return new ErrorResponse(41726);
+};
+
+// get notification count
+exports.getCountNotification = async (request) => {
+	const { user } = request;
+
+	const notif = await NotificationMembers.count({
+		where: {
+			members_id: user.id,
+			read: 0,
+		},
+	});
+
+	return new Response(20057, {
+		count: notif,
+	});
+};
+
 // get detail notification members
 exports.getDetailNotification = async (request) => {
 	const { user, query } = request;
