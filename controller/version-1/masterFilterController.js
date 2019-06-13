@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 
 const { ErrorResponse, Response } = require('../../helper/response');
+const model = require('../../models');
 const {
 	Loyalty,
 	LoyaltyType,
@@ -11,6 +12,49 @@ const {
 	Members,
 	MembersRegister,
 } = require('../../models');
+
+const MemberCards = model.MembersCards.Get;
+
+// list filter point
+exports.getFilterPoint = async (request) => {
+	const { user } = request;
+	const whereSearch = {};
+	const cards = await MemberCards.findAll({
+		where: {
+			members_id: user.id,
+		},
+		attributes: ['id'],
+	});
+
+	const cardsId = cards.map(value => value.id);
+
+	const loyaltyHasCards = await LoyaltyMemberCards.Get.findAll({
+		where: {
+			member_cards_id: {
+				[Op.in]: cardsId,
+			},
+		},
+		attributes: ['loyalty_id'],
+	});
+
+	const loyaltyId = loyaltyHasCards.map(value => value.loyalty_id);
+
+	whereSearch.id = {
+		[Op.in]: loyaltyId,
+	};
+
+
+	const loyalty = await Loyalty.Get.findAll({
+		where: {
+			...whereSearch,
+		},
+		attributes: ['id', 'name'],
+	});
+
+	return new Response(20016, {
+		loyalty,
+	});
+};
 
 // list filter promo content
 exports.getFilterListPromo = async () => {
