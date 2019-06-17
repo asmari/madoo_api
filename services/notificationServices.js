@@ -11,25 +11,27 @@ const logger = require('../helper/Logger').Notifications;
 const Members = model.Members.Get;
 const Notification = model.Notification.Get;
 const NotificationMember = model.NotificationMembers.Get;
-// const NotificationSettings = model.NotificationSettings.Get;
+const NotificationSettings = model.NotificationSettings.Get;
 const DeviceNotification = model.DeviceNotification.Get;
 
 const data = workerData;
 
-Notification.findOne({
-	where: {
-		id: data.id,
-	},
-	include: [
-		{
-			model: NotificationMember,
-			as: 'notification_members',
-			group: [
-				'members_id',
-			],
+const run = async () => {
+	const notification = await Notification.findOne({
+		where: {
+			id: data.id,
 		},
-	],
-}).then((notification) => {
+		include: [
+			{
+				model: NotificationMember,
+				as: 'notification_members',
+				group: [
+					'members_id',
+				],
+			},
+		],
+	});
+
 	if (notification) {
 		let doneMember = [];
 		if (notification.notification_members) {
@@ -69,13 +71,45 @@ Notification.findOne({
 			},
 		};
 
-		if (data.memberId !== 0) {
+		if (notification.recipient_type === 'selected') {
+			try {
+				const recipient = JSON.parse(notification.recipient);
+
+				const devices = await DeviceNotification.findAll({
+					where: {
+						fcm_token: {
+							[Op.in]: recipient,
+						},
+						members_id: {
+							[Op.ne]: null,
+						},
+					},
+					attributes: ['members_id'],
+				});
+
+				const memberDevices = devices.map(value => value.members_id);
+
+				whereMembersId = {
+					id: {
+						[Op.in]: memberDevices,
+					},
+				};
+			} catch (e) {
+				logger.warn(e);
+			}
+		} else if (data.memberId !== 0) {
 			whereMembersId = {
 				id: data.memberId,
 			};
+		} else {
+			whereMembersId = {
+				id: {
+					[Op.notIn]: doneMember,
+				},
+			};
 		}
 
-		const findMembers = Members.findAll({
+		const members = await Members.findAll({
 			where: whereMembersId,
 			include: [
 				{
@@ -86,66 +120,56 @@ Notification.findOne({
 						},
 					},
 				},
-				// {
-				// 	model: NotificationSettings,
-				// 	where: whereNotificationSettings,
-				// },
+				{
+					model: NotificationSettings,
+					where: whereNotificationSettings,
+				},
 			],
 		});
 
-		return Promise.all([findMembers, Promise.resolve(notification)]);
-	}
+		if (members.length > 0) {
+			const membersSend = members.map(value => value.device_notification.fcm_token);
+			const memberId = members.map(value => value.id);
 
-	return Promise.reject(new Error('Notification not found'));
-}).then((values) => {
-	const members = values[0];
-	const notification = values[1];
-
-	if (members.length > 0) {
-		const membersSend = members.map(value => value.device_notification.fcm_token);
-		const memberId = members.map(value => value.id);
-
-		const fcmRes = FcmSender.send({
-			registration_ids: membersSend,
-			data: {
-				param: JSON.stringify({
-					id: notification.id,
+			const fcmRes = await FcmSender.send({
+				registration_ids: membersSend,
+				data: {
+					param: JSON.stringify({
+						id: notification.id,
+						title: notification.title,
+						type: notification.type,
+						loyalty_id: notification.loyalty_id,
+						promo_id: notification.promo_id,
+					}),
+					image: notification.image,
+				},
+				priority: 'normal',
+				notification: {
 					title: notification.title,
-					type: notification.type,
-					loyalty_id: notification.loyalty_id,
-					promo_id: notification.promo_id,
-				}),
-				image: notification.image,
-			},
-			priority: 'normal',
-			notification: {
-				title: notification.title,
-				body: notification.description,
-				clickAction: notification.click,
-			},
-		});
+					body: notification.description,
+					clickAction: notification.click,
+				},
+			});
 
-		return Promise.all([fcmRes, memberId, notification]);
+			if (fcmRes.success > 0) {
+				const bulkCreate = memberId.map(value => ({
+					members_id: value,
+					notification_id: notification.id,
+					read: 0,
+				}));
+				return NotificationMember.bulkCreate(bulkCreate);
+			}
+
+			logger.warn(fcmRes);
+			return Promise.reject(new Error('FCM Failed'));
+		}
+
+		return Promise.reject(new Error('No Member Found!'));
 	}
 
-	return Promise.reject(new Error('members not found'));
-}).then((values) => {
-	const resFcm = JSON.parse(values[0]);
-	const memberId = values[1];
-	const notification = values[2];
+	return Promise.reject(new Error('No Notification found!'));
+};
 
-	if (resFcm.success > 0) {
-		const bulkCreate = memberId.map(value => ({
-			members_id: value,
-			notification_id: notification.id,
-			read: 0,
-		}));
-
-		return NotificationMember.bulkCreate(bulkCreate);
-	}
-
-	return Promise.reject(new Error(`Notification error not send, ${JSON.stringify(resFcm)}`));
-})
-	.catch((error) => {
-		logger.error(error);
-	});
+run().catch((err) => {
+	logger.error(err);
+});
