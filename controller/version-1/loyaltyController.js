@@ -260,7 +260,6 @@ exports.doCheckMemberCard = async (request) => {
 			return new ErrorResponse(41710);
 
 		default:
-			console.log(err);
 			return new ErrorResponse(40114);
 		}
 	}
@@ -463,6 +462,7 @@ exports.getLoyaltyMember = async (request) => {
 		],
 		include: [{
 			model: Loyalty,
+			paranoid: false,
 			where: whereLoyalty,
 		}, {
 			model: MemberCards,
