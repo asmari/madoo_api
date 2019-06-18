@@ -28,9 +28,7 @@ exports.doGetListHistory = async (request) => {
 		},
 	});
 
-	const whereOptions = {
-		members_id: member.id,
-	};
+	let whereOptions = {};
 
 	if (!Array.isArray(params.filter_loyalty)) {
 		params.filter_loyalty = [params.filter_loyalty];
@@ -44,13 +42,57 @@ exports.doGetListHistory = async (request) => {
 				},
 			},
 			attributes: ['id'],
+			include: [
+				{
+					model: MemberCards,
+					where: {
+						members_id: member.id,
+					},
+				},
+			],
 		});
 
 		if (loyaltyMemberCards) {
-			const idMemberCards = loyaltyMemberCards.map(value => value.id);
+			const idMemberCards = loyaltyMemberCards.map(value => value.member_cards_id);
+			whereOptions = {
+				[Op.or]: [
+					{
+						member_cards_id: {
+							[Op.in]: idMemberCards,
+						},
+						conversion_member_cards_id: {
+							[Op.in]: idMemberCards,
+						},
+					},
+				],
+			};
+		}
+	} else {
+		const loyaltyMemberCards = await LoyaltyMemberCards.findAll({
+			attributes: ['id', 'member_cards_id'],
+			include: [
+				{
+					model: MemberCards,
+					where: {
+						members_id: member.id,
+					},
+				},
+			],
+		});
 
-			whereOptions.id = {
-				[Op.in]: idMemberCards,
+		if (loyaltyMemberCards) {
+			const idMemberCards = loyaltyMemberCards.map(value => value.member_cards_id);
+			whereOptions = {
+				[Op.or]: [
+					{
+						member_cards_id: {
+							[Op.in]: idMemberCards,
+						},
+						conversion_member_cards_id: {
+							[Op.in]: idMemberCards,
+						},
+					},
+				],
 			};
 		}
 	}
@@ -59,6 +101,7 @@ exports.doGetListHistory = async (request) => {
 		const trxList = await Transaction.paginate({
 			page: params.page,
 			paginate: params.item,
+			where: whereOptions,
 			order: [
 				['id', 'DESC'],
 			],
@@ -102,6 +145,8 @@ exports.doGetListHistory = async (request) => {
 		const responseData = trxList.docs.map((value) => {
 			const dVal = [];
 
+			// console.log(value.toJSON());
+
 			const d = value.toJSON();
 			delete d.source_member_cards;
 			delete d.target_member_cards;
@@ -131,6 +176,8 @@ exports.doGetListHistory = async (request) => {
 					reVal.loyalty = 'Not Found';
 					reVal.loyalty_unit = '-';
 
+					// console.log(sourceLoyalty);
+
 					if (Object.prototype.hasOwnProperty.call(sourceLoyalty, 'loyalty_has_member_cards') && sourceLoyalty.loyalty_has_member_cards.length > 0) {
 						const loyaltyCard = sourceLoyalty.loyalty_has_member_cards[0];
 
@@ -149,6 +196,8 @@ exports.doGetListHistory = async (request) => {
 			return dVal.reverse();
 		});
 
+		// console.log(responseData);
+
 		const resFinal = [];
 
 		responseData.forEach((v) => {
@@ -158,7 +207,7 @@ exports.doGetListHistory = async (request) => {
 				}
 
 				if (params.filter_loyalty.length > 0) {
-					console.log(v1);
+					// console.log(v1);
 					if (params.filter_loyalty.find(v2 => v2 === v1.loyalty_id)) {
 						resFinal.push(v1);
 					}
