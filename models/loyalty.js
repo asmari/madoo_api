@@ -122,6 +122,11 @@ const Loyalty = model.define('loyalty', {
 		allowNull: true,
 		require: false,
 	},
+	enable_trx: {
+		type: Sequelize.TINYINT,
+		allowNull: false,
+		defaultValue: true,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
