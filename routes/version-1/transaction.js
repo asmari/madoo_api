@@ -6,6 +6,12 @@ async function routes(fastify) {
 		...transactionSchema.transactionListSchema,
 		beforeHandler: [fastify.authenticate],
 	}, transactionController.doGetListHistory);
+
+	// get detail transaction routes
+	fastify.get('/detail', {
+		...transactionSchema.transactionDetailSchema,
+		beforeHandler: [fastify.authenticate],
+	}, transactionController.doGetDetailTransaction);
 }
 
 module.exports = routes;
