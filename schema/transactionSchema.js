@@ -32,3 +32,24 @@ exports.transactionListSchema = {
 		},
 	},
 };
+
+exports.transactionDetailSchema = {
+	schema: {
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest api transaction detail',
+		querystring: {
+			type: 'object',
+			required: ['transaction_id'],
+			properties: {
+				transaction_id: {
+					type: 'integer',
+				},
+			},
+		},
+	},
+};
