@@ -57,5 +57,6 @@ module.exports = {
 	20055: 'Conversion source success',
 	20056: 'Notification update success',
 	20057: 'Notification count success',
+	20058: 'Transaction detail success',
 	20099: 'Success',
 };

@@ -47,4 +47,5 @@ module.exports = {
 	41724: 'Member card from loyalty source not found',
 	41725: 'Member card from loyalty target not found',
 	41726: 'Notification not found',
+	41727: 'Transaction not found',
 };
