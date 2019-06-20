@@ -59,6 +59,21 @@ exports.doGetDetailTransaction = async (request) => {
 			{
 				model: MemberCards,
 				as: 'source_member_cards',
+				nested: true,
+				include: [
+					{
+						model: LoyaltyMemberCards,
+						nested: true,
+						attributes: ['member_cards_id', 'loyalty_id'],
+						include: [
+							{
+								model: Loyalty,
+								attributes: ['name', 'unit'],
+								nested: true,
+							},
+						],
+					},
+				],
 				where: {
 					id: {
 						[Op.ne]: null,
@@ -73,6 +88,20 @@ exports.doGetDetailTransaction = async (request) => {
 						[Op.ne]: null,
 					},
 				},
+				include: [
+					{
+						model: LoyaltyMemberCards,
+						nested: true,
+						attributes: ['member_cards_id', 'loyalty_id'],
+						include: [
+							{
+								model: Loyalty,
+								attributes: ['name', 'unit'],
+								nested: true,
+							},
+						],
+					},
+				],
 			},
 		],
 	});
