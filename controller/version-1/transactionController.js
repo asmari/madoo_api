@@ -1,7 +1,7 @@
 const { Op } = require('sequelize');
 
 const model = require('../../models/index');
-const { ErrorResponse, ResponsePaginate } = require('../../helper/response');
+const { ErrorResponse, ResponsePaginate, Response } = require('../../helper/response');
 
 const Transaction = model.Transaction.Get;
 const MemberCards = model.MembersCards.Get;
@@ -10,6 +10,79 @@ const Loyalty = model.Loyalty.Get;
 const Members = model.Members.Get;
 
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+// get detail transaction
+exports.doGetDetailTransaction = async (request) => {
+	const { user, query } = request;
+
+	const member = await Members.findOne({
+		where: {
+			id: user.id,
+		},
+	});
+
+	let whereOptions = {};
+
+	const loyaltyMemberCards = await LoyaltyMemberCards.findAll({
+		attributes: ['id', 'member_cards_id'],
+		include: [
+			{
+				model: MemberCards,
+				where: {
+					members_id: member.id,
+				},
+			},
+		],
+	});
+
+	if (loyaltyMemberCards) {
+		const idMemberCards = loyaltyMemberCards.map(value => value.member_cards_id);
+		whereOptions = {
+			[Op.or]: [
+				{
+					member_cards_id: {
+						[Op.in]: idMemberCards,
+					},
+					conversion_member_cards_id: {
+						[Op.in]: idMemberCards,
+					},
+				},
+			],
+		};
+	}
+
+	whereOptions.id = query.transaction_id;
+
+	const transaction = await Transaction.findOne({
+		where: whereOptions,
+		include: [
+			{
+				model: MemberCards,
+				as: 'source_member_cards',
+				where: {
+					id: {
+						[Op.ne]: null,
+					},
+				},
+			},
+			{
+				model: MemberCards,
+				as: 'target_member_cards',
+				where: {
+					id: {
+						[Op.ne]: null,
+					},
+				},
+			},
+		],
+	});
+
+	if (transaction) {
+		return new Response(20058, transaction);
+	}
+
+	return new ErrorResponse(41727);
+};
 
 // get history transaction
 exports.doGetListHistory = async (request) => {
@@ -222,7 +295,6 @@ exports.doGetListHistory = async (request) => {
 			item: params.item,
 		}, resFinal);
 	} catch (err) {
-		console.log(err);
 		throw new ErrorResponse(41798, {
 			message: err.toString(),
 		});
