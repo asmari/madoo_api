@@ -218,7 +218,9 @@ exports.doCheckMemberCardPoint = async (request) => {
 			return new ErrorResponse(41710);
 
 		default:
-			return err;
+			return new ErrorResponse(42298, {
+				message: err.message,
+			});
 		}
 	}
 };
@@ -260,7 +262,9 @@ exports.doCheckMemberCard = async (request) => {
 			return new ErrorResponse(41710);
 
 		default:
-			return new ErrorResponse(40114);
+			return new ErrorResponse(42298, {
+				message: err.message,
+			});
 		}
 	}
 };
