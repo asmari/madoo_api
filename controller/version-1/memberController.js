@@ -1,5 +1,6 @@
 const moment = require('moment');
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 
 const model = require('../../models');
 const { ErrorResponse, Response } = require('../../helper/response');
@@ -41,7 +42,15 @@ exports.doRegisterPhone = async (request) => {
 
 	const memberEmail = await Members.findOne({
 		where: {
-			email: params.email,
+			[Op.or]: [
+				{
+					email: params.email,
+				}, {
+					fb_email: params.email,
+				}, {
+					g_email: params.email,
+				},
+			],
 		},
 	});
 
@@ -75,6 +84,7 @@ exports.doRegisterPhone = async (request) => {
 				return new Response(20001, res);
 			}
 		} catch (err) {
+			console.log(err);
 			return new ErrorResponse(40111, {
 				time: '1 x 24 hour',
 			});
@@ -87,6 +97,8 @@ exports.doRegisterPhone = async (request) => {
 		const payload = {
 			full_name: params.full_name,
 			email: params.email,
+			fb_email: '-',
+			g_email: '-',
 			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		};
@@ -168,7 +180,11 @@ exports.doSaveMember = async (request, reply) => {
 
 	const memberRegister = await MembersRegister.findOne({ where: { mobile_phone: params.mobile_phone, status: 'pending' } });
 	if (memberRegister) {
-		const member = await Members.create(params);
+		const member = await Members.create({
+			...params,
+			g_email: '-',
+			fb_email: '-',
+		});
 		const pin = await Pins.create({ pin: params.pin, members_id: member.id, expired });
 		await memberRegister.update({ status: 'registered' });
 		const payload = {
