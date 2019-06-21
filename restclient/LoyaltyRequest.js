@@ -12,6 +12,7 @@ module.exports = class LoyaltyRequest {
 			NO_VALUE: 'Value for the type is null',
 			TYPE_NO_CHOICE: 'Type cannot be zero',
 			LOYALTY_ZERO: 'Loyalty id cannot be zero',
+			LOYALTY_NOT_READY: 'Loyalty is not ready',
 		};
 	}
 
@@ -54,18 +55,31 @@ module.exports = class LoyaltyRequest {
 	getFieldFromType(type = 0) {
 		switch (type) {
 		case LoyaltyRequest.TYPE.GET_PROFILE:
+			if (this.loyalty.api_user_detail === null) {
+				throw new Error(LoyaltyRequest.STATUS.LOYALTY_NOT_READY);
+			}
+
 			return this.loyalty.api_user_detail;
 
 		case LoyaltyRequest.TYPE.POINT_BALANCE:
+			if (this.loyalty.api_user_detail === null) {
+				throw new Error(LoyaltyRequest.STATUS.LOYALTY_NOT_READY);
+			}
 			return this.loyalty.api_user_point;
 
 		case LoyaltyRequest.TYPE.POINT_PLUS:
+			if (this.loyalty.api_user_detail === null) {
+				throw new Error(LoyaltyRequest.STATUS.LOYALTY_NOT_READY);
+			}
 			return this.loyalty.api_point_plus;
 
 		case LoyaltyRequest.TYPE.POINT_MINUS:
+			if (this.loyalty.api_user_detail === null) {
+				throw new Error(LoyaltyRequest.STATUS.LOYALTY_NOT_READY);
+			}
 			return this.loyalty.api_point_minus;
 		default:
-			return null;
+			throw new Error(LoyaltyRequest.STATUS.LOYALTY_NOT_READY);
 		}
 	}
 
