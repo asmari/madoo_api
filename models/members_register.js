@@ -77,6 +77,14 @@ const MembersRegister = model.define('members_register', {
 		type: Sequelize.TEXT,
 		allowNull: true,
 	},
+	fb_email: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+	g_email: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	freezeTableName: true,

@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 
 const { ErrorResponse, Response } = require('../../helper/response');
 const model = require('../../models');
@@ -59,7 +60,15 @@ exports.doRegisterFacebook = async (request) => {
 	// find email unique
 	const memberEmail = await Members.findOne({
 		where: {
-			email: params.email,
+			[Op.or]: [
+				{
+					email: params.email,
+				}, {
+					fb_email: params.email,
+				}, {
+					g_email: params.email,
+				},
+			],
 		},
 	});
 
@@ -98,6 +107,8 @@ exports.doRegisterFacebook = async (request) => {
 			fb_id: params.fb_id,
 			fb_token: params.fb_token,
 			fb_name: params.full_name,
+			fb_email: params.email,
+			g_email: '-',
 			mobile_phone: params.mobile_phone,
 			// pin: params.pin,
 			status: 'pending',
@@ -109,6 +120,8 @@ exports.doRegisterFacebook = async (request) => {
 			fb_id: params.fb_id,
 			fb_token: params.fb_token,
 			fb_name: params.full_name,
+			fb_email: params.email,
+			g_email: '-',
 			mobile_phone: params.mobile_phone,
 			// pin: params.pin,
 			status: 'pending',
@@ -157,6 +170,8 @@ exports.doSaveMember = async (request, reply) => {
 			...params,
 			fb_id: memberRegister.fb_id,
 			fb_token: memberRegister.fb_token,
+			fb_email: memberRegister.fb_email,
+			g_email: '-',
 			fb_name: params.full_name,
 		});
 

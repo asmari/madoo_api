@@ -1,5 +1,6 @@
 // const { resolve } = require('path');
 const bcrypt = require('bcrypt');
+const { Op } = require('sequelize');
 
 const model = require('../../models');
 const OtpNewHelper = require('../../helper/OtpNewHelper');
@@ -62,7 +63,15 @@ exports.doRegisterGoogle = async (request) => {
 	// find email unique
 	const memberEmail = await Members.findOne({
 		where: {
-			email: params.email,
+			[Op.or]: [
+				{
+					email: params.email,
+				}, {
+					fb_email: params.email,
+				}, {
+					g_email: params.email,
+				},
+			],
 		},
 	});
 
@@ -100,6 +109,8 @@ exports.doRegisterGoogle = async (request) => {
 			g_id: params.g_id,
 			g_token: params.g_token,
 			g_name: params.full_name,
+			g_email: params.email,
+			fb_email: '-',
 			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		});
@@ -110,6 +121,8 @@ exports.doRegisterGoogle = async (request) => {
 			g_id: params.g_id,
 			g_token: params.g_token,
 			g_name: params.full_name,
+			g_email: params.email,
+			fb_email: '-',
 			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		});
@@ -158,6 +171,8 @@ exports.doSaveMember = async (request, reply) => {
 			g_id: params.g_id,
 			g_token: params.g_token,
 			g_name: params.full_name,
+			g_email: memberRegister.g_email,
+			fb_email: '-',
 		});
 
 		await Pins.create({

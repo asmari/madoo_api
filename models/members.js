@@ -86,6 +86,14 @@ const Members = model.define('members', {
 		type: Sequelize.STRING,
 		allowNull: true,
 	},
+	fb_email: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
+	g_email: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
