@@ -27,8 +27,11 @@ fastify.register(authKeyMiddleware);
 // register jwt security
 fastify.register(security);
 
-// register fastify swagger
-fastify.register(documentations);
+if (config.app_env === 'dev' || config.app_env === 'staging') {
+	// register fastify swagger
+	fastify.register(documentations);
+}
+
 
 // register fastify error boom
 fastify.register(errorHandler);
