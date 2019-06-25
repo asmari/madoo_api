@@ -466,6 +466,7 @@ exports.doConvertionPoint = async (request) => {
 				const notification = await Notification.create({
 					loyalty_id: loyaltySource.id,
 					type: 'conversion',
+					transaction_id: transaction.id,
 					promo_id: 0,
 					title: `Conversion ${transaction.status}`,
 					valid_until: new Date(),
@@ -487,6 +488,8 @@ exports.doConvertionPoint = async (request) => {
 								title: notification.title,
 								type: notification.type,
 								loyalty_id: notification.loyalty_id,
+								promo_id: notification.promo_id,
+								transaction_id: notification.transaction_id,
 							}),
 							image: notification.image || null,
 						},
