@@ -152,7 +152,9 @@ const run = async () => {
 				},
 			});
 
-			if (fcmRes.success > 0) {
+			const resFcm = JSON.parse(fcmRes);
+
+			if (resFcm.success > 0) {
 				const bulkCreate = memberId.map(value => ({
 					members_id: value,
 					notification_id: notification.id,
