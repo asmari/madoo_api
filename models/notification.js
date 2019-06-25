@@ -3,6 +3,8 @@ const sequelizePaginate = require('sequelize-paginate');
 const model = require('./conn/sequelize').sequelize;
 
 const Loyalty = require('./loyalty').Get;
+const Promo = require('./promo').Get;
+const Transaction = require('./transaction').Get;
 const NotificationMember = require('./notificationMember').Get;
 
 const Notification = model.define('notification', {
@@ -11,6 +13,22 @@ const Notification = model.define('notification', {
 		allowNull: false,
 		references: {
 			model: Loyalty,
+			key: 'id',
+		},
+	},
+	promo_id: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+		references: {
+			model: Promo,
+			key: 'id',
+		},
+	},
+	transaction_id: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+		references: {
+			model: Transaction,
 			key: 'id',
 		},
 	},
