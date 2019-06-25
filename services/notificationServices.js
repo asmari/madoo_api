@@ -140,6 +140,7 @@ const run = async () => {
 						type: notification.type,
 						loyalty_id: notification.loyalty_id,
 						promo_id: notification.promo_id,
+						transaction_id: notification.transaction_id,
 					}),
 					image: notification.image,
 				},
