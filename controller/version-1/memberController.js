@@ -215,6 +215,12 @@ exports.doSaveMember = async (request, reply) => {
 			});
 		});
 
+		if (params.email) {
+			const emailer = new EmailSender();
+
+			await emailer.send(params.email, member.id);
+		}
+
 		return new Response(20005, accessToken);
 	}
 	// Error: Member not found
