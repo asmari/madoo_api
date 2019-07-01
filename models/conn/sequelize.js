@@ -11,7 +11,10 @@ exports.sequelize = new Sequelize(config.db.database, config.db.username, config
 		acquire: 30000,
 		idle: 10000,
 	},
-	timezone: '+07:00',
+	timezone: config.tz,
+	dialectOptions: {
+		useUTC: false,
+	},
 	// http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
 	operatorsAliases: false,
 });
