@@ -21,4 +21,5 @@ exports.get = {
 	mail: {
 		apiKey: process.env.SENDINBLUE_APIKEY,
 	},
+	tz: process.env.TZ,
 };
