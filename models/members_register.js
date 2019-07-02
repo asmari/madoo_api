@@ -89,6 +89,8 @@ const MembersRegister = model.define('members_register', {
 	timestamps: true,
 	freezeTableName: true,
 	underscored: true,
+	createdAt: 'created_at',
+	updatedAt: 'updated_at',
 	deletedAt: 'deleted_at',
 	paranoid: true,
 });
