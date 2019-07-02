@@ -14,8 +14,8 @@ exports.sequelize = new Sequelize(config.db.database, config.db.username, config
 	timezone: config.tz,
 	dialectOptions: {
 		// useUTC: false,
-		dateStrings: true,
-		typeCast: true,
+		// dateStrings: true,
+		// typeCast: true,
 	},
 	// http://docs.sequelizejs.com/manual/tutorial/querying.html#operators
 	operatorsAliases: false,
