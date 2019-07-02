@@ -13,7 +13,7 @@ exports.sequelize = new Sequelize(config.db.database, config.db.username, config
 	},
 	timezone: config.tz,
 	dialectOptions: {
-		useUTC: false,
+		// useUTC: false,
 		dateStrings: true,
 		typeCast: true,
 	},
