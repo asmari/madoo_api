@@ -25,3 +25,4 @@ exports.UpdateMemberLogs = require('./update_member_logs');
 exports.MemberCardsAuthToken = require('./memberCardsAuthToken');
 exports.AuthApiKeys = require('./authApiKeys');
 exports.TransactionLog = require('./transactionLog');
+exports.MasterUnit = require('./master_unit');

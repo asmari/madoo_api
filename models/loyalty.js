@@ -7,8 +7,17 @@ const model = require('./conn/sequelize').sequelize;
 const Promo = require('./promo');
 const ConvertionRate = require('./convertion_rate');
 const Conversion = require('./conversion');
+const MasterUnit = require('./master_unit');
 
 const Loyalty = model.define('loyalty', {
+	unit_id: {
+		type: Sequelize.INTEGER,
+		allowNull: false,
+		references: {
+			model: MasterUnit.Get,
+			key: 'id',
+		},
+	},
 	type_loyalty_id: {
 		type: Sequelize.INTEGER,
 		allowNull: false,
@@ -140,6 +149,13 @@ const Loyalty = model.define('loyalty', {
 			Loyalty.belongsTo(models.LoyaltyMemberCards);
 		},
 	},
+	defaultScope: {
+		include: [
+			{
+				model: MasterUnit.Get,
+			},
+		],
+	},
 });
 
 Promo.Get.belongsTo(Loyalty, {
@@ -176,6 +192,17 @@ Loyalty.hasMany(ConvertionRate.Get, {
 	foreignKey: 'conversion_loyalty',
 	as: 'LoyaltyTarget',
 });
+
+Loyalty.hasOne(MasterUnit.Get, {
+	foreignKey: 'id',
+});
+
+// round way to get has one functional
+const unit = Loyalty.associations[MasterUnit.Get.name];
+unit.sourceIdentifier = 'unit_id';
+unit.sourceKey = 'unit_id';
+unit.sourceKeyAttribute = 'unit_id';
+unit.sourceKeyIsPrimary = false;
 
 
 sequelizePaginate.paginate(Loyalty);
