@@ -16,6 +16,7 @@ exports.doGetDetailTransaction = async (request) => {
 	const { user, query } = request;
 
 	const member = await Members.findOne({
+		paranoid: false,
 		where: {
 			id: user.id,
 		},
@@ -25,6 +26,7 @@ exports.doGetDetailTransaction = async (request) => {
 
 	const loyaltyMemberCards = await LoyaltyMemberCards.findAll({
 		attributes: ['id', 'member_cards_id'],
+		paranoid: false,
 		include: [
 			{
 				model: MemberCards,
@@ -82,6 +84,7 @@ exports.doGetDetailTransaction = async (request) => {
 			},
 			{
 				model: MemberCards,
+				paranoid: false,
 				as: 'target_member_cards',
 				where: {
 					id: {
@@ -92,6 +95,7 @@ exports.doGetDetailTransaction = async (request) => {
 					{
 						model: LoyaltyMemberCards,
 						nested: true,
+						paranoid: false,
 						attributes: ['member_cards_id', 'loyalty_id'],
 						include: [
 							{

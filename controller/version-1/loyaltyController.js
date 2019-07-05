@@ -11,7 +11,7 @@ const Loyalty = model.Loyalty.Get;
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
 const MemberCards = model.MembersCards.Get;
-const MemberCardsLog = model.MembersCardsLog.Get;
+// const MemberCardsLog = model.MembersCardsLog.Get;
 const Promo = model.Promo.Get;
 const Members = model.Members.Get;
 const MemberCardsAuthToken = model.MemberCardsAuthToken.Get;
@@ -290,11 +290,9 @@ exports.doDeleteLoyaltyMemberCard = async (request) => {
 	});
 
 	if (memberCard != null) {
-		await MemberCardsLog.create(memberCard.toJSON());
+		// await MemberCardsLog.create(memberCard.toJSON());
 
-		memberCard.destroy({
-			force: true,
-		});
+		memberCard.destroy();
 
 		return new Response(20010, {
 			delete: true,
