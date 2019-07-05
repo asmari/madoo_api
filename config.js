@@ -6,6 +6,7 @@ exports.get = {
 		database: process.env.DB_NAME || '',
 		driver: process.env.DB_DRIVER || 'mysql',
 		host: process.env.DB_HOST || '127.0.0.1',
+		port: process.env.DB_PORT || '3306',
 	},
 	sms: {
 		subAccount: process.env.SMS_SUB_ACCOUNTS,
