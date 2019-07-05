@@ -173,7 +173,7 @@ exports.getPromo = async (request) => {
 
 				if (Object.prototype.hasOwnProperty.call(ly1, 'member_cards') && ly1.member_cards.length > 0) {
 					ly1.member_cards.forEach((card) => {
-						if (card.member_id === user.id) {
+						if (card.members_id === user.id) {
 							d.has_member_card = true;
 						}
 					});
