@@ -1,4 +1,4 @@
-const moment = require('moment');
+// const moment = require('moment');
 const sequelize = require('sequelize');
 
 const { Response, ResponsePaginate, ErrorResponse } = require('../../helper/response');
@@ -6,7 +6,9 @@ const model = require('../../models');
 
 const { Op } = sequelize;
 const Loyalty = model.Loyalty.Get;
+const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
 const Promo = model.Promo.Get;
+const MemberCards = model.MembersCards.Get;
 
 // get autocomplete suggestion promo
 exports.getAutoCompletePromo = async (request) => {
@@ -73,7 +75,8 @@ exports.getFeaturedPromo = async (request) => {
 
 // get list promo
 exports.getPromo = async (request) => {
-	const currentDate = moment().format('YYYY-MM-DD');
+	const { user } = request;
+	// const currentDate = moment().format('YYYY-MM-DD');
 	const whereCondition = {};
 
 	const params = {
@@ -128,12 +131,26 @@ exports.getPromo = async (request) => {
 		};
 	}
 
+	Loyalty.hasOne(LoyaltyHasMemberCards, {
+		foreignKey: 'loyalty_id'
+	});
+
 	const dataOptions = {
 
 		include: [{
 			model: Loyalty,
 			as: 'loyalty',
 			required: true,
+			include: [
+				{
+					model: LoyaltyHasMemberCards,
+					include: [
+						{
+							model: MemberCards,
+						},
+					],
+				},
+			],
 		}],
 		page: params.page,
 		paginate: params.item,
@@ -145,7 +162,28 @@ exports.getPromo = async (request) => {
 
 	const promos = await Promo.paginate(dataOptions);
 
-	const data = promos.docs;
+	const data = promos.docs.map((v) => {
+		const d = v.toJSON();
+
+		if (Object.prototype.hasOwnProperty.call(v, 'loyalty')) {
+			const ly = v.loyalty;
+
+			if (Object.prototype.hasOwnProperty.call(ly, 'loyalty_has_member_card')) {
+				const ly1 = ly.loyalty_has_member_card;
+
+				if (Object.prototype.hasOwnProperty.call(ly1, 'member_cards') && ly1.member_cards.length > 0) {
+					ly1.member_cards.forEach((card) => {
+						if (card.member_id === user.id) {
+							d.has_member_card = true;
+						}
+					});
+				}
+				delete d.loyalty.loyalty_has_member_card;
+			}
+		}
+
+		return d;
+	});
 
 	return new ResponsePaginate(20023, {
 		item: params.item,
