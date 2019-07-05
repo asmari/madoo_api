@@ -142,6 +142,7 @@ exports.doGetListHistory = async (request) => {
 
 	if (params.filter_loyalty.length > 0) {
 		const loyaltyMemberCards = await LoyaltyMemberCards.findAll({
+			paranoid: false,
 			where: {
 				loyalty_id: {
 					[Op.in]: params.filter_loyalty,
@@ -179,6 +180,7 @@ exports.doGetListHistory = async (request) => {
 			include: [
 				{
 					model: MemberCards,
+					paranoid: false,
 					where: {
 						members_id: member.id,
 					},
@@ -205,6 +207,7 @@ exports.doGetListHistory = async (request) => {
 
 	try {
 		const trxList = await Transaction.paginate({
+			paranoid: false,
 			page: params.page,
 			paginate: params.item,
 			where: whereOptions,
