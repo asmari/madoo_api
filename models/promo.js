@@ -71,6 +71,13 @@ const Promo = model.define('promo', {
 		type: sequelize.STRING,
 		allowNull: false,
 	},
+	has_member_card: {
+		type: sequelize.VIRTUAL(sequelize.BOOLEAN),
+		allowNull: false,
+		get() {
+			return false;
+		},
+	},
 }, {
 	timestamps: true,
 	underscored: true,
