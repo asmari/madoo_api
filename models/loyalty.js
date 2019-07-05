@@ -155,9 +155,9 @@ const Loyalty = model.define('loyalty', {
 				model: MasterUnit.Get,
 			},
 		],
-		attributes: {
-			exclude: ['api_user_detail', 'api_user_point', 'api_point_plus', 'api_point_minus', 'api_refresh_token'],
-		},
+		// attributes: {
+		// 	exclude: ['api_user_detail', 'api_user_point', 'api_point_plus', 'api_point_minus', 'api_refresh_token'],
+		// },
 	},
 });
 
