@@ -10,6 +10,8 @@ const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
 const Promo = model.Promo.Get;
 const MemberCards = model.MembersCards.Get;
 
+const Logger = require('../../helper/Logger').General;
+
 // get autocomplete suggestion promo
 exports.getAutoCompletePromo = async (request) => {
 	const { query } = request;
@@ -132,7 +134,7 @@ exports.getPromo = async (request) => {
 	}
 
 	Loyalty.hasOne(LoyaltyHasMemberCards, {
-		foreignKey: 'loyalty_id'
+		foreignKey: 'loyalty_id',
 	});
 
 	const dataOptions = {
@@ -165,21 +167,25 @@ exports.getPromo = async (request) => {
 	const data = promos.docs.map((v) => {
 		const d = v.toJSON();
 
-		if (Object.prototype.hasOwnProperty.call(v, 'loyalty')) {
-			const ly = v.loyalty;
+		try {
+			if (Object.prototype.hasOwnProperty.call(v, 'loyalty')) {
+				const ly = v.loyalty;
 
-			if (Object.prototype.hasOwnProperty.call(ly, 'loyalty_has_member_card')) {
-				const ly1 = ly.loyalty_has_member_card;
+				if (Object.prototype.hasOwnProperty.call(ly, 'loyalty_has_member_card')) {
+					const ly1 = ly.loyalty_has_member_card;
 
-				if (Object.prototype.hasOwnProperty.call(ly1, 'member_cards') && ly1.member_cards.length > 0) {
-					ly1.member_cards.forEach((card) => {
-						if (card.members_id === user.id) {
-							d.has_member_card = true;
-						}
-					});
+					if (Object.prototype.hasOwnProperty.call(ly1, 'member_cards') && ly1.member_cards.length > 0) {
+						ly1.member_cards.forEach((card) => {
+							if (card.members_id === user.id) {
+								d.has_member_card = true;
+							}
+						});
+					}
+					delete d.loyalty.loyalty_has_member_card;
 				}
-				delete d.loyalty.loyalty_has_member_card;
 			}
+		} catch (e) {
+			Logger.error(e.stack);
 		}
 
 		return d;
