@@ -341,6 +341,7 @@ exports.getDetailMember = async (request) => {
 				where: {
 					id: params.loyalty_id,
 				},
+				include: [Promo],
 			}],
 		}],
 	});
