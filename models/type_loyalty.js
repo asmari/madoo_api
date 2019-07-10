@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 
 const model = require('./conn/sequelize').sequelize;
 
-const Loyalty = require('./loyalty');
+// const Loyalty = require('./loyalty');
 
 const LoyaltyType = model.define('type_loyalty', {
 	id: {
@@ -22,9 +22,9 @@ const LoyaltyType = model.define('type_loyalty', {
 	freezeTableName: true,
 });
 
-LoyaltyType.hasMany(Loyalty.Get, {
-	foreignKey: 'type_loyalty_id',
-	sourceKey: 'id',
-});
+// LoyaltyType.hasMany(Loyalty.Get, {
+// 	foreignKey: 'type_loyalty_id',
+// 	sourceKey: 'id',
+// });
 
 exports.Get = LoyaltyType;

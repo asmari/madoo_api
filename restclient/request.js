@@ -77,7 +77,11 @@ module.exports = class Request {
 						break;
 
 					default:
-						parsedData = JSON.parse(chunkData);
+						try {
+							parsedData = JSON.parse(chunkData);
+						} catch (e) {
+							console.log(e);
+						}
 						break;
 					}
 

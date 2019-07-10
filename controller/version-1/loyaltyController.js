@@ -474,6 +474,10 @@ exports.getLoyaltyMember = async (request) => {
 					paranoid: true,
 					required: true,
 				},
+				{
+					model: LoyaltyType,
+					required: true,
+				},
 			],
 		}, {
 			model: MemberCards,
