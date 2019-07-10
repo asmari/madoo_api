@@ -46,7 +46,12 @@ module.exports = class Request {
 				headers,
 				method,
 			}, (res) => {
-				const contentType = res.headers['content-type'].split(';')[0] || res.headers['content-type'];
+				let contentType = '';
+
+				if (Object.prototype.hasOwnProperty.call(res.headers, 'content-type')) {
+					contentType = res.headers['content-type'].indexOf(';') !== -1 ? res.headers['content-type'].split(';')[0] : res.headers['content-type'];
+				}
+
 
 				let chunkData = '';
 
