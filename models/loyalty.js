@@ -9,6 +9,7 @@ const ConvertionRate = require('./convertion_rate');
 const Conversion = require('./conversion');
 const MasterUnit = require('./master_unit');
 const BusinessPartner = require('./business_partner');
+const LoyaltyType = require('./type_loyalty');
 
 const Loyalty = model.define('loyalty', {
 	unit_id: {
@@ -151,9 +152,19 @@ const Loyalty = model.define('loyalty', {
 		},
 	},
 	defaultScope: {
-		include: [{
-			model: MasterUnit.Get,
-		}],
+		include: [
+			{
+				model: MasterUnit.Get,
+			},
+			{
+				model: BusinessPartner.Get,
+				required: true,
+			},
+			{
+				model: LoyaltyType.Get,
+				required: true,
+			},
+		],
 	},
 });
 
@@ -194,6 +205,11 @@ Loyalty.hasMany(ConvertionRate.Get, {
 
 Loyalty.hasOne(MasterUnit.Get, {
 	foreignKey: 'id',
+});
+
+Loyalty.hasMany(LoyaltyType.Get, {
+	foreignKey: 'id',
+	sourceKey: 'type_loyalty_id',
 });
 
 // round way to get has one functional
