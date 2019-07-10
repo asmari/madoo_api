@@ -8,6 +8,7 @@ const Promo = require('./promo');
 const ConvertionRate = require('./convertion_rate');
 const Conversion = require('./conversion');
 const MasterUnit = require('./master_unit');
+const BusinessPartner = require('./business_partner');
 
 const Loyalty = model.define('loyalty', {
 	unit_id: {
@@ -150,14 +151,9 @@ const Loyalty = model.define('loyalty', {
 		},
 	},
 	defaultScope: {
-		include: [
-			{
-				model: MasterUnit.Get,
-			},
-		],
-		// attributes: {
-		// 	exclude: ['api_user_detail', 'api_user_point', 'api_point_plus', 'api_point_minus', 'api_refresh_token'],
-		// },
+		include: [{
+			model: MasterUnit.Get,
+		}],
 	},
 });
 
@@ -207,6 +203,16 @@ unit.sourceKey = 'unit_id';
 unit.sourceKeyAttribute = 'unit_id';
 unit.sourceKeyIsPrimary = false;
 
+Loyalty.hasMany(BusinessPartner.Get, {
+	foreignKey: 'id',
+	sourceKey: 'business_partner_id',
+});
+
+// const business = Loyalty.associations[BusinessPartner.Get.name];
+// business.sourceIdentifier = 'business_partner_id';
+// business.sourceKey = 'business_partner_id';
+// business.sourceKeyAttribute = 'business_partner_id';
+// business.sourceKeyIsPrimary = false;
 
 sequelizePaginate.paginate(Loyalty);
 
