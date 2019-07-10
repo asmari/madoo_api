@@ -15,6 +15,7 @@ const MemberCards = model.MembersCards.Get;
 const Promo = model.Promo.Get;
 const Members = model.Members.Get;
 const MemberCardsAuthToken = model.MemberCardsAuthToken.Get;
+const BusinessPartner = model.BusinessPartner.Get;
 
 // Save Membercard loyalty
 exports.doSaveMemberCard = async (request) => {
@@ -465,8 +466,15 @@ exports.getLoyaltyMember = async (request) => {
 		],
 		include: [{
 			model: Loyalty,
-			paranoid: false,
 			where: whereLoyalty,
+			required: true,
+			include: [
+				{
+					model: BusinessPartner,
+					paranoid: true,
+					required: true,
+				},
+			],
 		}, {
 			model: MemberCards,
 		}],
@@ -494,20 +502,24 @@ exports.getLoyaltyMember = async (request) => {
 						Object.prototype.hasOwnProperty.call(params, 'force_refresh_point')
 						&& params.force_refresh_point
 					)) {
-						const dLoyalty = value.loyalties[0];
+						try {
+							const dLoyalty = value.loyalties[0];
 
-						const requester = new LoyaltyRequest();
-						await requester.setLoyaltyId(dLoyalty.id);
-						requester.setMemberCardId(card.id);
+							const requester = new LoyaltyRequest();
+							await requester.setLoyaltyId(dLoyalty.id);
+							requester.setMemberCardId(card.id);
 
-						const res = await requester.getMemberPoint(card);
+							const res = await requester.getMemberPoint(card);
 
-						// eslint-disable-next-line max-len
-						if (res.status && res.data != null && res.data[0].value != null && res.data.length > 0) {
-							await card.update({
-								point_balance: res.data[0].value,
-							});
-							done.push(res);
+							// eslint-disable-next-line max-len
+							if (res.status && res.data != null && res.data[0].value != null && res.data.length > 0) {
+								await card.update({
+									point_balance: res.data[0].value,
+								});
+								done.push(res);
+							}
+						} catch (e) {
+							Logger.error(e);
 						}
 					}
 				}
