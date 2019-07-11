@@ -239,7 +239,7 @@ module.exports = class LoyaltyRequest {
 					},
 				});
 
-				if (restClient.hasAuth()) {
+				if (restClient.hasAuth() && restClient.getAuthType() !== 'aws-v4') {
 					const memberToken = await MemberCardsToken.findOne({
 						where: {
 							members_cards_id: memberCard.id,
