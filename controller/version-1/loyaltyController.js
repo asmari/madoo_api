@@ -219,6 +219,7 @@ exports.doCheckMemberCardPoint = async (request) => {
 			return new ErrorResponse(41710);
 
 		default:
+			console.trace(err);
 			return new ErrorResponse(42298, {
 				message: err.message,
 			});
@@ -509,18 +510,20 @@ exports.getLoyaltyMember = async (request) => {
 						try {
 							const dLoyalty = value.loyalties[0];
 
-							const requester = new LoyaltyRequest();
-							await requester.setLoyaltyId(dLoyalty.id);
-							requester.setMemberCardId(card.id);
+							if (dLoyalty.api_refresh_token !== null) {
+								const requester = new LoyaltyRequest();
+								await requester.setLoyaltyId(dLoyalty.id);
+								requester.setMemberCardId(card.id);
 
-							const res = await requester.getMemberPoint(card);
+								const res = await requester.getMemberPoint(card);
 
-							// eslint-disable-next-line max-len
-							if (res.status && res.data != null && res.data[0].value != null && res.data.length > 0) {
-								await card.update({
-									point_balance: res.data[0].value,
-								});
-								done.push(res);
+								// eslint-disable-next-line max-len
+								if (res.status && res.data != null && res.data[0].value != null && res.data.length > 0) {
+									await card.update({
+										point_balance: res.data[0].value,
+									});
+									done.push(res);
+								}
 							}
 						} catch (e) {
 							Logger.error(e);
