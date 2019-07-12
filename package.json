@@ -20,9 +20,12 @@
   "author": "fuadsuyudi",
   "license": "ISC",
   "dependencies": {
+    "aws-signature-v4": "^1.4.0",
+    "aws4": "^1.8.0",
     "bcrypt": "^3.0.6",
     "boom": "^7.3.0",
     "cli-table": "^0.3.1",
+    "crypto-js": "^3.1.9-1",
     "dotenv": "^7.0.0",
     "fastify": "^1.14.1",
     "fastify-file-upload": "^1.0.0",

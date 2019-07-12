@@ -4,10 +4,14 @@ const querystring = require('querystring');
 const flat = require('flat');
 const randomstring = require('randomstring');
 const isBuffer = require('is-buffer');
+const aws4 = require('aws4');
+const moment = require('moment');
+
 
 const { ErrorResponse } = require('../helper/response');
 const Request = require('./request');
 const Logger = require('../helper/Logger').RestClient;
+const Config = require('../config');
 
 module.exports = class RestClient extends Request {
 	constructor(obj) {
@@ -19,13 +23,18 @@ module.exports = class RestClient extends Request {
 		Logger.info('RUN LOYALTY', obj);
 
 		if (Object.prototype.hasOwnProperty.call(obj, 'auth')) {
-			const supportedAuth = ['oauth2', 'oauth', 'jwt'];
+			const supportedAuth = ['oauth2', 'oauth', 'jwt', 'aws-v4'];
 			const { auth } = obj;
 
 			supportedAuth.forEach((value) => {
 				if (Object.prototype.hasOwnProperty.call(auth, value)) {
-					this.auth = new RestClient(auth[value]);
-					this.authType = value;
+					if (value === 'aws-v4') {
+						this.authType = value;
+						this.auth = auth;
+					} else {
+						this.auth = new RestClient(auth[value]);
+						this.authType = value;
+					}
 				}
 			});
 		}
@@ -36,6 +45,7 @@ module.exports = class RestClient extends Request {
 
 		if (Object.prototype.hasOwnProperty.call(obj, 'header')) {
 			this.createHeaders(obj.header);
+			this.currentHeader = obj.header;
 		}
 
 		if (Object.prototype.hasOwnProperty.call(obj, 'api')) {
@@ -51,6 +61,14 @@ module.exports = class RestClient extends Request {
 		}
 
 		if (Object.prototype.hasOwnProperty.call(obj, 'response')) {
+			if (Object.prototype.hasOwnProperty.call(obj.response, 'static') && obj.response.static === true) {
+				this.staticResponse = true;
+			}
+
+			if (Object.prototype.hasOwnProperty.call(obj.response, 'return_body')) {
+				this.returnBodyResponse = obj.response.return_body;
+			}
+
 			this.responseFilter = obj.response;
 		}
 
@@ -71,6 +89,10 @@ module.exports = class RestClient extends Request {
 		return Object.prototype.hasOwnProperty.call(this, 'auth');
 	}
 
+	getAuthType() {
+		return this.authType;
+	}
+
 	removeAuth() {
 		this.auth = null;
 		this.authType = null;
@@ -81,7 +103,7 @@ module.exports = class RestClient extends Request {
 
 		Logger.info('INSERT BODY', data);
 
-		if (this.auth != null) {
+		if (this.auth != null && this.authType !== 'aws-v4') {
 			this.auth.insertBody(data);
 		}
 
@@ -198,6 +220,10 @@ module.exports = class RestClient extends Request {
 			parsedBody = querystring.stringify(parsedBody);
 			break;
 
+		case 'application/json':
+		case 'text/json':
+			parsedBody = JSON.stringify(parsedBody);
+			break;
 		default:
 
 			break;
@@ -218,44 +244,94 @@ module.exports = class RestClient extends Request {
 	async request() {
 		const responseAll = {};
 
-		if (this.auth != null && !Object.prototype.hasOwnProperty.call(this, 'hasAuthToken')) {
-			try {
-				const responseAuth = await this.auth.request();
+		Logger.info('TOKENBOWO', this.authType);
 
-				Logger.info('DOING AUTH', this.auth);
+		if (this.auth != null && !Object.prototype.hasOwnProperty.call(this, 'hasAuthToken') && this.authType !== 'aws-v4') {
+			if (this.auth instanceof Request || this.authType !== 'aws-v4') {
+				try {
+					const responseAuth = await this.auth.request();
 
-				switch (this.authType) {
-				case 'oauth2':
+					Logger.info('DOING AUTH', this.auth);
 
-					// eslint-disable-next-line no-case-declarations
-					const token = RestClient.findFromArray(responseAuth.data, 'token');
+					switch (this.authType) {
+					case 'oauth2':
 
-					this.changeHeader('Authorization', `Bearer ${token.value}`);
+						// eslint-disable-next-line no-case-declarations
+						const token = RestClient.findFromArray(responseAuth.data, 'token');
 
-					Object.assign(responseAll, {
-						auth: {
-							oauth2: responseAuth.data,
-						},
-					});
-					break;
+						this.changeHeader('Authorization', `Bearer ${token.value}`);
 
-				default:
-					break;
+						Object.assign(responseAll, {
+							auth: {
+								oauth2: responseAuth.data,
+							},
+						});
+						break;
+
+					default:
+						break;
+					}
+				} catch (err) {
+					console.log('Error Test', err);
 				}
-			} catch (err) {
-				console.log('Error Test', err);
+			}
+		} else {
+			switch (this.authType) {
+			case 'aws-v4':
+				// eslint-disable-next-line no-case-declarations
+				const url = new URL(this.api);
+
+				// eslint-disable-next-line no-case-declarations
+				const awsAuth = this.auth['aws-v4'];
+
+				// eslint-disable-next-line no-case-declarations
+				const token = aws4.sign({
+					host: url.host,
+					path: url.pathname,
+					service: awsAuth.service_name,
+					region: awsAuth.region,
+					method: 'POST',
+					body: this.parsedBody,
+					headers: {
+						'Content-Type': this.currentHeader['Content-type'] || 'application/json',
+						Date: new Date().toLocaleString('en-US', { timeZone: Config.get.tz }),
+					},
+				}, {
+					secretAccessKey: awsAuth.secret,
+					accessKeyId: awsAuth.key,
+				});
+
+				this.createHeaders(token.headers);
+
+
+				break;
+
+			default:
+				break;
 			}
 		}
 
-		const response = await super.request(this.api, this.method, this.parsedBody);
+		if (Object.prototype.hasOwnProperty.call(this, 'staticResponse')) {
+			let data = {};
+			if (Object.prototype.hasOwnProperty.call(this, 'returnBodyResponse') && this.returnBodyResponse === true) {
+				data = this.parsedBody;
+			}
 
-		Logger.info('GET RESPONSE', response);
+			const responseFiltered = this.getFilterValue(data);
+			Object.assign(responseAll, responseFiltered);
+		} else {
+			const response = await super.request(this.api, this.method, this.parsedBody);
 
-		const responseFiltered = this.getFilterValue(response);
+			Logger.info('GET RESPONSE', response);
 
-		Logger.info('RESPONSE FILTERED', responseFiltered);
+			const responseFiltered = this.getFilterValue(response);
 
-		Object.assign(responseAll, responseFiltered);
+			Logger.info('RESPONSE FILTERED', responseFiltered);
+
+			Object.assign(responseAll, responseFiltered);
+		}
+
+		Logger.info('BODY', this.parsedBody);
 
 		Logger.info('========================================================================');
 
@@ -280,6 +356,9 @@ module.exports = class RestClient extends Request {
 		const date = new Date();
 
 		switch (funcName) {
+		case 'NOWSPACE':
+			value = moment().format('YYYYMMDDHHmmss');
+			break;
 		case 'NOWATOM':
 			value = new Date().toISOString();
 			break;
@@ -322,7 +401,7 @@ module.exports = class RestClient extends Request {
 
 	getFilterValue(response) {
 		let resultResponse = {};
-		const resultResponses = [];
+		let resultResponses = [];
 
 		const filter = this.responseFilter;
 		const flatened = flat.flatten(response);
@@ -341,136 +420,140 @@ module.exports = class RestClient extends Request {
 			propResponse = filter.status.$default;
 		}
 
-		Object.keys(propResponse.properties).forEach((key) => {
-			let keyLink = propResponse.properties[key];
-			let displayName = null;
+		if (Object.prototype.hasOwnProperty.call(propResponse, 'original_response') && propResponse.original_response === true) {
+			resultResponses = response;
+		} else {
+			Object.keys(propResponse.properties).forEach((key) => {
+				let keyLink = propResponse.properties[key];
+				let displayName = null;
 
-			valueType = 'string';
+				valueType = 'string';
 
-			if (typeof keyLink === 'object') {
-				const objValue = keyLink;
+				if (typeof keyLink === 'object') {
+					const objValue = keyLink;
 
-				if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
-					keyLink = objValue.value;
-				}
-
-				if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
-					valueType = objValue.type;
-				}
-
-				if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
-					switch (typeof objValue.displayName) {
-					case 'string':
-						// eslint-disable-next-line prefer-destructuring
-						displayName = objValue.displayName;
-						break;
-					case 'object':
-						// eslint-disable-next-line no-case-declarations
-						const keyData = Object.keys(objValue.displayName);
-
-						keyData.forEach((value) => {
-							if (value === this.lang) {
-								displayName = objValue.displayName[value];
-							}
-						});
-
-						if (displayName == null && keyData.length > 0) {
-							displayName = objValue.displayName[keyData[0]];
-						}
-
-						break;
-
-					default:
-						break;
+					if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
+						keyLink = objValue.value;
 					}
-				}
-			}
 
-			const keyLinkSplit = keyLink.split('.');
+					if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
+						valueType = objValue.type;
+					}
 
-			const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
-
-			if (filterIndex !== -1) {
-				resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
-			} else {
-				resultResponse[key] = flatened[keyLink];
-			}
-
-			switch (valueType) {
-			case 'number':
-				// eslint-disable-next-line max-len
-				resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
-				break;
-
-			case 'double':
-			case 'float':
-				resultResponse[key] = parseFloat(resultResponse[key]);
-				break;
-
-			case 'date':
-			case 'datetime':
-				resultResponse[key] = new Date(resultResponse[key]);
-				break;
-
-			default:
-				break;
-			}
-
-			if (displayName == null) {
-				displayName = key;
-			}
-
-			if (this.checkResponse.length > 0) {
-				this.checkResponse.forEach((valKey) => {
-					if (key === valKey.keyName) {
-						switch (valueType) {
-						case 'date':
-							// eslint-disable-next-line no-case-declarations
-							const d1 = resultResponse[key];
-							// eslint-disable-next-line no-case-declarations
-							const d = new Date(`${valKey.value.getFullYear()}-${valKey.value.getMonth() + 1}-${valKey.value.getDate()}`);
-
-							// eslint-disable-next-line no-case-declarations
-							const isValid = {
-								date: d1.getDate() === d.getDate(),
-								month: d1.getMonth() === d.getMonth(),
-								year: d1.getFullYear() === d.getFullYear(),
-							};
-
-							if (!isValid.date || !isValid.month || !isValid.year) {
-								throw new ErrorResponse(41714, {
-									field: displayName,
-								});
-							}
-
-							resultResponse[key] = `${d1.getFullYear()}/${d1.getMonth() + 1}/${d1.getDate()}`;
+					if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
+						switch (typeof objValue.displayName) {
+						case 'string':
+							// eslint-disable-next-line prefer-destructuring
+							displayName = objValue.displayName;
 							break;
-						case 'datetime':
-							if (resultResponse[key].getTime() !== valKey.value.getTime()) {
-								throw new ErrorResponse(41714, {
-									field: displayName,
-								});
+						case 'object':
+							// eslint-disable-next-line no-case-declarations
+							const keyData = Object.keys(objValue.displayName);
+
+							keyData.forEach((value) => {
+								if (value === this.lang) {
+									displayName = objValue.displayName[value];
+								}
+							});
+
+							if (displayName == null && keyData.length > 0) {
+								displayName = objValue.displayName[keyData[0]];
 							}
+
 							break;
 
 						default:
-							if (resultResponse[key] !== valKey.value) {
-								throw new ErrorResponse(41714, {
-									field: displayName,
-								});
-							}
 							break;
 						}
 					}
-				});
-			}
+				}
 
-			resultResponses.push({
-				value: resultResponse[key],
-				displayName,
-				keyName: key,
+				const keyLinkSplit = keyLink.split('.');
+
+				const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
+
+				if (filterIndex !== -1) {
+					resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
+				} else {
+					resultResponse[key] = flatened[keyLink];
+				}
+
+				switch (valueType) {
+				case 'number':
+					// eslint-disable-next-line max-len
+					resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
+					break;
+
+				case 'double':
+				case 'float':
+					resultResponse[key] = parseFloat(resultResponse[key]);
+					break;
+
+				case 'date':
+				case 'datetime':
+					resultResponse[key] = new Date(resultResponse[key]);
+					break;
+
+				default:
+					break;
+				}
+
+				if (displayName == null) {
+					displayName = key;
+				}
+
+				if (this.checkResponse.length > 0) {
+					this.checkResponse.forEach((valKey) => {
+						if (key === valKey.keyName) {
+							switch (valueType) {
+							case 'date':
+								// eslint-disable-next-line no-case-declarations
+								const d1 = resultResponse[key];
+								// eslint-disable-next-line no-case-declarations
+								const d = new Date(`${valKey.value.getFullYear()}-${valKey.value.getMonth() + 1}-${valKey.value.getDate()}`);
+
+								// eslint-disable-next-line no-case-declarations
+								const isValid = {
+									date: d1.getDate() === d.getDate(),
+									month: d1.getMonth() === d.getMonth(),
+									year: d1.getFullYear() === d.getFullYear(),
+								};
+
+								if (!isValid.date || !isValid.month || !isValid.year) {
+									throw new ErrorResponse(41714, {
+										field: displayName,
+									});
+								}
+
+								resultResponse[key] = `${d1.getFullYear()}/${d1.getMonth() + 1}/${d1.getDate()}`;
+								break;
+							case 'datetime':
+								if (resultResponse[key].getTime() !== valKey.value.getTime()) {
+									throw new ErrorResponse(41714, {
+										field: displayName,
+									});
+								}
+								break;
+
+							default:
+								if (resultResponse[key] !== valKey.value) {
+									throw new ErrorResponse(41714, {
+										field: displayName,
+									});
+								}
+								break;
+							}
+						}
+					});
+				}
+
+				resultResponses.push({
+					value: resultResponse[key],
+					displayName,
+					keyName: key,
+				});
 			});
-		});
+		}
 
 		resultResponse = {
 			status: propResponse.success,
@@ -487,6 +570,12 @@ module.exports = class RestClient extends Request {
 		let result = 'noval';
 
 		switch (keyFunc) {
+		case 'zero':
+			result = 0;
+			break;
+		case 'null':
+			result = null;
+			break;
 		case 'sort':
 
 			// eslint-disable-next-line no-case-declarations

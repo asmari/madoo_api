@@ -85,12 +85,12 @@ exports.checkConvertionRate = async (request) => {
 			model: Loyalty,
 			as: 'Source',
 			required: true,
-			attributes: ['id', 'name', 'unit'],
+			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 		}, {
 			model: Loyalty,
 			as: 'Target',
 			required: true,
-			attributes: ['id', 'name', 'unit'],
+			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 		}],
 	});
 
@@ -192,7 +192,7 @@ exports.doConvertionPoint = async (request) => {
 		where: {
 			id: params.loyalty_id_source,
 		},
-		attributes: ['id', 'name', 'unit'],
+		attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 	});
 
 	if (!loyaltySource) {
@@ -203,7 +203,7 @@ exports.doConvertionPoint = async (request) => {
 		where: {
 			id: params.loyalty_id_target,
 		},
-		attributes: ['id', 'name', 'unit'],
+		attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 	});
 
 	if (!loyaltyTarget) {
@@ -260,12 +260,12 @@ exports.doConvertionPoint = async (request) => {
 			model: Loyalty,
 			as: 'Source',
 			required: true,
-			attributes: ['id', 'name', 'unit'],
+			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 		}, {
 			model: Loyalty,
 			as: 'Target',
 			required: true,
-			attributes: ['id', 'name', 'unit'],
+			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 		}],
 	});
 
@@ -392,6 +392,10 @@ exports.doConvertionPoint = async (request) => {
 						}
 					});
 
+					if (!Number.isNaN(pointMinus) || pointMinus == null) {
+						pointMinus = 0;
+					}
+
 					await cardSource.update({
 						point_balance: pointMinus,
 					});
@@ -416,6 +420,10 @@ exports.doConvertionPoint = async (request) => {
 
 				if (resAddPoint.status) {
 					let pointAdd = cardSource.point_balance;
+
+					if (!Number.isNaN(pointAdd) || pointAdd == null) {
+						pointAdd = 0;
+					}
 
 					resAddPoint.data.forEach((val) => {
 						if (val.keyName === 'point_balance') {
@@ -598,13 +606,13 @@ exports.getConvertionRate = async (request) => {
 				as: 'Source',
 				required: true,
 				where: whereSource,
-				attributes: ['id', 'name', 'unit'],
+				attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 			}, {
 				model: Loyalty,
 				as: 'Target',
 				required: true,
 				where: whereTarget,
-				attributes: ['id', 'name', 'unit'],
+				attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 			}],
 			page: params.page,
 			paginate: params.item,
@@ -716,7 +724,7 @@ exports.getKeyboardFieldConversion = async (request) => {
 					attributes: ['id', 'point_balance'],
 				}, {
 					model: Loyalty,
-					attributes: ['id', 'unit'],
+					attributes: ['id', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 				},
 			],
 		});
@@ -754,7 +762,7 @@ exports.getKeyboardFieldConversion = async (request) => {
 					attributes: ['id', 'point_balance'],
 				}, {
 					model: Loyalty,
-					attributes: ['id', 'unit'],
+					attributes: ['id', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 				},
 			],
 		});
