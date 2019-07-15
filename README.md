@@ -12,6 +12,7 @@ copy the `.env.sample` file to `.env` and put the configuration for DB and serve
 - DB_USERNAME=username for database
 - DB_PASSWORD=password for database
 - SERVER_PORT=port for running server (default : 3000)
+- CMS_URL = Email verification configuration need to put [token] inside (example = http://somesite.com/email/[token]/verify or http://somesite.com/email/verify?token=[token]) 
 
 ## Security
 Security for api is using JWT. To add security for each route, you can add `fastify.authenticate` with `beforeHandler` options. Example : 
