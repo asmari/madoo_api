@@ -1,4 +1,4 @@
-// const moment = require('moment');
+const moment = require('moment');
 const sequelize = require('sequelize');
 
 const { Response, ResponsePaginate, ErrorResponse } = require('../../helper/response');
@@ -52,17 +52,17 @@ exports.getFeaturedPromo = async (request) => {
 		};
 	}
 
-	// const currentDate = moment().format('YYYY-MM-DD');
+	const currentDate = moment().format('YYYY-MM-DD');
 
 	const promos = await Promo.findAll({
 		where: {
 			...filterPromo,
-			// valid_until_end: {
-			// 	[Op.gte]: currentDate,
-			// },
-			// valid_until: {
-			// 	[Op.lte]: currentDate,
-			// },
+			valid_until_end: {
+				[Op.gte]: currentDate,
+			},
+			valid_until: {
+				[Op.lte]: currentDate,
+			},
 			status: 1,
 			isfeatured: 1,
 		},
@@ -78,7 +78,7 @@ exports.getFeaturedPromo = async (request) => {
 // get list promo
 exports.getPromo = async (request) => {
 	const { user } = request;
-	// const currentDate = moment().format('YYYY-MM-DD');
+	const currentDate = moment().format('YYYY-MM-DD');
 	const whereCondition = {};
 
 	const params = {
@@ -119,8 +119,8 @@ exports.getPromo = async (request) => {
 		'id', 'ASC',
 	];
 
-	// whereCondition.valid_until_end = { [Op.gte]: currentDate };
-	// whereCondition.valid_until = { [Op.lte]: currentDate };
+	whereCondition.valid_until_end = { [Op.gte]: currentDate };
+	whereCondition.valid_until = { [Op.lte]: currentDate };
 
 	whereCondition.status = 1;
 
