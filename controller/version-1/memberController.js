@@ -353,9 +353,9 @@ exports.doUpdateMember = async (request) => {
 
 				await emailer.send(body.email, member.id);
 
-				await member.update({
-					email: body.email,
-				});
+				// await member.update({
+				// 	email: body.email,
+				// });
 				body.email_exists = false;
 			} else {
 				body.email_exists = true;

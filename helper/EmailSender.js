@@ -5,6 +5,7 @@ const config = require('../config').get;
 const model = require('../models/index');
 
 const UpdateMemberLogs = model.UpdateMemberLogs.Get;
+const Members = model.Members.Get;
 
 module.exports = class EmailSender {
 	constructor() {
@@ -49,7 +50,7 @@ module.exports = class EmailSender {
 		return this.process({
 			to,
 			data: {
-				url: `${config.cms}?token=${token}`,
+				url: `${this.filterUrl(token)}`,
 			},
 			template: `${__dirname}/../templates/email.html`,
 			body: {
@@ -72,6 +73,13 @@ module.exports = class EmailSender {
 				tags: ['email_verification'],
 			},
 		});
+	}
+
+	// eslint-disable-next-line class-methods-use-this
+	filterUrl(token) {
+		let str = config.cms;
+		str = str.replace(/\[token]/, token);
+		return str;
 	}
 
 	async process(options) {
@@ -130,6 +138,18 @@ module.exports = class EmailSender {
 					});
 
 					if (log) {
+						const members = await Members.findOne({
+							where: {
+								id: log.members_id,
+							},
+						});
+
+						if (members) {
+							await members.update({
+								email: decoded.email,
+							});
+						}
+
 						await log.update({
 							is_verified: 1,
 						});
