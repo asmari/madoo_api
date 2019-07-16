@@ -340,11 +340,22 @@ exports.doConvertionPoint = async (request) => {
 			});
 		}
 
+		const idUnix = () => {
+			let date = new Date()
+			let bulan = date.getMonth()+ 1 +''
+			let tahun = (date.getFullYear()+'').substring(2)
+			if(bulan.length == 1){
+			  bulan = '0' + bulan
+			}
+				return  Number(tahun + bulan + '0000000')
+			}
+		let idNum = idUnix();
+			
+		const incr = ()=> {
+			return idNum++
+		}
 		const transaction = await Transaction.create({
-			unix_id: randomstring.generate({
-				length: 8,
-				charset: 'numeric',
-			}),
+			unix_id: incr(),
 			member_cards_id: cardSource.id,
 			conversion_member_cards_id: cardTarget.id,
 			point: params.point_to_convert,
