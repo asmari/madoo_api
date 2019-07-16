@@ -480,6 +480,7 @@ exports.doConvertionPoint = async (request) => {
 					valid_until: new Date(),
 					description: 'Conversion Success',
 					recipient_type: 'member',
+					status: 'FINISH',
 				});
 
 				if (notification) {
