@@ -91,6 +91,10 @@ const Notification = model.define('notification', {
 		type: sequelize.STRING,
 		allowNull: true,
 	},
+	status: {
+		type: sequelize.STRING,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	paranoid: true,
