@@ -205,6 +205,7 @@ module.exports = class RestClient extends Request {
 
 		parsedBody = RestClient.unflatten(parsedBody);
 
+
 		switch (contentType.toLocaleLowerCase()) {
 		case 'application/xml':
 		case 'text/xml':
@@ -317,7 +318,7 @@ module.exports = class RestClient extends Request {
 				data = this.parsedBody;
 			}
 
-			const responseFiltered = this.getFilterValue(data);
+			const responseFiltered = this.getFilterValue(JSON.parse(data));
 			Object.assign(responseAll, responseFiltered);
 		} else {
 			const response = await super.request(this.api, this.method, this.parsedBody);
@@ -401,12 +402,13 @@ module.exports = class RestClient extends Request {
 
 	getFilterValue(response) {
 		let resultResponse = {};
-		let resultResponses = [];
+		const resultResponses = [];
 
 		const filter = this.responseFilter;
 		const flatened = flat.flatten(response);
 		let code = null;
 		let valueType = 'string';
+
 
 		if (Object.prototype.hasOwnProperty.call(flatened, filter.code)) {
 			code = flatened[filter.code];
@@ -420,140 +422,138 @@ module.exports = class RestClient extends Request {
 			propResponse = filter.status.$default;
 		}
 
-		if (Object.prototype.hasOwnProperty.call(propResponse, 'original_response') && propResponse.original_response === true) {
-			resultResponses = response;
-		} else {
-			Object.keys(propResponse.properties).forEach((key) => {
-				let keyLink = propResponse.properties[key];
-				let displayName = null;
+		Object.keys(propResponse.properties).forEach((key) => {
+			let keyLink = propResponse.properties[key];
+			let displayName = null;
 
-				valueType = 'string';
 
-				if (typeof keyLink === 'object') {
-					const objValue = keyLink;
+			valueType = 'string';
 
-					if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
-						keyLink = objValue.value;
+			if (typeof keyLink === 'object') {
+				const objValue = keyLink;
+
+				if (Object.prototype.hasOwnProperty.call(objValue, 'value')) {
+					keyLink = objValue.value;
+				}
+
+				if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
+					valueType = objValue.type;
+				}
+
+				if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
+					switch (typeof objValue.displayName) {
+					case 'string':
+						// eslint-disable-next-line prefer-destructuring
+						displayName = objValue.displayName;
+						break;
+					case 'object':
+						// eslint-disable-next-line no-case-declarations
+						const keyData = Object.keys(objValue.displayName);
+
+						keyData.forEach((value) => {
+							if (value === this.lang) {
+								displayName = objValue.displayName[value];
+							}
+						});
+
+						if (displayName == null && keyData.length > 0) {
+							displayName = objValue.displayName[keyData[0]];
+						}
+
+						break;
+
+					default:
+						break;
 					}
+				}
+			}
 
-					if (Object.prototype.hasOwnProperty.call(objValue, 'type')) {
-						valueType = objValue.type;
-					}
+			const keyLinkSplit = keyLink.split('.');
 
-					if (Object.prototype.hasOwnProperty.call(objValue, 'displayName')) {
-						switch (typeof objValue.displayName) {
-						case 'string':
-							// eslint-disable-next-line prefer-destructuring
-							displayName = objValue.displayName;
-							break;
-						case 'object':
+			const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
+
+			if (filterIndex !== -1) {
+				resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
+			} else {
+				resultResponse[key] = flatened[keyLink];
+			}
+
+			switch (valueType) {
+			case 'number':
+				// eslint-disable-next-line max-len
+				resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
+				break;
+
+			case 'double':
+			case 'float':
+				resultResponse[key] = parseFloat(resultResponse[key]);
+				break;
+
+			case 'date':
+			case 'datetime':
+				resultResponse[key] = new Date(resultResponse[key]);
+				break;
+
+			default:
+				break;
+			}
+
+			if (displayName == null) {
+				displayName = key;
+			}
+
+			if (this.checkResponse.length > 0) {
+				this.checkResponse.forEach((valKey) => {
+					if (key === valKey.keyName) {
+						switch (valueType) {
+						case 'date':
 							// eslint-disable-next-line no-case-declarations
-							const keyData = Object.keys(objValue.displayName);
+							const d1 = resultResponse[key];
+							// eslint-disable-next-line no-case-declarations
+							const d = new Date(`${valKey.value.getFullYear()}-${valKey.value.getMonth() + 1}-${valKey.value.getDate()}`);
 
-							keyData.forEach((value) => {
-								if (value === this.lang) {
-									displayName = objValue.displayName[value];
-								}
-							});
+							// eslint-disable-next-line no-case-declarations
+							const isValid = {
+								date: d1.getDate() === d.getDate(),
+								month: d1.getMonth() === d.getMonth(),
+								year: d1.getFullYear() === d.getFullYear(),
+							};
 
-							if (displayName == null && keyData.length > 0) {
-								displayName = objValue.displayName[keyData[0]];
+							if (!isValid.date || !isValid.month || !isValid.year) {
+								throw new ErrorResponse(41714, {
+									field: displayName,
+								});
 							}
 
+							resultResponse[key] = `${d1.getFullYear()}/${d1.getMonth() + 1}/${d1.getDate()}`;
+							break;
+						case 'datetime':
+							if (resultResponse[key].getTime() !== valKey.value.getTime()) {
+								throw new ErrorResponse(41714, {
+									field: displayName,
+								});
+							}
 							break;
 
 						default:
+							if (resultResponse[key] !== valKey.value) {
+								throw new ErrorResponse(41714, {
+									field: displayName,
+								});
+							}
 							break;
 						}
 					}
-				}
-
-				const keyLinkSplit = keyLink.split('.');
-
-				const filterIndex = keyLinkSplit.findIndex(ele => ele.substr(0, 1) === '@');
-
-				if (filterIndex !== -1) {
-					resultResponse[key] = RestClient.runFilterFunction(response, keyLinkSplit, filterIndex);
-				} else {
-					resultResponse[key] = flatened[keyLink];
-				}
-
-				switch (valueType) {
-				case 'number':
-					// eslint-disable-next-line max-len
-					resultResponse[key] = Number.isNaN(resultResponse[key]) ? -1 : parseInt(resultResponse[key], 10);
-					break;
-
-				case 'double':
-				case 'float':
-					resultResponse[key] = parseFloat(resultResponse[key]);
-					break;
-
-				case 'date':
-				case 'datetime':
-					resultResponse[key] = new Date(resultResponse[key]);
-					break;
-
-				default:
-					break;
-				}
-
-				if (displayName == null) {
-					displayName = key;
-				}
-
-				if (this.checkResponse.length > 0) {
-					this.checkResponse.forEach((valKey) => {
-						if (key === valKey.keyName) {
-							switch (valueType) {
-							case 'date':
-								// eslint-disable-next-line no-case-declarations
-								const d1 = resultResponse[key];
-								// eslint-disable-next-line no-case-declarations
-								const d = new Date(`${valKey.value.getFullYear()}-${valKey.value.getMonth() + 1}-${valKey.value.getDate()}`);
-
-								// eslint-disable-next-line no-case-declarations
-								const isValid = {
-									date: d1.getDate() === d.getDate(),
-									month: d1.getMonth() === d.getMonth(),
-									year: d1.getFullYear() === d.getFullYear(),
-								};
-
-								if (!isValid.date || !isValid.month || !isValid.year) {
-									throw new ErrorResponse(41714, {
-										field: displayName,
-									});
-								}
-
-								resultResponse[key] = `${d1.getFullYear()}/${d1.getMonth() + 1}/${d1.getDate()}`;
-								break;
-							case 'datetime':
-								if (resultResponse[key].getTime() !== valKey.value.getTime()) {
-									throw new ErrorResponse(41714, {
-										field: displayName,
-									});
-								}
-								break;
-
-							default:
-								if (resultResponse[key] !== valKey.value) {
-									throw new ErrorResponse(41714, {
-										field: displayName,
-									});
-								}
-								break;
-							}
-						}
-					});
-				}
-
-				resultResponses.push({
-					value: resultResponse[key],
-					displayName,
-					keyName: key,
 				});
+			}
+
+			resultResponses.push({
+				value: resultResponse[key],
+				displayName,
+				keyName: key,
 			});
-		}
+		});
+
 
 		resultResponse = {
 			status: propResponse.success,
