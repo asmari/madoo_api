@@ -318,7 +318,11 @@ module.exports = class RestClient extends Request {
 				data = this.parsedBody;
 			}
 
-			const responseFiltered = this.getFilterValue(JSON.parse(data));
+			if (typeof data !== 'object') {
+				data = JSON.parse(data);
+			}
+
+			const responseFiltered = this.getFilterValue(data);
 			Object.assign(responseAll, responseFiltered);
 		} else {
 			const response = await super.request(this.api, this.method, this.parsedBody);
