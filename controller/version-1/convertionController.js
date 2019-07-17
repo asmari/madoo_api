@@ -300,6 +300,8 @@ exports.doConvertionPoint = async (request) => {
 
 		const sourceNewPoint = await sourceRequest.getMemberPoint();
 
+		Logger.info('SOURCE POINT REFRESH', sourceNewPoint);
+
 		if (sourceNewPoint.status) {
 			let sourcePoint = cardSource.point_balance;
 
@@ -312,6 +314,8 @@ exports.doConvertionPoint = async (request) => {
 			await cardSource.update({
 				point_balance: sourcePoint,
 			});
+
+			Logger.info('UPDATE SOURCE POINT', cardSource.toJSON(), sourcePoint);
 		}
 
 		const targetRequest = new LoyaltyRequest();
@@ -319,6 +323,8 @@ exports.doConvertionPoint = async (request) => {
 		targetRequest.setMemberCardId(cardTarget.id);
 
 		const targetNewPoint = await targetRequest.getMemberPoint();
+
+		Logger.info('TARGET POINT REFRESH', targetNewPoint);
 
 		if (targetNewPoint.status) {
 			let targetPoint = cardTarget.point_balance;
@@ -364,7 +370,7 @@ exports.doConvertionPoint = async (request) => {
 			};
 
 			try {
-				Logger.info('Start Convertion', transaction);
+				Logger.info('Start Convertion', transaction.toJSON());
 
 				const resMinusPoint = await sourceRequest.pointMinus({
 					point: params.point_to_convert,
@@ -392,7 +398,7 @@ exports.doConvertionPoint = async (request) => {
 						}
 					});
 
-					if (!Number.isNaN(pointMinus) || pointMinus == null) {
+					if (Number.isNaN(pointMinus) || pointMinus == null) {
 						pointMinus = 0;
 					}
 
@@ -421,7 +427,7 @@ exports.doConvertionPoint = async (request) => {
 				if (resAddPoint.status) {
 					let pointAdd = cardSource.point_balance;
 
-					if (!Number.isNaN(pointAdd) || pointAdd == null) {
+					if (Number.isNaN(pointAdd) || pointAdd == null) {
 						pointAdd = 0;
 					}
 
