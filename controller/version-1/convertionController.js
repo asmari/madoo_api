@@ -18,6 +18,7 @@ const NotificationMember = model.NotificationMembers.Get;
 const MemberCards = model.MembersCards.Get;
 const Transaction = model.Transaction.Get;
 const TransactionLog = model.TransactionLog.Get;
+const MasterUnit = model.MasterUnit.Get;
 
 exports.checkConvertionRate = async (request) => {
 	const whereCondition = {};
@@ -192,6 +193,11 @@ exports.doConvertionPoint = async (request) => {
 		where: {
 			id: params.loyalty_id_source,
 		},
+		include: [
+			{
+				model: MasterUnit,
+			},
+		],
 		attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 	});
 
@@ -203,6 +209,11 @@ exports.doConvertionPoint = async (request) => {
 		where: {
 			id: params.loyalty_id_target,
 		},
+		include: [
+			{
+				model: MasterUnit,
+			},
+		],
 		attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
 	});
 
@@ -477,14 +488,34 @@ exports.doConvertionPoint = async (request) => {
 					});
 				}
 
+				const options = {
+					message: '',
+					title: '',
+				};
+
+				switch (transaction.status) {
+				case 'success':
+					options.message = `You've successfully converted ${transaction.point} ${loyaltySource.name} ${loyaltySource.master_unit.title} to ${transaction.conversion_point} ${loyaltyTarget.name} ${loyaltyTarget.master_unit.title}`;
+					options.title = 'Your point conversion is now complete!';
+					break;
+
+				case 'failed':
+					options.message = `Your Point Conversion From ${loyaltySource.name} to ${loyaltyTarget.name} is failed, but keep calm & try again`;
+					options.title = 'Oh no, your point conversion is failed';
+					break;
+
+				default:
+					break;
+				}
+
 				const notification = await Notification.create({
 					loyalty_id: loyaltySource.id,
 					type: 'conversion',
 					transaction_id: transaction.id,
 					promo_id: 0,
-					title: `Conversion ${transaction.status}`,
+					title: options.title,
 					valid_until: new Date(),
-					description: 'Conversion Success',
+					description: options.message,
 					recipient_type: 'member',
 					status: 'FINISH',
 				});
