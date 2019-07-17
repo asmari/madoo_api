@@ -505,6 +505,8 @@ exports.doConvertionPoint = async (request) => {
 					break;
 
 				default:
+					options.title = 'Conversion in progress';
+					options.message = 'Please wait, your conversion in progress';
 					break;
 				}
 
