@@ -23,7 +23,7 @@ module.exports = fp(async (fastify) => {
 			});
 
 			if (membersToken === null) {
-				reply.send(new ErrorResponse(40100));
+				reply.send(new ErrorResponse(40117));
 				return;
 			}
 
