@@ -6,6 +6,7 @@ const OtpNewHelper = require('../../helper/OtpNewHelper');
 
 const Members = model.Members.Get;
 const Pins = model.Pins.Get;
+const MembersToken = model.MembersToken.Get;
 
 // Index Auth member
 exports.authIndex = async (request, reply) => reply.send({ status: true });
@@ -97,6 +98,25 @@ exports.doLogin = async (request, reply) => {
 			});
 		});
 
+		const memberToken = await MembersToken.findOne({
+			where: {
+				members_id: member.id,
+			},
+			paranoid: false,
+		});
+
+		if (memberToken !== null) {
+			await memberToken.restore();
+			await memberToken.update({
+				token: accessToken.access_token,
+			});
+		} else {
+			await MembersToken.create({
+				members_id: member.id,
+				token: accessToken.access_token,
+			});
+		}
+
 		return new Response(20000, accessToken);
 	}
 
@@ -113,6 +133,12 @@ exports.doLogin = async (request, reply) => {
 			await Members.destroy({
 				where: {
 					id: member.id,
+				},
+			});
+
+			await MembersToken.destroy({
+				where: {
+					members_id: member.id,
 				},
 			});
 		}

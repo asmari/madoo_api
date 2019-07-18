@@ -25,6 +25,7 @@ module.exports = {
 	40114: 'Authorization failed',
 	40115: 'Authorization key not registered, please contact admin',
 	40116: 'client_id or client_secret not exists at headers',
+	40117: 'Authorization Revoked',
 	40198: {
 		message: 'Error :message',
 		params: ['message'],

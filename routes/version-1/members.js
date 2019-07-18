@@ -54,6 +54,9 @@ async function routes(fastify) {
 	fastify.get('/email/verification', {
 		...memberSchema.verificationEmail,
 	}, memberController.doVerifyEmail);
+
+	// remove token
+	fastify.post('/remove/token', memberSchema.removeTokenSchema, memberController.doRemoveToken);
 }
 
 module.exports = routes;

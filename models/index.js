@@ -27,3 +27,4 @@ exports.AuthApiKeys = require('./authApiKeys');
 exports.TransactionLog = require('./transactionLog');
 exports.MasterUnit = require('./master_unit');
 exports.BusinessPartner = require('./business_partner');
+exports.MembersToken = require('./membersToken');
