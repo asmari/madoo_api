@@ -13,6 +13,7 @@ const Pins = model.Pins.Get;
 const Otp = model.Otp.Get;
 const UpdateMemberLogs = model.UpdateMemberLogs.Get;
 const NotificationSettings = model.NotificationSettings.Get;
+const MembersToken = model.MembersToken.Get;
 
 // Index Auth member
 exports.memberIndex = async () => {
@@ -215,6 +216,23 @@ exports.doSaveMember = async (request, reply) => {
 			});
 		});
 
+		const memberToken = await MembersToken.findOne({
+			where: {
+				members_id: member.id,
+			},
+		});
+
+		if (memberToken !== null) {
+			memberToken.update({
+				token: accessToken.access_token,
+			});
+		} else {
+			await MembersToken.create({
+				members_id: member.id,
+				token: accessToken.access_token,
+			});
+		}
+
 		if (params.email) {
 			const emailer = new EmailSender();
 
@@ -288,6 +306,12 @@ exports.doPinValidation = async (request) => {
 			await Members.destroy({
 				where: {
 					id: token.id,
+				},
+			});
+
+			await MembersToken.destroy({
+				where: {
+					members_id: token.id,
 				},
 			});
 		}
@@ -505,4 +529,25 @@ exports.doVerifyEmail = async (request) => {
 	} catch (err) {
 		return new ErrorResponse(41713);
 	}
+};
+
+exports.doRemoveToken = async (request) => {
+	const { body } = request;
+
+	const membersToken = await MembersToken.findOne({
+		where: {
+			members_id: body.user_id,
+		},
+		paranoid: false,
+	});
+
+	if (membersToken) {
+		if (membersToken.deleted_at === null) {
+			membersToken.destroy();
+		}
+
+		return new Response(20059);
+	}
+
+	return new ErrorResponse(41700);
 };
