@@ -855,7 +855,9 @@ exports.getConversionSource = async (request) => {
 		[Op.in]: loyaltyId,
 	};
 
-	const whereLoyalty = {};
+	const whereLoyalty = {
+		enable_trx: 1,
+	};
 
 	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
 		whereLoyalty.name = {
@@ -901,7 +903,9 @@ exports.getConversionSource = async (request) => {
 exports.getConversionDestination = async (request) => {
 	const { user } = request;
 	const whereCondition = {};
-	const whereTarget = {};
+	const whereTarget = {
+		enable_trx: 1,
+	};
 	const allowedTo = [];
 	const loyaltyId = [];
 
