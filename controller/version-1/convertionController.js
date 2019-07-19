@@ -855,7 +855,9 @@ exports.getConversionSource = async (request) => {
 		[Op.in]: loyaltyId,
 	};
 
-	const whereLoyalty = {};
+	const whereLoyalty = {
+		enable_trx: 1,
+	};
 
 	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
 		whereLoyalty.name = {
@@ -901,9 +903,12 @@ exports.getConversionSource = async (request) => {
 exports.getConversionDestination = async (request) => {
 	const { user } = request;
 	const whereCondition = {};
-	const whereTarget = {};
+	const whereTarget = {
+		enable_trx: 1,
+	};
 	const allowedTo = [];
-	const loyaltyId = [];
+	let loyaltyId = [];
+	const loyaltyIdTrx = [];
 
 	const params = JSON.parse(JSON.stringify(request.query));
 
@@ -917,6 +922,20 @@ exports.getConversionDestination = async (request) => {
 		return new ErrorResponse(41709);
 	}
 
+	const rate = await ConvertionRate.findAll({
+		where: {
+			loyalty_id: loyaltyExists.id,
+			enable_trx: 1,
+		},
+		attributes: ['conversion_loyalty'],
+	});
+
+
+	if (rate) {
+		rate.forEach((val) => {
+			loyaltyIdTrx.push(val.conversion_loyalty);
+		});
+	}
 
 	params.page = parseInt(params.page, 10) || 1;
 	params.item = parseInt(params.item, 10) || 10;
@@ -959,6 +978,8 @@ exports.getConversionDestination = async (request) => {
 			loyaltyId.push(id.conversion_loyalty);
 		});
 	}
+
+	loyaltyId = loyaltyId.concat(loyaltyIdTrx.filter(e => loyaltyId.indexOf(e) < 0));
 	// const loyalty = await Loyalty.paginate({
 	// 	page: params.page,
 	// 	paginate: params.item,
@@ -968,7 +989,7 @@ exports.getConversionDestination = async (request) => {
 	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
 		where: {
 			loyalty_id: {
-				[Op.in]: loyaltyId,
+				[Op.in]: loyaltyIdTrx,
 			},
 		},
 		page: params.page,
