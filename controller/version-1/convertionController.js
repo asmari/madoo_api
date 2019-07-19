@@ -849,6 +849,8 @@ exports.getConversionSource = async (request) => {
 		attributes: ['loyalty_id'],
 	});
 
+	Logger.log('SOURCE', rule.toJSON());
+
 	const loyaltyId = rule.map(value => value.loyalty_id);
 
 	where.loyalty_id = {
@@ -892,6 +894,8 @@ exports.getConversionSource = async (request) => {
 			},
 		],
 	});
+
+	Logger.log('SOURCE', loyaltyMemberCards.toJSON());
 
 	return new ResponsePaginate(20055, {
 		item: query.item,
