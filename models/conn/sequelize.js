@@ -1,11 +1,14 @@
 const Sequelize = require('sequelize');
 const config = require('../../config').get;
+const Logger = require('../../helper/Logger').Query;
 
 exports.sequelize = new Sequelize(config.db.database, config.db.username, config.db.password, {
 	host: config.db.host,
 	port: config.db.port,
 	dialect: config.db.driver,
-	logging: false,
+	logging: (str) => {
+		Logger.info(str);
+	},
 	pool: {
 		max: 5,
 		min: 0,
