@@ -849,7 +849,7 @@ exports.getConversionSource = async (request) => {
 		attributes: ['loyalty_id'],
 	});
 
-	Logger.log('SOURCE', rule.toJSON());
+	Logger.log('SOURCE', rule);
 
 	const loyaltyId = rule.map(value => value.loyalty_id);
 
@@ -895,7 +895,7 @@ exports.getConversionSource = async (request) => {
 		],
 	});
 
-	Logger.log('SOURCE', loyaltyMemberCards.toJSON());
+	Logger.log('SOURCE', loyaltyMemberCards);
 
 	return new ResponsePaginate(20055, {
 		item: query.item,
