@@ -137,23 +137,29 @@ exports.getPromo = async (request) => {
 		foreignKey: 'loyalty_id',
 	});
 
+	Promo.hasOne(LoyaltyHasMemberCards, {
+		foreignKey: 'loyalty_id',
+		sourceKey: 'loyalty_id',
+	});
+
+	const unit = Promo.associations.loyalty_has_member_card;
+	unit.sourceIdentifier = 'loyalty_id';
+	unit.sourceKey = 'loyalty_id';
+	unit.sourceKeyAttribute = 'loyalty_id';
+	unit.sourceKeyIsPrimary = false;
+
 	const dataOptions = {
 
-		include: [{
-			model: Loyalty,
-			as: 'loyalty',
-			required: true,
-			include: [
-				{
-					model: LoyaltyHasMemberCards,
-					include: [
-						{
-							model: MemberCards,
-						},
-					],
-				},
-			],
-		}],
+		include: [
+			{
+				model: Loyalty,
+				as: 'loyalty',
+				required: true,
+			},
+			{
+				model: LoyaltyHasMemberCards,
+			},
+		],
 		page: params.page,
 		paginate: params.item,
 		where: whereCondition,
@@ -167,25 +173,10 @@ exports.getPromo = async (request) => {
 	const data = promos.docs.map((v) => {
 		const d = v.toJSON();
 
-		try {
-			if (Object.prototype.hasOwnProperty.call(v, 'loyalty')) {
-				const ly = v.loyalty;
-
-				if (Object.prototype.hasOwnProperty.call(ly, 'loyalty_has_member_card')) {
-					const ly1 = ly.loyalty_has_member_card;
-
-					if (Object.prototype.hasOwnProperty.call(ly1, 'member_cards') && ly1.member_cards.length > 0) {
-						ly1.member_cards.forEach((card) => {
-							if (card.members_id === user.id) {
-								d.has_member_card = true;
-							}
-						});
-					}
-					delete d.loyalty.loyalty_has_member_card;
-				}
-			}
-		} catch (e) {
-			Logger.error(e.stack);
+		if (d.loyalty_has_member_card !== null) {
+			d.has_member_card = true;
+		} else {
+			d.has_member_card = false;
 		}
 
 		return d;
