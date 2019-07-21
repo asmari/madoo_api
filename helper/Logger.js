@@ -34,6 +34,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/CHECK_POINT.log',
 		},
+		QUERY: {
+			type: 'file',
+			filename: 'logs/QUERY.log',
+		},
 	},
 	categories: {
 		default: {
@@ -60,6 +64,9 @@ log4js.configure({
 		CHECK_POINT: {
 			appenders: ['CHECK_POINT'], level: 'ALL',
 		},
+		QUERY: {
+			appenders: ['QUERY'], level: 'ALL',
+		},
 	},
 });
 
@@ -73,3 +80,4 @@ exports.Notifications = log4js.getLogger('NOTIFICATIONS');
 exports.RestClient = log4js.getLogger('RESTCLIENT');
 exports.Convertion = log4js.getLogger('CONVERTION');
 exports.CheckPoint = log4js.getLogger('CHECK_POINT');
+exports.Query = log4js.getLogger('QUERY');

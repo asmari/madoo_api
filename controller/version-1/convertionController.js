@@ -849,9 +849,10 @@ exports.getConversionSource = async (request) => {
 		attributes: ['loyalty_id'],
 	});
 
-	Logger.log('SOURCE', rule);
 
 	const loyaltyId = rule.map(value => value.loyalty_id);
+
+	Logger.log('SOURCE', loyaltyId);
 
 	where.loyalty_id = {
 		[Op.in]: loyaltyId,
@@ -926,6 +927,10 @@ exports.getConversionDestination = async (request) => {
 		return new ErrorResponse(41709);
 	}
 
+	Logger.info('START DESTINATION');
+
+	Logger.trace(JSON.stringify(loyaltyExists));
+
 	const rate = await ConvertionRate.findAll({
 		where: {
 			loyalty_id: loyaltyExists.id,
@@ -934,6 +939,8 @@ exports.getConversionDestination = async (request) => {
 		attributes: ['conversion_loyalty'],
 	});
 
+
+	Logger.trace(JSON.stringify(rate));
 
 	if (rate) {
 		rate.forEach((val) => {
@@ -970,6 +977,7 @@ exports.getConversionDestination = async (request) => {
 		};
 	}
 
+	Logger.trace(JSON.stringify(whereCondition));
 	const dataOptions = {
 		attributes: ['conversion_loyalty'],
 		where: whereCondition,
@@ -989,6 +997,8 @@ exports.getConversionDestination = async (request) => {
 	// 	paginate: params.item,
 	// 	where: { id: { [Op.in]: loyaltyId } },
 	// });
+
+	Logger.trace(JSON.stringify(loyaltyIdTrx));
 
 	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
 		where: {
