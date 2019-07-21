@@ -18,3 +18,13 @@ exports.contactSchema = {
 		description: 'Rest API for contact',
 	},
 };
+exports.webviewSchema = {
+	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest API for webview',
+	},
+};
