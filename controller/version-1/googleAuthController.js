@@ -218,12 +218,12 @@ exports.doSaveMember = async (request, reply) => {
 		if (memberToken !== null) {
 			await memberToken.restore();
 			await memberToken.update({
-				token: token.access_token,
+				token,
 			});
 		} else {
 			await MembersToken.create({
 				members_id: member.id,
-				token: token.access_token,
+				token,
 			});
 		}
 
