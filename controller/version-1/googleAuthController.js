@@ -7,6 +7,7 @@ const OtpNewHelper = require('../../helper/OtpNewHelper');
 const { ErrorResponse, Response } = require('../../helper/response');
 
 const Members = model.Members.Get;
+const MembersToken = model.MembersToken.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 const NotificationSettings = model.NotificationSettings.Get;
@@ -207,6 +208,25 @@ exports.doSaveMember = async (request, reply) => {
 			});
 		});
 
+		const memberToken = await MembersToken.findOne({
+			where: {
+				members_id: member.id,
+			},
+			paranoid: false,
+		});
+
+		if (memberToken !== null) {
+			await memberToken.restore();
+			await memberToken.update({
+				token: token.access_token,
+			});
+		} else {
+			await MembersToken.create({
+				members_id: member.id,
+				token: token.access_token,
+			});
+		}
+
 		if (token != null) {
 			return new Response(20005, {
 				token_type: 'Bearer',
@@ -288,6 +308,25 @@ exports.doLoginGoogle = async (request, reply) => {
 			resolve(res);
 		});
 	});
+
+	const memberToken = await MembersToken.findOne({
+		where: {
+			members_id: member.id,
+		},
+		paranoid: false,
+	});
+
+	if (memberToken !== null) {
+		await memberToken.restore();
+		await memberToken.update({
+			token: resotp.access_token,
+		});
+	} else {
+		await MembersToken.create({
+			members_id: member.id,
+			token: resotp.access_token,
+		});
+	}
 
 	return new Response(20010, resotp);
 };
