@@ -520,6 +520,7 @@ exports.doConvertionPoint = async (request) => {
 					description: options.message,
 					recipient_type: 'member',
 					status: 'FINISH',
+					click: 'notif',
 				});
 
 				if (notification) {
