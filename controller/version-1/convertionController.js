@@ -1,5 +1,5 @@
 const sequelize = require('sequelize');
-const randomstring = require('randomstring');
+const moment = require('moment')
 const model = require('../../models');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
@@ -19,6 +19,7 @@ const MemberCards = model.MembersCards.Get;
 const Transaction = model.Transaction.Get;
 const TransactionLog = model.TransactionLog.Get;
 
+const now = moment()
 exports.checkConvertionRate = async (request) => {
 	const whereCondition = {};
 	// const whereSource = {};
@@ -140,7 +141,6 @@ exports.doConvertionPoint = async (request) => {
 	const { user } = request;
 
 	const params = request.body;
-
 
 	if (params.loyalty_id != null) {
 		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
@@ -340,22 +340,46 @@ exports.doConvertionPoint = async (request) => {
 			});
 		}
 
-		const idUnix = () => {
-			let date = new Date()
-			let bulan = date.getMonth()+ 1 +''
-			let tahun = (date.getFullYear()+'').substring(2)
-			if(bulan.length == 1){
-			  bulan = '0' + bulan
+		const noOrder = (orderNo) => {
+			let angka = (parseInt(orderNo.toString().substring(orderNo.toString().length - 5))) + 1;
+			const strNew = orderNo.toString().substring(0, (orderNo.toString().length - 6));
+			if (angka < 10) {
+				angka = `00000${angka}`;
+			} else if (angka < 100) {
+				angka = `0000${angka}`;
+			} else if (angka < 1000) {
+				angka = `000${angka}`;
+			} else if (angka < 10000) {
+				angka = `00${angka}`;
+			} else if (angka < 100000) {
+				angka = `0${angka}`;
+			} else if (angka < 1000000) {
+				angka = `${angka}`;
+			} else {
+				angka = angka;
 			}
-				return  Number(tahun + bulan + '0000000')
-			}
-		let idNum = idUnix();
-			
-		const incr = ()=> {
-			return idNum++
+			return `${strNew}${angka}`;
 		}
+
+		let idUnix = await Transaction.findAll({
+			where: {
+				created_at: {
+					[Op.between]: [now.startOf('month').format('YYYY-MM-DD hh:mm:ss'), now.endOf('month').format('YYYY-MM-DD hh:mm:ss')]
+				}
+			}
+		})
+
+		idUnix = idUnix.length;
+		let orderNo; 
+		if (idUnix == 0) {
+			orderNo = `${now.format('YYMM')}000001`;
+		} else {
+			const lastNoOrder = await Transaction.max('unix_id')
+			orderNo = await noOrder(lastNoOrder);
+		}
+
 		const transaction = await Transaction.create({
-			unix_id: incr(),
+			unix_id: orderNo,
 			member_cards_id: cardSource.id,
 			conversion_member_cards_id: cardTarget.id,
 			point: params.point_to_convert,
