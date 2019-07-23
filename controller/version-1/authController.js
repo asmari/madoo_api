@@ -326,6 +326,25 @@ exports.doChangePin = async (request, reply) => {
 			});
 		});
 
+		const memberToken = await MembersToken.findOne({
+			where: {
+				members_id: member.id,
+			},
+			paranoid: false,
+		});
+
+		if (memberToken !== null) {
+			await memberToken.restore();
+			await memberToken.update({
+				token: res.access_token,
+			});
+		} else {
+			await MembersToken.create({
+				members_id: member.id,
+				token: res.access_token,
+			});
+		}
+
 		return new Response(20040, res);
 	}
 
