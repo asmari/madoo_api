@@ -329,20 +329,20 @@ exports.doChangePin = async (request, reply) => {
 
 		//
 
-		const accessToken = await new Promise((resolve, reject) => {
-			reply.jwtSign(payload, (err, token) => {
-				if (err) {
-					reject(err);
-				}
-				const res = {
-					token_type: 'Bearer',
-					access_token: token,
-					fingerprint: member.finggerprint,
-					members_id: member.id,
-				};
-				resolve(res);
-			});
-		});
+		// const accessToken = await new Promise((resolve, reject) => {
+		// 	reply.jwtSign(payload, (err, token) => {
+		// 		if (err) {
+		// 			reject(err);
+		// 		}
+		// 		const res = {
+		// 			token_type: 'Bearer',
+		// 			access_token: token,
+		// 			fingerprint: member.finggerprint,
+		// 			members_id: member.id,
+		// 		};
+		// 		resolve(res);
+		// 	});
+		// });
 
 		const memberToken = await MembersToken.findOne({
 			where: {
@@ -351,17 +351,17 @@ exports.doChangePin = async (request, reply) => {
 			paranoid: false,
 		});
 
-		if (memberToken !== null) {
-			await memberToken.restore();
-			await memberToken.update({
-				token: accessToken.access_token,
-			});
-		} else {
-			await MembersToken.create({
-				members_id: member.id,
-				token: accessToken.access_token,
-			});
-		}
+		// if (memberToken !== null) {
+		await memberToken.restore();
+		// 	await memberToken.update({
+		// 		token: accessToken.access_token,
+		// 	});
+		// } else {
+		// 	await MembersToken.create({
+		// 		members_id: member.id,
+		// 		token: accessToken.access_token,
+		// 	});
+		// }
 
 		return new Response(20040, memberToken);
 	}
