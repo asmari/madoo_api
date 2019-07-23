@@ -301,6 +301,7 @@ exports.doChangePin = async (request, reply) => {
 			pin.update({
 				pin: pinHash,
 				members_id: member.id,
+				wrong: 0,
 			});
 		}
 
@@ -311,22 +312,58 @@ exports.doChangePin = async (request, reply) => {
 			oauth: isOauth,
 		};
 
-		const res = await new Promise((resolve, reject) => {
+		// const res = await new Promise((resolve, reject) => {
+		// 	reply.jwtSign(payload, (err, token) => {
+		// 		if (err) {
+		// 			reject(helper.Fail(err));
+		// 		}
+		// 		const response = {
+		// 			token_type: 'Bearer',
+		// 			access_token: token,
+		// 			fingerprint: member.finggerprint,
+		// 		};
+
+		// 		resolve(response);
+		// 	});
+		// });
+
+		//
+
+		const accessToken = await new Promise((resolve, reject) => {
 			reply.jwtSign(payload, (err, token) => {
 				if (err) {
-					reject(helper.Fail(err));
+					reject(err);
 				}
-				const response = {
+				const res = {
 					token_type: 'Bearer',
 					access_token: token,
 					fingerprint: member.finggerprint,
+					members_id: member.id,
 				};
-
-				resolve(response);
+				resolve(res);
 			});
 		});
 
-		return new Response(20040, res);
+		const memberToken = await MembersToken.findOne({
+			where: {
+				members_id: member.id,
+			},
+			paranoid: false,
+		});
+
+		if (memberToken !== null) {
+			await memberToken.restore();
+			await memberToken.update({
+				token: accessToken.access_token,
+			});
+		} else {
+			await MembersToken.create({
+				members_id: member.id,
+				token: accessToken.access_token,
+			});
+		}
+
+		return new Response(20040, memberToken);
 	}
 
 	// Error: Member not found
