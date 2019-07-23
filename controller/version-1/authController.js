@@ -301,6 +301,7 @@ exports.doChangePin = async (request, reply) => {
 			pin.update({
 				pin: pinHash,
 				members_id: member.id,
+				wrong: 0,
 			});
 		}
 
@@ -311,20 +312,37 @@ exports.doChangePin = async (request, reply) => {
 			oauth: isOauth,
 		};
 
-		const res = await new Promise((resolve, reject) => {
-			reply.jwtSign(payload, (err, token) => {
-				if (err) {
-					reject(helper.Fail(err));
-				}
-				const response = {
-					token_type: 'Bearer',
-					access_token: token,
-					fingerprint: member.finggerprint,
-				};
+		// const res = await new Promise((resolve, reject) => {
+		// 	reply.jwtSign(payload, (err, token) => {
+		// 		if (err) {
+		// 			reject(helper.Fail(err));
+		// 		}
+		// 		const response = {
+		// 			token_type: 'Bearer',
+		// 			access_token: token,
+		// 			fingerprint: member.finggerprint,
+		// 		};
 
-				resolve(response);
-			});
-		});
+		// 		resolve(response);
+		// 	});
+		// });
+
+		//
+
+		// const accessToken = await new Promise((resolve, reject) => {
+		// 	reply.jwtSign(payload, (err, token) => {
+		// 		if (err) {
+		// 			reject(err);
+		// 		}
+		// 		const res = {
+		// 			token_type: 'Bearer',
+		// 			access_token: token,
+		// 			fingerprint: member.finggerprint,
+		// 			members_id: member.id,
+		// 		};
+		// 		resolve(res);
+		// 	});
+		// });
 
 		const memberToken = await MembersToken.findOne({
 			where: {
@@ -333,19 +351,19 @@ exports.doChangePin = async (request, reply) => {
 			paranoid: false,
 		});
 
-		if (memberToken !== null) {
-			await memberToken.restore();
-			await memberToken.update({
-				token: res.access_token,
-			});
-		} else {
-			await MembersToken.create({
-				members_id: member.id,
-				token: res.access_token,
-			});
-		}
+		// if (memberToken !== null) {
+		await memberToken.restore();
+		// 	await memberToken.update({
+		// 		token: accessToken.access_token,
+		// 	});
+		// } else {
+		// 	await MembersToken.create({
+		// 		members_id: member.id,
+		// 		token: accessToken.access_token,
+		// 	});
+		// }
 
-		return new Response(20040, res);
+		return new Response(20040, memberToken);
 	}
 
 	// Error: Member not found
