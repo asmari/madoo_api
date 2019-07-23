@@ -54,6 +54,17 @@ exports.getFeaturedPromo = async (request) => {
 
 	const currentDate = moment().format('YYYY-MM-DD');
 
+	Promo.hasOne(LoyaltyHasMemberCards, {
+		foreignKey: 'loyalty_id',
+		sourceKey: 'loyalty_id',
+	});
+
+	const unit = Promo.associations.loyalty_has_member_card;
+	unit.sourceIdentifier = 'loyalty_id';
+	unit.sourceKey = 'loyalty_id';
+	unit.sourceKeyAttribute = 'loyalty_id';
+	unit.sourceKeyIsPrimary = false;
+
 	const promos = await Promo.findAll({
 		where: {
 			...filterPromo,
@@ -72,7 +83,19 @@ exports.getFeaturedPromo = async (request) => {
 		order: [['updated_at', 'DESC']],
 	});
 
-	return new Response(20022, promos);
+	const data = promos.map((v) => {
+		const d = v.toJSON();
+
+		if (d.loyalty_has_member_card !== null) {
+			d.has_member_card = true;
+		} else {
+			d.has_member_card = false;
+		}
+
+		return d;
+	});
+
+	return new Response(20022, data);
 };
 
 // get list promo
