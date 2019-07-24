@@ -30,6 +30,7 @@ exports.doGetDetailTransaction = async (request) => {
 		include: [
 			{
 				model: MemberCards,
+				paranoid: false,
 				where: {
 					members_id: member.id,
 				},
