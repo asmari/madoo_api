@@ -61,14 +61,17 @@ exports.doGetDetailTransaction = async (request) => {
 			{
 				model: MemberCards,
 				as: 'source_member_cards',
+				paranoid: false,
 				nested: true,
 				include: [
 					{
 						model: LoyaltyMemberCards,
 						nested: true,
+						paranoid: false,
 						attributes: ['member_cards_id', 'loyalty_id'],
 						include: [
 							{
+								paranoid: false,
 								model: Loyalty,
 								attributes: ['name', 'unit'],
 								nested: true,
@@ -100,6 +103,7 @@ exports.doGetDetailTransaction = async (request) => {
 						include: [
 							{
 								model: Loyalty,
+								paranoid: false,
 								attributes: ['name', 'unit'],
 								nested: true,
 							},
