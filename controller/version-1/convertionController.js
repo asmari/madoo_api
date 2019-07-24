@@ -342,22 +342,8 @@ exports.doConvertionPoint = async (request) => {
 
 		const noOrder = (orderNo) => {
 			let angka = (parseInt(orderNo.toString().substring(orderNo.toString().length - 5))) + 1;
-			const strNew = orderNo.toString().substring(0, (orderNo.toString().length - 6));
-			if (angka < 10) {
-				angka = `00000${angka}`;
-			} else if (angka < 100) {
-				angka = `0000${angka}`;
-			} else if (angka < 1000) {
-				angka = `000${angka}`;
-			} else if (angka < 10000) {
-				angka = `00${angka}`;
-			} else if (angka < 100000) {
-				angka = `0${angka}`;
-			} else if (angka < 1000000) {
-				angka = `${angka}`;
-			} else {
-				angka = angka;
-			}
+			angka = angka.toString().padStart(6, '0');
+			let strNew = orderNo.toString().substring(0, (orderNo.toString().length - 6));
 			return `${strNew}${angka}`;
 		}
 
