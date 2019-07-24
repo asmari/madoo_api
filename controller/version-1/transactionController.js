@@ -57,6 +57,7 @@ exports.doGetDetailTransaction = async (request) => {
 
 	const transaction = await Transaction.findOne({
 		where: whereOptions,
+		paranoid: false,
 		include: [
 			{
 				model: MemberCards,
