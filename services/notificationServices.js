@@ -148,7 +148,7 @@ const run = async () => {
 				notification: {
 					title: notification.title,
 					body: notification.description,
-					clickAction: notification.click,
+					click_action: notification.click,
 				},
 			});
 
