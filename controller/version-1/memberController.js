@@ -30,6 +30,7 @@ exports.doRegisterPhone = async (request) => {
 	const otpNewHelper = new OtpNewHelper();
 
 	const member = await Members.findOne({
+		paranoid: false,
 		where: {
 			mobile_phone: params.mobile_phone,
 		},
@@ -42,6 +43,7 @@ exports.doRegisterPhone = async (request) => {
 	}
 
 	const memberEmail = await Members.findOne({
+		paranoid: false,
 		where: {
 			[Op.or]: [
 				{
