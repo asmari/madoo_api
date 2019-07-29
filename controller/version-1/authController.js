@@ -305,38 +305,39 @@ exports.doChangePin = async (request, reply) => {
 			});
 		}
 
-		// const isOauth = !!(member.fb_id != null || member.g_id != null);
+		const isOauth = !!(member.fb_id != null || member.g_id != null);
 
-		// const payload = {
-		// 	id: member.id,
-		// 	oauth: isOauth,
-		// };
+		const payload = {
+			id: member.id,
+			oauth: isOauth,
+		};
 
-		// const res = await new Promise((resolve, reject) => {
-		// 	reply.jwtSign(payload, (err, token) => {
-		// 		if (err) {
-		// 			reject(helper.Fail(err));
-		// 		}
-		// 		const response = {
-		// 			token_type: 'Bearer',
-		// 			access_token: token,
-		// 			fingerprint: member.finggerprint,
-		// 		};
+		const res = await new Promise((resolve, reject) => {
+			reply.jwtSign(payload, (err, token) => {
+				if (err) {
+					reject(helper.Fail(err));
+				}
+				const response = {
+					token_type: 'Bearer',
+					access_token: token,
+					fingerprint: member.finggerprint,
+					members_id: member.id,
+				};
 
-		// 		resolve(response);
-		// 	});
-		// });
-
-		const memberToken = await MembersToken.findOne({
-			where: {
-				members_id: member.id,
-			},
-			paranoid: false,
+				resolve(response);
+			});
 		});
 
-		await memberToken.restore();
+		// const memberToken = await MembersToken.findOne({
+		// 	where: {
+		// 		members_id: member.id,
+		// 	},
+		// 	paranoid: false,
+		// });
 
-		return new Response(20040, memberToken);
+		// await memberToken.restore();
+
+		return new Response(20040, res);
 	}
 
 	// Error: Member not found
