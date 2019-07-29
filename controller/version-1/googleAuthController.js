@@ -63,6 +63,7 @@ exports.doRegisterGoogle = async (request) => {
 
 	// find email unique
 	const memberEmail = await Members.findOne({
+		paranoid: false,
 		where: {
 			[Op.or]: [
 				{
@@ -82,6 +83,7 @@ exports.doRegisterGoogle = async (request) => {
 	}
 
 	const memberPhone = await Members.findOne({
+		paranoid: false,
 		where: {
 			mobile_phone: params.mobile_phone,
 		},

@@ -60,6 +60,7 @@ exports.doRegisterFacebook = async (request) => {
 
 	// find email unique
 	const memberEmail = await Members.findOne({
+		paranoid: false,
 		where: {
 			[Op.or]: [
 				{
@@ -80,6 +81,7 @@ exports.doRegisterFacebook = async (request) => {
 
 	// find phone unique
 	const memberPhone = await Members.findOne({
+		paranoid: false,
 		where: {
 			mobile_phone: params.mobile_phone,
 		},
