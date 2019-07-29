@@ -11,6 +11,7 @@ const Members = model.Members.Get;
 
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+const log = require('../../helper/Logger').logger;
 // get detail transaction
 exports.doGetDetailTransaction = async (request) => {
 	const { user, query } = request;
@@ -154,7 +155,7 @@ exports.doGetListHistory = async (request) => {
 					[Op.in]: params.filter_loyalty,
 				},
 			},
-			attributes: ['id'],
+			attributes: ['id', 'member_cards_id'],
 			include: [
 				{
 					model: MemberCards,
@@ -173,6 +174,8 @@ exports.doGetListHistory = async (request) => {
 						member_cards_id: {
 							[Op.in]: idMemberCards,
 						},
+					},
+					{
 						conversion_member_cards_id: {
 							[Op.in]: idMemberCards,
 						},
@@ -202,6 +205,8 @@ exports.doGetListHistory = async (request) => {
 						member_cards_id: {
 							[Op.in]: idMemberCards,
 						},
+					},
+					{
 						conversion_member_cards_id: {
 							[Op.in]: idMemberCards,
 						},
