@@ -48,4 +48,6 @@ module.exports = {
 	41725: 'Member card from loyalty target not found',
 	41726: 'Notification not found',
 	41727: 'Transaction not found',
+	41728: 'Promo not found',
+	41729: 'Promo is deleted',
 };

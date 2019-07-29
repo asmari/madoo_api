@@ -215,13 +215,28 @@ exports.getPromo = async (request) => {
 // get detail promo
 exports.getDetailPromo = async (request) => {
 	const query = JSON.parse(JSON.stringify(request.query));
+	// const currentDate = moment().format('YYYY-MM-DD');
+	const whereCondition = {};
+
+	// whereCondition.valid_until_end = { [Op.gte]: currentDate };
+	// whereCondition.valid_until = { [Op.lte]: currentDate };
+
+	// whereCondition.status = 1;
+	whereCondition.id = query.promo_id;
 
 	const promo = await Promo.findOne({
-		where: {
-			id: query.promo_id,
-		},
+		paranoid: false,
+		where: whereCondition,
 		include: [Loyalty],
 	});
 
-	return new Response(20024, promo);
+	if (promo) {
+		if (promo.deleted_at != null || promo.status !== 1) {
+			return new ErrorResponse(41729);
+		}
+
+		return new Response(20024, promo);
+	}
+
+	return new ErrorResponse(41728);
 };
