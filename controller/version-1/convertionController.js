@@ -1,5 +1,5 @@
 const sequelize = require('sequelize');
-const moment = require('moment')
+const moment = require('moment');
 const model = require('../../models');
 const { ErrorResponse, Response, ResponsePaginate } = require('../../helper/response');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
@@ -20,7 +20,6 @@ const Transaction = model.Transaction.Get;
 const TransactionLog = model.TransactionLog.Get;
 const MasterUnit = model.MasterUnit.Get;
 
-const now = moment()
 exports.checkConvertionRate = async (request) => {
 	const whereCondition = {};
 	// const whereSource = {};
@@ -357,29 +356,20 @@ exports.doConvertionPoint = async (request) => {
 			});
 		}
 
-		const noOrder = (orderNo) => {
-			let angka = (parseInt(orderNo.toString().substring(orderNo.toString().length - 5))) + 1;
-			angka = angka.toString().padStart(6, '0');
-			let strNew = orderNo.toString().substring(0, (orderNo.toString().length - 6));
-			return `${strNew}${angka}`;
-		}
+		const now = moment();
 
-		let idUnix = await Transaction.findAll({
+		const totalTrxToday = await Transaction.count({
 			where: {
 				created_at: {
-					[Op.between]: [now.startOf('month').format('YYYY-MM-DD hh:mm:ss'), now.endOf('month').format('YYYY-MM-DD hh:mm:ss')]
-				}
-			}
-		})
+					[Op.gte]: now.format('YYYY-MM-01 00:00:00'),
+					[Op.lte]: now.format('YYYY-MM-31 HH:mm:SS'),
+				},
+			},
+		});
 
-		idUnix = idUnix.length;
-		let orderNo; 
-		if (idUnix == 0) {
-			orderNo = `${now.format('YYMM')}000001`;
-		} else {
-			const lastNoOrder = await Transaction.max('unix_id')
-			orderNo = await noOrder(lastNoOrder);
-		}
+		const str = totalTrxToday.toString();
+
+		const orderNo = `${now.format('YYMM')}${'0'.repeat(6 - str.length)}${str}`;
 
 		const transaction = await Transaction.create({
 			unix_id: orderNo,
