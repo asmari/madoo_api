@@ -236,6 +236,14 @@ exports.doSaveMember = async (request, reply) => {
 		}
 
 		if (params.email) {
+			await UpdateMemberLogs.create({
+				type: 'email',
+				members_id: member.id,
+				value_before: member.email,
+				value_after: member.email,
+				is_verified: 0,
+			});
+
 			const emailer = new EmailSender();
 
 			await emailer.send(params.email, member.id);
