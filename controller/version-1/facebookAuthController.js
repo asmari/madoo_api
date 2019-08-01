@@ -10,6 +10,7 @@ const MembersToken = model.MembersToken.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 const NotificationSettings = model.NotificationSettings.Get;
+const UpdateMemberLogs = model.UpdateMemberLogs.Get;
 
 // register fb oauth
 exports.doRegisterFacebook = async (request) => {
@@ -176,6 +177,14 @@ exports.doSaveMember = async (request, reply) => {
 			fb_email: memberRegister.fb_email,
 			g_email: '-',
 			fb_name: params.full_name,
+		});
+
+		await UpdateMemberLogs.create({
+			type: 'email',
+			members_id: member.id,
+			value_before: member.email,
+			value_after: member.email,
+			is_verified: 0,
 		});
 
 		await Pins.create({

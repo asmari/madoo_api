@@ -11,6 +11,7 @@ const MembersToken = model.MembersToken.Get;
 const MembersRegister = model.MembersRegister.Get;
 const Pins = model.Pins.Get;
 const NotificationSettings = model.NotificationSettings.Get;
+const UpdateMemberLogs = model.UpdateMemberLogs.Get;
 
 // register google oauth
 exports.doRegisterGoogle = async (request) => {
@@ -176,6 +177,14 @@ exports.doSaveMember = async (request, reply) => {
 			g_name: params.full_name,
 			g_email: memberRegister.g_email,
 			fb_email: '-',
+		});
+
+		await UpdateMemberLogs.create({
+			type: 'email',
+			members_id: member.id,
+			value_before: member.email,
+			value_after: member.email,
+			is_verified: 0,
 		});
 
 		await Pins.create({
