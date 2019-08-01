@@ -1,4 +1,5 @@
 const sequelize = require('sequelize');
+const moment = require('moment');
 const AuthRefresher = require('../../services/authRefresherServices');
 const model = require('../../models');
 const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
@@ -328,6 +329,8 @@ exports.getDetailMember = async (request) => {
 		});
 	}
 
+	const currentDate = moment().format('YYYY-MM-DD');
+
 	const memberCards = await MemberCards.findOne({
 		where: {
 			members_id: user.id,
@@ -341,7 +344,21 @@ exports.getDetailMember = async (request) => {
 				where: {
 					id: params.loyalty_id,
 				},
-				include: [Promo],
+				include: [
+					{
+						model: Promo,
+						where: {
+							valid_until_end: {
+								[Op.gte]: currentDate,
+							},
+							valid_until: {
+								[Op.lte]: currentDate,
+							},
+							status: 1,
+						},
+						required: false,
+					},
+				],
 			}],
 		}],
 	});
@@ -561,11 +578,27 @@ exports.getListLoyalty = async () => {
 exports.getDetailLoyalty = async (request) => {
 	const query = JSON.parse(JSON.stringify(request.query));
 
+	const currentDate = moment().format('YYYY-MM-DD');
+
 	const loyalty = await Loyalty.findOne({
 		where: {
 			id: query.loyalty_id,
 		},
-		include: [Promo],
+		include: [
+			{
+				model: Promo,
+				where: {
+					valid_until_end: {
+						[Op.gte]: currentDate,
+					},
+					valid_until: {
+						[Op.lte]: currentDate,
+					},
+					status: 1,
+				},
+				required: false,
+			},
+		],
 	});
 
 	return new Response(20015, loyalty);
