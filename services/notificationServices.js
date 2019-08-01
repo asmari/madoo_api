@@ -160,6 +160,9 @@ const run = async () => {
 					notification_id: notification.id,
 					read: 0,
 				}));
+				await notification.update({
+					status: 'FINISH',
+				});
 				return NotificationMember.bulkCreate(bulkCreate);
 			}
 
