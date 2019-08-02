@@ -181,6 +181,16 @@ exports.getPromo = async (request) => {
 			},
 			{
 				model: LoyaltyHasMemberCards,
+				required: false,
+				include: [
+					{
+						required: false,
+						model: MemberCards,
+						where: {
+							members_id: user.id,
+						},
+					},
+				],
 			},
 		],
 		page: params.page,
@@ -196,10 +206,8 @@ exports.getPromo = async (request) => {
 	const data = promos.docs.map((v) => {
 		const d = v.toJSON();
 
-		if (d.loyalty_has_member_card !== null) {
+		if (d.loyalty_has_member_card.member_cards.length > 0) {
 			d.has_member_card = true;
-		} else {
-			d.has_member_card = false;
 		}
 
 		return d;
