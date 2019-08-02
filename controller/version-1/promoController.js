@@ -156,20 +156,20 @@ exports.getPromo = async (request) => {
 		};
 	}
 
-	Loyalty.hasOne(LoyaltyHasMemberCards, {
+	Loyalty.hasMany(LoyaltyHasMemberCards, {
 		foreignKey: 'loyalty_id',
 	});
 
-	Promo.hasOne(LoyaltyHasMemberCards, {
+	Promo.hasMany(LoyaltyHasMemberCards, {
 		foreignKey: 'loyalty_id',
 		sourceKey: 'loyalty_id',
 	});
 
-	const unit = Promo.associations.loyalty_has_member_card;
-	unit.sourceIdentifier = 'loyalty_id';
-	unit.sourceKey = 'loyalty_id';
-	unit.sourceKeyAttribute = 'loyalty_id';
-	unit.sourceKeyIsPrimary = false;
+	// const unit = Promo.associations.loyalty_has_member_card;
+	// // unit.sourceIdentifier = 'loyalty_id';
+	// // unit.sourceKey = 'loyalty_id';
+	// // unit.sourceKeyAttribute = 'loyalty_id';
+	// unit.sourceKeyIsPrimary = false;
 
 	const dataOptions = {
 
@@ -206,8 +206,15 @@ exports.getPromo = async (request) => {
 	const data = promos.docs.map((v) => {
 		const d = v.toJSON();
 
-		if (d.loyalty_has_member_card.member_cards.length > 0) {
-			d.has_member_card = true;
+		if (Object.prototype.hasOwnProperty.call(d, 'loyalty_has_member_cards')) {
+			console.log(d.loyalty_has_member_cards.length);
+			d.loyalty_has_member_cards.forEach((val) => {
+				if (val.member_cards.length > 0) {
+					d.has_member_card = true;
+				}
+			});
+
+			delete d.loyalty_has_member_cards;
 		}
 
 		return d;
