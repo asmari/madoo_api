@@ -233,14 +233,17 @@ exports.doGetListHistory = async (request) => {
 					paranoid: false,
 					model: MemberCards,
 					as: 'source_member_cards',
+					required: false,
 					include: [
 						{
 							paranoid: false,
 							model: LoyaltyMemberCards,
+							required: false,
 							include: [
 								{
 									paranoid: false,
 									model: Loyalty,
+									required: false,
 									attributes: ['id', 'name', 'unit'],
 								},
 							],
@@ -250,14 +253,17 @@ exports.doGetListHistory = async (request) => {
 				{
 					paranoid: false,
 					model: MemberCards,
+					required: false,
 					as: 'target_member_cards',
 					include: [
 						{
 							paranoid: false,
+							required: false,
 							model: LoyaltyMemberCards,
 							include: [
 								{
 									paranoid: false,
+									required: false,
 									model: Loyalty,
 									attributes: ['id', 'name', 'unit'],
 								},
