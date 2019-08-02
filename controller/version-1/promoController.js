@@ -224,10 +224,40 @@ exports.getDetailPromo = async (request) => {
 	// whereCondition.status = 1;
 	whereCondition.id = query.promo_id;
 
+	Loyalty.hasOne(LoyaltyHasMemberCards, {
+		foreignKey: 'loyalty_id',
+	});
+
+	Promo.hasOne(LoyaltyHasMemberCards, {
+		foreignKey: 'loyalty_id',
+		sourceKey: 'loyalty_id',
+	});
+
+	const unit = Promo.associations.loyalty_has_member_card;
+	unit.sourceIdentifier = 'loyalty_id';
+	unit.sourceKey = 'loyalty_id';
+	unit.sourceKeyAttribute = 'loyalty_id';
+	unit.sourceKeyIsPrimary = false;
+
 	const promo = await Promo.findOne({
 		paranoid: false,
 		where: whereCondition,
-		include: [Loyalty],
+		include: [
+			{
+				paranoid: false,
+				model: Loyalty,
+				include: [
+					{
+						model: LoyaltyHasMemberCards,
+						include: [
+							{
+								model: MemberCards,
+							},
+						],
+					},
+				],
+			},
+		],
 	});
 
 	if (promo) {
@@ -235,7 +265,19 @@ exports.getDetailPromo = async (request) => {
 			return new ErrorResponse(41729);
 		}
 
-		return new Response(20024, promo);
+		const res = promo.toJSON();
+
+		if (Object.prototype.hasOwnProperty.call(res.loyalty, 'loyalty_has_member_card')) {
+			if (Object.prototype.hasOwnProperty.call(res.loyalty.loyalty_has_member_card, 'member_cards')) {
+				if (res.loyalty.loyalty_has_member_card.member_cards.length > 0) {
+					res.has_member_card = true;
+				}
+			}
+
+			delete res.loyalty.loyalty_has_member_card;
+		}
+
+		return new Response(20024, res);
 	}
 
 	return new ErrorResponse(41728);
