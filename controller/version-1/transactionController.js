@@ -230,13 +230,16 @@ exports.doGetListHistory = async (request) => {
 			},
 			include: [
 				{
+					paranoid: false,
 					model: MemberCards,
 					as: 'source_member_cards',
 					include: [
 						{
+							paranoid: false,
 							model: LoyaltyMemberCards,
 							include: [
 								{
+									paranoid: false,
 									model: Loyalty,
 									attributes: ['id', 'name', 'unit'],
 								},
@@ -245,13 +248,16 @@ exports.doGetListHistory = async (request) => {
 					],
 				},
 				{
+					paranoid: false,
 					model: MemberCards,
 					as: 'target_member_cards',
 					include: [
 						{
+							paranoid: false,
 							model: LoyaltyMemberCards,
 							include: [
 								{
+									paranoid: false,
 									model: Loyalty,
 									attributes: ['id', 'name', 'unit'],
 								},
