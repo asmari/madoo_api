@@ -1,8 +1,10 @@
+const { Op } = require('sequelize');
 const bcrypt = require('bcrypt');
 const model = require('../../models');
 const helper = require('../../helper');
 const { ErrorResponse, Response } = require('../../helper/response');
 const OtpNewHelper = require('../../helper/OtpNewHelper');
+const CountryCode = require('../../helper/CountryCode');
 
 const Members = model.Members.Get;
 const Pins = model.Pins.Get;
@@ -17,13 +19,43 @@ exports.doCheckMember = async (request) => {
 
 	if (!Object.prototype.hasOwnProperty.call(params, 'mobile_phone')) {
 		// Error: Required field :field
-		throw new ErrorResponse(42200, 'mobile_phone');
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
 	}
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone);
+
+	const wherePhone = {};
+
+	if (Object.prototype.hasOwnProperty.call(params, 'country_code')) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: params.mobile_phone,
+				country_code: params.country_code,
+			},
+			{
+				mobile_phone: `${params.country_code}${params.mobile_phone}`,
+			},
+		];
+	} else if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
+	console.log(wherePhone);
+
 	const member = await Members.findOne({
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 		paranoid: false,
 	});
 
@@ -54,10 +86,33 @@ exports.doLogin = async (request, reply) => {
 		throw new ErrorResponse(42200, 'pin');
 	}
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	const member = await Members.findOne({
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 		paranoid: false,
 		include: [Pins],
 	});
@@ -157,10 +212,33 @@ exports.setForgotPinOtp = async (request) => {
 	const params = request.body;
 	const otpNewHelper = new OtpNewHelper();
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	const member = await Members.findOne({
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 	});
 
 	if (member) {
@@ -169,7 +247,7 @@ exports.setForgotPinOtp = async (request) => {
 		// }, params.mobile_phone);
 
 		try {
-			const resOtp = await otpNewHelper.sendOtp(params.mobile_phone, {
+			const resOtp = await otpNewHelper.sendOtp(countryCode.fullphone, {
 				type: 'forgot',
 				data: {
 					memberId: member.id,
@@ -207,10 +285,33 @@ exports.checkForgotPinOtp = async (request) => {
 	const params = request.body;
 	const otpNewHelper = new OtpNewHelper();
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	const member = await Members.findOne({
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 	});
 
 	if (member) {
@@ -274,10 +375,33 @@ exports.doChangePin = async (request, reply) => {
 		});
 	}
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	const member = await Members.findOne({
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 	});
 
 	if (member) {
