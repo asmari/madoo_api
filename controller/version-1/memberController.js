@@ -6,6 +6,7 @@ const model = require('../../models');
 const { ErrorResponse, Response } = require('../../helper/response');
 const EmailSender = require('../../helper/EmailSender');
 const OtpNewHelper = require('../../helper/OtpNewHelper');
+const CountryCode = require('../../helper/CountryCode');
 
 const Members = model.Members.Get;
 const MembersRegister = model.MembersRegister.Get;
@@ -29,11 +30,34 @@ exports.doRegisterPhone = async (request) => {
 	const params = request.body;
 	const otpNewHelper = new OtpNewHelper();
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	const member = await Members.findOne({
 		paranoid: false,
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 	});
 
 	if (member) {
@@ -62,18 +86,15 @@ exports.doRegisterPhone = async (request) => {
 	}
 
 	const memberRegister = await MembersRegister.findOne({
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 	}, {});
 	if (memberRegister) {
 		// if (memberRegister.status !== 'registered') {
 		// const sendOtp = await otpHelper.sendOtp({
 		// 	members_register_id: memberRegister.id,
 		// }, memberRegister.mobile_phone);
-
 		try {
-			const res = await otpNewHelper.sendOtp(memberRegister.mobile_phone, {
+			const res = await otpNewHelper.sendOtp(countryCode.fullphone, {
 				type: 'otp',
 				data: {
 					memberId: memberRegister.id,
@@ -102,7 +123,8 @@ exports.doRegisterPhone = async (request) => {
 			email: params.email,
 			fb_email: '-',
 			g_email: '-',
-			mobile_phone: params.mobile_phone,
+			mobile_phone: countryCode.mobile_phone,
+			country_code: countryCode.code,
 			status: 'pending',
 		};
 		const newMember = await MembersRegister.create(payload);
@@ -111,7 +133,7 @@ exports.doRegisterPhone = async (request) => {
 		// }, newMember.mobile_phone);
 
 		try {
-			const res = await otpNewHelper.sendOtp(newMember.mobile_phone, {
+			const res = await otpNewHelper.sendOtp(countryCode.fullphone, {
 				type: 'otp',
 				data: {
 					memberId: newMember.id,
@@ -136,7 +158,38 @@ exports.doOtpValidation = async (request) => {
 	const params = request.body;
 	const otpNewHelper = new OtpNewHelper();
 
-	const memberRegister = await MembersRegister.findOne({ include: [Otp], where: { mobile_phone: params.mobile_phone, status: 'pending' } });
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
+	const memberRegister = await MembersRegister.findOne({
+		include: [Otp],
+		where: {
+			...wherePhone,
+			status: 'pending',
+		},
+	});
 
 	if (memberRegister) {
 		try {
@@ -180,11 +233,43 @@ exports.doSaveMember = async (request, reply) => {
 	const expired = moment().add(1, 'month').format('YYYY-MM-DD HH:mm:ss');
 	params.pin = bcrypt.hashSync(params.pin.toString(), 10);
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
 
-	const memberRegister = await MembersRegister.findOne({ where: { mobile_phone: params.mobile_phone, status: 'pending' } });
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
+	const memberRegister = await MembersRegister.findOne({
+		where: {
+			...wherePhone,
+			status: 'pending',
+		},
+	});
+
 	if (memberRegister) {
 		const member = await Members.create({
 			...params,
+			mobile_phone: countryCode.mobile_phone,
+			country_code: countryCode.code,
 			g_email: '-',
 			fb_email: '-',
 		});
@@ -365,6 +450,32 @@ exports.doUpdateMember = async (request) => {
 			field: 'mobile_phone or email',
 		});
 	}
+
+	const countryCode = CountryCode.detectCountry(body.mobile_phone, body.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = body.mobile_phone;
+	}
+
 	const member = await Members.findOne({ where: { id: user.id } });
 	if (member) {
 		if (body.full_name) {
@@ -396,13 +507,13 @@ exports.doUpdateMember = async (request) => {
 			}
 		}
 		if (body.mobile_phone) {
-			const phoneExist = await Members.findOne({ where: { mobile_phone: body.mobile_phone } });
+			const phoneExist = await Members.findOne({ where: wherePhone });
 			if (!phoneExist) {
 				await UpdateMemberLogs.create({
 					type: 'mobile_phone',
 					members_id: member.id,
-					value_before: member.mobile_phone,
-					value_after: body.mobile_phone,
+					value_before: `${member.country_code}${member.mobile_phone}`,
+					value_after: countryCode.fullphone,
 					is_verified: 0,
 				});
 
@@ -430,9 +541,34 @@ exports.doSendOtpUpdateMember = async (request) => {
 		},
 	});
 
+	const countryCode = CountryCode.detectCountry(body.mobile_phone, body.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = body.mobile_phone;
+	}
+
 	if (member) {
 		try {
-			const res = await otpNewHelper.sendOtp(body.mobile_phone, {
+			const res = await otpNewHelper.sendOtp(countryCode.fullphone, {
 				type: 'update_member',
 				data: {
 					memberId: user.id,
@@ -461,6 +597,31 @@ exports.doSendOtpUpdateMember = async (request) => {
 exports.doCheckOtpUpdateMember = async (request) => {
 	const { user, body } = request;
 
+	const countryCode = CountryCode.detectCountry(body.mobile_phone, body.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, {
+			field: 'country_code',
+		});
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = body.mobile_phone;
+	}
+
 	const otpNewHelper = new OtpNewHelper();
 
 	const members = await Members.findOne({
@@ -487,7 +648,7 @@ exports.doCheckOtpUpdateMember = async (request) => {
 					where: {
 						type: 'mobile_phone',
 						members_id: members.id,
-						value_after: body.mobile_phone,
+						value_after: countryCode.fullphone,
 					},
 					order: [
 						['created_at', 'DESC'],
@@ -501,7 +662,8 @@ exports.doCheckOtpUpdateMember = async (request) => {
 				}
 
 				await members.update({
-					mobile_phone: body.mobile_phone,
+					mobile_phone: countryCode.mobile_phone,
+					country_code: countryCode.code,
 				});
 
 				return new Response(20049, members);
