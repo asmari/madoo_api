@@ -316,8 +316,15 @@ exports.doGetListHistory = async (request) => {
 						if (Object.prototype.hasOwnProperty.call(loyaltyCard, 'loyalties') && loyaltyCard.loyalties.length > 0) {
 							const loyalty = loyaltyCard.loyalties[0];
 							reVal.loyalty = loyalty.name;
-							reVal.loyalty_unit = loyalty.unit;
 							reVal.loyalty_id = loyalty.id;
+
+							if (loyalty.master_unit != null) {
+								reVal.loyalty_unit = loyalty.master_unit.unit;
+								reVal.loyalty_unit_title = loyalty.master_unit.title;
+							} else {
+								reVal.loyalty_unit = loyalty.unit;
+								reVal.loyalty_unit_title = loyalty.unit;
+							}
 						}
 					}
 				}
