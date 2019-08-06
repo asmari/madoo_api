@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 const { ErrorResponse, Response } = require('../../helper/response');
 const model = require('../../models');
 const OtpNewHelper = require('../../helper/OtpNewHelper');
+const CountryCode = require('../../helper/CountryCode');
 
 const Members = model.Members.Get;
 const MembersToken = model.MembersToken.Get;
@@ -59,6 +60,29 @@ exports.doRegisterFacebook = async (request) => {
 	// 	});
 	// }
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, 'country_code');
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	// find email unique
 	const memberEmail = await Members.findOne({
 		paranoid: false,
@@ -83,9 +107,7 @@ exports.doRegisterFacebook = async (request) => {
 	// find phone unique
 	const memberPhone = await Members.findOne({
 		paranoid: false,
-		where: {
-			mobile_phone: params.mobile_phone,
-		},
+		where: wherePhone,
 	});
 
 	if (memberPhone != null) {
@@ -99,7 +121,7 @@ exports.doRegisterFacebook = async (request) => {
 	let exists = await MembersRegister
 		.findOne({
 			where: {
-				mobile_phone: params.mobile_phone,
+				...wherePhone,
 				status: 'pending',
 			},
 		});
@@ -113,7 +135,8 @@ exports.doRegisterFacebook = async (request) => {
 			fb_name: params.full_name,
 			fb_email: params.email,
 			g_email: '-',
-			mobile_phone: params.mobile_phone,
+			mobile_phone: countryCode.mobile_phone,
+			country_code: countryCode.code,
 			// pin: params.pin,
 			status: 'pending',
 		});
@@ -126,7 +149,8 @@ exports.doRegisterFacebook = async (request) => {
 			fb_name: params.full_name,
 			fb_email: params.email,
 			g_email: '-',
-			mobile_phone: params.mobile_phone,
+			mobile_phone: countryCode.mobile_phone,
+			country_code: countryCode.code,
 			// pin: params.pin,
 			status: 'pending',
 		});
@@ -137,7 +161,7 @@ exports.doRegisterFacebook = async (request) => {
 	// }, params.mobile_phone);
 
 	try {
-		await otpNewHelper.sendOtp(params.mobile_phone, {
+		await otpNewHelper.sendOtp(countryCode.fullphone, {
 			type: 'otp',
 			data: {
 				memberId: exists.id,
@@ -159,12 +183,35 @@ exports.doSaveMember = async (request, reply) => {
 	const params = request.body;
 	const date = new Date();
 
+	const countryCode = CountryCode.detectCountry(params.mobile_phone, params.country_code || null);
+
+	if (countryCode == null) {
+		// Error: Required field :field
+		throw new ErrorResponse(42200, 'country_code');
+	}
+
+	const wherePhone = {};
+
+	if (countryCode !== null) {
+		wherePhone[Op.or] = [
+			{
+				mobile_phone: countryCode.mobile_phone,
+				country_code: countryCode.code,
+			},
+			{
+				mobile_phone: countryCode.fullphone,
+			},
+		];
+	} else {
+		wherePhone.mobile_phone = params.mobile_phone;
+	}
+
 	const pin = bcrypt.hashSync(params.pin.toString(), 10);
 
 	const memberRegister = await MembersRegister.findOne({
 		where: {
+			...wherePhone,
 			email: params.email,
-			mobile_phone: params.mobile_phone,
 			status: 'pending',
 		},
 	});
@@ -172,6 +219,7 @@ exports.doSaveMember = async (request, reply) => {
 	if (memberRegister != null) {
 		const member = await Members.create({
 			...params,
+			country_code: countryCode.code,
 			fb_id: memberRegister.fb_id,
 			fb_token: memberRegister.fb_token,
 			fb_email: memberRegister.fb_email,
