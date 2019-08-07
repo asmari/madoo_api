@@ -624,8 +624,7 @@ exports.getDetailLoyalty = async (request) => {
 	});
 
 	const data = loyalty.promos.map((v) => {
-		const d = v.toJSON();
-		console.log(d);
+		const d = v;
 		if (Object.prototype.hasOwnProperty.call(d, 'loyalty_has_member_cards')) {
 			d.loyalty_has_member_cards.forEach((val) => {
 				if (val.member_cards.length > 0) {
