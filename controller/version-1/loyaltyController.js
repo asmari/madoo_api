@@ -626,14 +626,20 @@ exports.getDetailLoyalty = async (request) => {
 	const data = loyalty.promos.map((v) => {
 		const d = v.toJSON();
 		Logger.log(d);
-		if (Object.prototype.hasOwnProperty.call(d, 'loyalty_has_member_cards')) {
-			d.loyalty_has_member_cards.forEach((val) => {
-				if (val.member_cards.length > 0) {
-					d.has_member_card = true;
-				}
-			});
-
-			delete d.loyalty_has_member_cards;
+		try {
+			if (Object.prototype.hasOwnProperty.call(d, 'loyalty_has_member_cards')) {
+				d.loyalty_has_member_cards.forEach((val) => {
+					if (val.member_cards.length > 0) {
+						d.has_member_card = true;
+					}
+				});
+	
+				delete d.loyalty_has_member_cards;
+			} else {
+				Logger.info('Not Found Loyalty has Member Cards');
+			}
+		} catch (err) {
+			Logger.error(err);
 		}
 
 		return d;
