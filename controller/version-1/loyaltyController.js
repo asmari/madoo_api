@@ -12,6 +12,7 @@ const Loyalty = model.Loyalty.Get;
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
 const LoyaltyType = model.LoyaltyType.Get;
 const MemberCards = model.MembersCards.Get;
+const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
 // const MemberCardsLog = model.MembersCardsLog.Get;
 const Promo = model.Promo.Get;
 const Members = model.Members.Get;
@@ -577,8 +578,14 @@ exports.getListLoyalty = async () => {
 // get detail loyalty
 exports.getDetailLoyalty = async (request) => {
 	const query = JSON.parse(JSON.stringify(request.query));
+	const { user } = request;
 
 	const currentDate = moment().format('YYYY-MM-DD');
+
+	Promo.hasMany(LoyaltyHasMemberCards, {
+		foreignKey: 'loyalty_id',
+		sourceKey: 'loyalty_id',
+	});
 
 	const loyalty = await Loyalty.findOne({
 		where: {
@@ -596,12 +603,47 @@ exports.getDetailLoyalty = async (request) => {
 					},
 					status: 1,
 				},
+				include: [
+					{
+						model: LoyaltyHasMemberCards,
+						required: false,
+						include: [
+							{
+								required: false,
+								model: MemberCards,
+								where: {
+									members_id: user.id,
+								},
+							},
+						],
+					},
+				],
 				required: false,
 			},
 		],
 	});
 
-	return new Response(20015, loyalty);
+	const data = loyalty.promos.map((v) => {
+		const d = v.toJSON();
+		console.log(d);
+		if (Object.prototype.hasOwnProperty.call(d, 'loyalty_has_member_cards')) {
+			d.loyalty_has_member_cards.forEach((val) => {
+				if (val.member_cards.length > 0) {
+					d.has_member_card = true;
+				}
+			});
+
+			delete d.loyalty_has_member_cards;
+		}
+
+		return d;
+	});
+
+	const res = loyalty.toJSON();
+
+	res.promos = data;
+
+	return new Response(20015, res);
 };
 
 
