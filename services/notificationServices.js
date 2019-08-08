@@ -17,6 +17,7 @@ const DeviceNotification = model.DeviceNotification.Get;
 const data = workerData;
 
 const run = async () => {
+	logger.info(new Date());
 	const notification = await Notification.findOne({
 		where: {
 			id: data.id,
@@ -128,8 +129,23 @@ const run = async () => {
 		});
 
 		if (members.length > 0) {
-			const membersSend = members.map(value => value.device_notification.fcm_token);
+			let membersSend = members.map(value => value.device_notification.fcm_token);
 			const memberId = members.map(value => value.id);
+
+			let deviceNonUser = await DeviceNotification.find({
+				where: {
+					members_id: {
+						[Op.eq]: null,
+					},
+				},
+			});
+
+			deviceNonUser = deviceNonUser.map(value => value.fcm_token);
+
+			membersSend = {
+				...membersSend,
+				...deviceNonUser,
+			};
 
 			const fcmRes = await FcmSender.send({
 				registration_ids: membersSend,
