@@ -50,4 +50,5 @@ module.exports = {
 	41727: 'Transaction not found',
 	41728: 'Promo not found',
 	41729: 'Promo is deleted',
+	41730: 'Loyalty is destination only',
 };

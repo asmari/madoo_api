@@ -19,6 +19,7 @@ const MemberCards = model.MembersCards.Get;
 const Transaction = model.Transaction.Get;
 const TransactionLog = model.TransactionLog.Get;
 const MasterUnit = model.MasterUnit.Get;
+const ConversionRule = model.ConversionRule.Get;
 
 exports.checkConvertionRate = async (request) => {
 	const whereCondition = {};
@@ -841,58 +842,110 @@ exports.getKeyboardFieldConversion = async (request) => {
 	throw new ErrorResponse(41701);
 };
 
+// exports.getConversionSource = async (request) => {
+// 	const { user, query } = request;
+
+// 	query.page = parseInt(query.page, 10) || 1;
+// 	query.item = parseInt(query.item, 10) || 10;
+
+// 	const where = {};
+
+// 	const rule = await Conversion.findAll({
+// 		where: {
+// 			role: {
+// 				[Op.or]: ['as_source_only', 'as_source_destination'],
+// 			},
+// 		},
+// 		group: [
+// 			'loyalty_id',
+// 		],
+// 		attributes: ['loyalty_id'],
+// 	});
+
+
+// 	const loyaltyId = rule.map(value => value.loyalty_id);
+
+// 	Logger.log('SOURCE', loyaltyId);
+
+// 	where.loyalty_id = {
+// 		[Op.in]: loyaltyId,
+// 	};
+
+// 	const whereLoyalty = {
+// 		enable_trx: 1,
+// 	};
+
+// 	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
+// 		whereLoyalty.name = {
+// 			[Op.like]: `%${query.search}%`,
+// 		};
+// 	}
+
+// 	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
+// 		where,
+// 		page: query.page,
+// 		paginate: query.item,
+// 		include: [
+// 			{
+// 				model: MemberCards,
+// 				where: {
+// 					members_id: user.id,
+// 				},
+// 			}, {
+// 				model: Loyalty,
+// 				where: whereLoyalty,
+// 				attributes: {
+// 					exclude: [
+// 						'api_user_detail',
+// 						'api_user_point',
+// 						'api_point_plus',
+// 						'api_point_minus',
+// 						'api_refresh_token',
+// 						'auth_field',
+// 						'confirm_field',
+// 					],
+// 				},
+// 			},
+// 		],
+// 	});
+
+// 	Logger.log('SOURCE', loyaltyMemberCards);
+
+// 	return new ResponsePaginate(20055, {
+// 		item: query.item,
+// 		pages: query.page,
+// 		total: loyaltyMemberCards.total,
+// 	}, loyaltyMemberCards.docs);
+// };
+
 exports.getConversionSource = async (request) => {
 	const { user, query } = request;
 
 	query.page = parseInt(query.page, 10) || 1;
 	query.item = parseInt(query.item, 10) || 10;
 
-	const where = {};
-
-	const rule = await Conversion.findAll({
-		where: {
-			role: {
-				[Op.or]: ['as_source_only', 'as_source_destination'],
-			},
-		},
-		group: [
-			'loyalty_id',
-		],
-		attributes: ['loyalty_id'],
-	});
-
-
-	const loyaltyId = rule.map(value => value.loyalty_id);
-
-	Logger.log('SOURCE', loyaltyId);
-
-	where.loyalty_id = {
-		[Op.in]: loyaltyId,
-	};
-
-	const whereLoyalty = {
-		enable_trx: 1,
-	};
+	const whereSearch = {};
 
 	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
-		whereLoyalty.name = {
+		whereSearch.name = {
 			[Op.like]: `%${query.search}%`,
 		};
 	}
 
-	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
-		where,
-		page: query.page,
-		paginate: query.item,
+	const cards = await LoyaltyMemberCards.paginate({
 		include: [
 			{
-				model: MemberCards,
-				where: {
-					members_id: user.id,
-				},
-			}, {
 				model: Loyalty,
-				where: whereLoyalty,
+				where: {
+					[Op.or]: [
+						{
+							role: 'source_destination',
+						}, {
+							role: 'source',
+						},
+					],
+					...whereSearch,
+				},
 				attributes: {
 					exclude: [
 						'api_user_detail',
@@ -904,34 +957,31 @@ exports.getConversionSource = async (request) => {
 						'confirm_field',
 					],
 				},
+			}, {
+				model: MemberCards,
+				where: {
+					members_id: user.id,
+				},
 			},
 		],
 	});
 
-	Logger.log('SOURCE', loyaltyMemberCards);
-
 	return new ResponsePaginate(20055, {
 		item: query.item,
 		pages: query.page,
-		total: loyaltyMemberCards.total,
-	}, loyaltyMemberCards.docs);
+		total: cards.total,
+	}, cards.docs);
 };
 
 exports.getConversionDestination = async (request) => {
-	const { user } = request;
-	const whereCondition = {};
-	const whereTarget = {
-		enable_trx: 1,
-	};
-	const allowedTo = [];
-	let loyaltyId = [];
-	const loyaltyIdTrx = [];
+	const { user, query } = request;
 
-	const params = JSON.parse(JSON.stringify(request.query));
+	query.page = parseInt(query.page, 10) || 1;
+	query.item = parseInt(query.item, 10) || 10;
 
 	const loyaltyExists = await Loyalty.findOne({
 		where: {
-			id: params.loyalty_id,
+			id: query.loyalty_id,
 		},
 	});
 
@@ -939,96 +989,46 @@ exports.getConversionDestination = async (request) => {
 		return new ErrorResponse(41709);
 	}
 
-	Logger.info('START DESTINATION');
-
-	Logger.trace(JSON.stringify(loyaltyExists));
-
-	const rate = await ConvertionRate.findAll({
-		where: {
-			loyalty_id: loyaltyExists.id,
-			enable_trx: 1,
-		},
-		attributes: ['conversion_loyalty'],
-	});
-
-
-	Logger.trace(JSON.stringify(rate));
-
-	if (rate) {
-		rate.forEach((val) => {
-			loyaltyIdTrx.push(val.conversion_loyalty);
-		});
+	if (loyaltyExists.role === 'destination') {
+		return new ErrorResponse(41730);
 	}
 
-	params.page = parseInt(params.page, 10) || 1;
-	params.item = parseInt(params.item, 10) || 10;
+	const whereSearch = {};
 
-
-	if (params.loyalty_id != null) {
-		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
-		const conversionData = JSON.parse(conversionRule.data_conversion);
-
-		if (conversionData.loyalty_to != null) {
-			conversionData.loyalty_to.forEach((id) => {
-				allowedTo.push(id);
-			});
-		}
-		whereCondition.loyalty_id = params.loyalty_id;
-		if (params.search != null && typeof (params.search) === 'string') {
-			whereTarget.name = {
-				[Op.like]: `%${params.search}%`,
-			};
-		}
-	}
-
-	if (allowedTo.length !== 0) {
-		whereCondition[Op.and] = {
-			conversion_loyalty: {
-				[Op.in]: allowedTo,
-			},
+	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
+		whereSearch.name = {
+			[Op.like]: `%${query.search}%`,
 		};
 	}
 
-	Logger.trace(JSON.stringify(whereCondition));
-	const dataOptions = {
-		attributes: ['conversion_loyalty'],
-		where: whereCondition,
-		raw: true,
-	};
-
-	const conversion = await ConvertionRate.findAll({ ...dataOptions });
-	if (conversion.length !== 0) {
-		conversion.forEach((id) => {
-			loyaltyId.push(id.conversion_loyalty);
-		});
-	}
-
-	loyaltyId = loyaltyId.concat(loyaltyIdTrx.filter(e => loyaltyId.indexOf(e) < 0));
-	// const loyalty = await Loyalty.paginate({
-	// 	page: params.page,
-	// 	paginate: params.item,
-	// 	where: { id: { [Op.in]: loyaltyId } },
-	// });
-
-	Logger.trace(JSON.stringify(loyaltyIdTrx));
-
-	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
+	const rules = await ConversionRule.findAll({
 		where: {
-			loyalty_id: {
-				[Op.in]: loyaltyIdTrx,
-			},
+			loyalty_from: loyaltyExists.id,
 		},
-		page: params.page,
-		paginate: params.item,
+	});
+
+	const cards = await LoyaltyMemberCards.paginate({
+		page: query.page,
+		paginate: query.item,
 		include: [
 			{
-				model: MemberCards,
-				where: {
-					members_id: user.id,
-				},
-			}, {
 				model: Loyalty,
-				where: whereTarget,
+				required: true,
+				where: {
+					[Op.and]: {
+						[Op.or]: [
+							{
+								role: 'source_destination',
+							}, {
+								role: 'destination',
+							},
+						],
+						id: {
+							[Op.in]: rules.map(x => x.loyalty_to),
+						},
+					},
+					...whereSearch,
+				},
 				attributes: {
 					exclude: [
 						'api_user_detail',
@@ -1040,17 +1040,160 @@ exports.getConversionDestination = async (request) => {
 						'confirm_field',
 					],
 				},
+			}, {
+				model: MemberCards,
+				where: {
+					members_id: user.id,
+				},
 			},
 		],
 	});
 
-	if (loyaltyMemberCards) {
+	if (cards) {
 		return new ResponsePaginate(20043, {
-			item: params.item,
-			pages: params.page,
-			total: loyaltyMemberCards.total,
-		}, loyaltyMemberCards.docs);
+			item: query.item,
+			pages: query.page,
+			total: cards.total,
+		}, cards.docs);
 	}
 
 	throw new ErrorResponse(41701);
 };
+
+// exports.getConversionDestination = async (request) => {
+// 	const { user } = request;
+// 	const whereCondition = {};
+// 	const whereTarget = {
+// 		enable_trx: 1,
+// 	};
+// 	const allowedTo = [];
+// 	let loyaltyId = [];
+// 	const loyaltyIdTrx = [];
+
+// 	const params = JSON.parse(JSON.stringify(request.query));
+
+// 	const loyaltyExists = await Loyalty.findOne({
+// 		where: {
+// 			id: params.loyalty_id,
+// 		},
+// 	});
+
+// 	if (loyaltyExists === null) {
+// 		return new ErrorResponse(41709);
+// 	}
+
+// 	Logger.info('START DESTINATION');
+
+// 	Logger.trace(JSON.stringify(loyaltyExists));
+
+// 	const rate = await ConvertionRate.findAll({
+// 		where: {
+// 			loyalty_id: loyaltyExists.id,
+// 			enable_trx: 1,
+// 		},
+// 		attributes: ['conversion_loyalty'],
+// 	});
+
+
+// 	Logger.trace(JSON.stringify(rate));
+
+// 	if (rate) {
+// 		rate.forEach((val) => {
+// 			loyaltyIdTrx.push(val.conversion_loyalty);
+// 		});
+// 	}
+
+// 	params.page = parseInt(params.page, 10) || 1;
+// 	params.item = parseInt(params.item, 10) || 10;
+
+
+// 	if (params.loyalty_id != null) {
+// 		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
+// 		const conversionData = JSON.parse(conversionRule.data_conversion);
+
+// 		if (conversionData.loyalty_to != null) {
+// 			conversionData.loyalty_to.forEach((id) => {
+// 				allowedTo.push(id);
+// 			});
+// 		}
+// 		whereCondition.loyalty_id = params.loyalty_id;
+// 		if (params.search != null && typeof (params.search) === 'string') {
+// 			whereTarget.name = {
+// 				[Op.like]: `%${params.search}%`,
+// 			};
+// 		}
+// 	}
+
+// 	if (allowedTo.length !== 0) {
+// 		whereCondition[Op.and] = {
+// 			conversion_loyalty: {
+// 				[Op.in]: allowedTo,
+// 			},
+// 		};
+// 	}
+
+// 	Logger.trace(JSON.stringify(whereCondition));
+// 	const dataOptions = {
+// 		attributes: ['conversion_loyalty'],
+// 		where: whereCondition,
+// 		raw: true,
+// 	};
+
+// 	const conversion = await ConvertionRate.findAll({ ...dataOptions });
+// 	if (conversion.length !== 0) {
+// 		conversion.forEach((id) => {
+// 			loyaltyId.push(id.conversion_loyalty);
+// 		});
+// 	}
+
+// 	loyaltyId = loyaltyId.concat(loyaltyIdTrx.filter(e => loyaltyId.indexOf(e) < 0));
+// 	// const loyalty = await Loyalty.paginate({
+// 	// 	page: params.page,
+// 	// 	paginate: params.item,
+// 	// 	where: { id: { [Op.in]: loyaltyId } },
+// 	// });
+
+// 	Logger.trace(JSON.stringify(loyaltyIdTrx));
+
+// 	const loyaltyMemberCards = await LoyaltyMemberCards.paginate({
+// 		where: {
+// 			loyalty_id: {
+// 				[Op.in]: loyaltyIdTrx,
+// 			},
+// 		},
+// 		page: params.page,
+// 		paginate: params.item,
+// 		include: [
+// 			{
+// 				model: MemberCards,
+// 				where: {
+// 					members_id: user.id,
+// 				},
+// 			}, {
+// 				model: Loyalty,
+// 				where: whereTarget,
+// 				attributes: {
+// 					exclude: [
+// 						'api_user_detail',
+// 						'api_user_point',
+// 						'api_point_plus',
+// 						'api_point_minus',
+// 						'api_refresh_token',
+// 						'auth_field',
+// 						'confirm_field',
+// 					],
+// 				},
+// 			},
+// 		],
+// 	});
+
+// 	if (loyaltyMemberCards) {
+// 		return new ResponsePaginate(20043, {
+// 			item: params.item,
+// 			pages: params.page,
+// 			total: loyaltyMemberCards.total,
+// 		}, loyaltyMemberCards.docs);
+// 	}
+
+// 	throw new ErrorResponse(41701);
+// };

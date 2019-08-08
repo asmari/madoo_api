@@ -138,6 +138,10 @@ const Loyalty = model.define('loyalty', {
 		allowNull: false,
 		defaultValue: true,
 	},
+	role: {
+		type: Sequelize.STRING,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
