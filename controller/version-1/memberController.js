@@ -721,5 +721,5 @@ exports.doRemoveToken = async (request) => {
 		return new Response(20059);
 	}
 
-	return new ErrorResponse(41700);
+	return new Response(20060);
 };

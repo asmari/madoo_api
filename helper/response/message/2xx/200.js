@@ -59,5 +59,6 @@ module.exports = {
 	20057: 'Notification count success',
 	20058: 'Transaction detail success',
 	20059: 'Remove token success',
+	20060: 'Members not login yet',
 	20099: 'Success',
 };
