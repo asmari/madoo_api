@@ -368,7 +368,9 @@ exports.doConvertionPoint = async (request) => {
 			},
 		});
 
-		const str = totalTrxToday.toString();
+		const totalTrxNumber = totalTrxToday === 0 ? 1 : totalTrxToday;
+
+		const str = totalTrxNumber.toString();
 
 		const orderNo = `${now.format('YYMM')}${'0'.repeat(6 - str.length)}${str}`;
 
