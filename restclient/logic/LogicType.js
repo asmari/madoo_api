@@ -1,0 +1,6 @@
+module.exports = {
+	POINT_ADD: 'POINT_ADD',
+	POINT_MINUS: 'POINT_MINUS',
+	GET_USER: 'GET_USER',
+	GET_POINT: 'GET_POINT',
+};
