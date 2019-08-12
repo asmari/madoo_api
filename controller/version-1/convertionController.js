@@ -468,9 +468,15 @@ exports.doConvertionPoint = async (request) => {
 				}
 
 				if (successResponse.add && successResponse.deduct) {
-					await transaction.update({
-						status: 'success',
-					});
+					if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
+						await transaction.update({
+							status: 'pending',
+						});
+					} else {
+						await transaction.update({
+							status: 'success',
+						});
+					}
 
 					const member = await Member.findOne({
 						where: {
