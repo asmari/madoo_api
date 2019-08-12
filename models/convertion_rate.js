@@ -49,6 +49,10 @@ const ConvertionRate = model.define('conversion_rate', {
 		type: sequelize.INTEGER,
 		allowNull: false,
 	},
+	enable_trx: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	deletedAt: 'deleted_at',

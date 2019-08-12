@@ -932,7 +932,9 @@ exports.getConversionSource = async (request) => {
 	query.page = parseInt(query.page, 10) || 1;
 	query.item = parseInt(query.item, 10) || 10;
 
-	const whereSearch = {};
+	const whereSearch = {
+		enable_trx: 1,
+	};
 
 	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
 		whereSearch.name = {
@@ -944,6 +946,7 @@ exports.getConversionSource = async (request) => {
 		include: [
 			{
 				model: Loyalty,
+				required: true,
 				where: {
 					[Op.or]: [
 						{
@@ -954,6 +957,16 @@ exports.getConversionSource = async (request) => {
 					],
 					...whereSearch,
 				},
+				include: [
+					{
+						model: ConvertionRate,
+						as: 'LoyaltySource',
+						required: true,
+						where: {
+							enable_trx: 1,
+						},
+					},
+				],
 				attributes: {
 					exclude: [
 						'api_user_detail',
@@ -1001,7 +1014,9 @@ exports.getConversionDestination = async (request) => {
 		return new ErrorResponse(41730);
 	}
 
-	const whereSearch = {};
+	const whereSearch = {
+		enable_trx: 1,
+	};
 
 	if (Object.prototype.hasOwnProperty.call(query, 'search')) {
 		whereSearch.name = {
@@ -1022,6 +1037,17 @@ exports.getConversionDestination = async (request) => {
 			{
 				model: Loyalty,
 				required: true,
+				include: [
+					{
+						model: ConvertionRate,
+						as: 'LoyaltyTarget',
+						required: true,
+						where: {
+							loyalty_id: query.loyalty_id,
+							enable_trx: 1,
+						},
+					},
+				],
 				where: {
 					[Op.and]: {
 						[Op.or]: [
