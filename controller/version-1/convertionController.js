@@ -1043,6 +1043,7 @@ exports.getConversionDestination = async (request) => {
 						as: 'LoyaltyTarget',
 						required: true,
 						where: {
+							loyalty_id: query.loyalty_id,
 							enable_trx: 1,
 						},
 					},
