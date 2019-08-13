@@ -1,6 +1,9 @@
 const model = require('../models/index');
 const RestClient = require('./index');
 
+const RestLogic = require('./logic');
+const LogicType = require('./logic/LogicType');
+
 const Loyalty = model.Loyalty.Get;
 const MemberCards = model.MembersCards.Get;
 const MemberCardsToken = model.MemberCardsAuthToken.Get;
@@ -183,6 +186,30 @@ module.exports = class LoyaltyRequest {
 		return this.loyalty.name;
 	}
 
+	// eslint-disable-next-line class-methods-use-this
+	getNewLogic(type = 0, json) {
+		if (json.indexOf('new-logic:') !== -1) {
+			const logic = json.replace('new-logic:', '');
+			const instanceLogic = RestLogic[logic];
+
+			switch (type) {
+			case LoyaltyRequest.TYPE.GET_PROFILE:
+				return instanceLogic.mapRequired(LogicType.GET_USER);
+			case LoyaltyRequest.TYPE.POINT_BALANCE:
+				return instanceLogic.mapRequired(LogicType.GET_POINT);
+			case LoyaltyRequest.TYPE.POINT_PLUS:
+				return true;
+			case LoyaltyRequest.TYPE.POINT_MINUS:
+				return true;
+
+			default:
+				return null;
+			}
+		}
+
+		return false;
+	}
+
 	checkRequiredField(type = 0) {
 		if (!this.isLoyaltyExist()) {
 			throw new Error(LoyaltyRequest.STATUS.NO_LOYALTY);
@@ -196,6 +223,13 @@ module.exports = class LoyaltyRequest {
 
 		if (this.getFieldFromType(type) == null) {
 			throw new Error(LoyaltyRequest.STATUS.NO_VALUE);
+		}
+
+		const jsonString = this.getFieldFromType(type);
+		const newLogic = this.getNewLogic(type, jsonString);
+
+		if (newLogic) {
+			return newLogic;
 		}
 
 		const json = JSON.parse(this.getFieldFromType(type));
@@ -227,58 +261,81 @@ module.exports = class LoyaltyRequest {
 				throw new Error(LoyaltyRequest.STATUS.TYPE_NO_CHOICE);
 			}
 
-			const dataJson = JSON.parse(this.getFieldFromType(type));
+			const jsonString = this.getFieldFromType(type);
+			const newLogic = this.getNewLogic(type, jsonString);
 
-			const restClient = new RestClient(dataJson);
+			console.log(jsonString);
 
-			if (Object.prototype.hasOwnProperty.call(this, 'memberCardId')) {
-				restClient.setAuthToken();
-				const memberCard = await MemberCards.findOne({
-					where: {
-						id: this.memberCardId,
-					},
-				});
+			if (newLogic) {
+				const logic = RestLogic[jsonString.replace('new-logic:', '')];
 
-				if (restClient.hasAuth() && restClient.getAuthType() !== 'aws-v4') {
-					const memberToken = await MemberCardsToken.findOne({
+				switch (type) {
+				case LoyaltyRequest.TYPE.GET_PROFILE:
+					return logic.run(LogicType.GET_USER, data);
+				case LoyaltyRequest.TYPE.POINT_BALANCE:
+					return logic.run(LogicType.GET_POINT, data);
+				case LoyaltyRequest.TYPE.POINT_PLUS:
+					return logic.run(LogicType.POINT_ADD, data);
+				case LoyaltyRequest.TYPE.POINT_MINUS:
+					return logic.run(LogicType.POINT_MINUS, data);
+				default:
+					return Promise.reject(new Error('Type Not Found'));
+				}
+			} else {
+				const dataJson = JSON.parse(this.getFieldFromType(type));
+
+				const restClient = new RestClient(dataJson);
+
+				if (Object.prototype.hasOwnProperty.call(this, 'memberCardId')) {
+					restClient.setAuthToken();
+					const memberCard = await MemberCards.findOne({
 						where: {
-							members_cards_id: memberCard.id,
+							id: this.memberCardId,
 						},
 					});
 
-					const tokenValue = JSON.parse(memberToken.auth_value);
+					if (restClient.hasAuth() && restClient.getAuthType() !== 'aws-v4') {
+						const memberToken = await MemberCardsToken.findOne({
+							where: {
+								members_cards_id: memberCard.id,
+							},
+						});
 
-					switch (memberToken.type_auth) {
-					case 'oauth2':
-						if (tokenValue && tokenValue.length > 0) {
-							tokenValue.forEach((value) => {
-								if (value.keyName === 'token') {
-									restClient.changeHeader('Authorization', `Bearer ${value.value}`);
-								}
-							});
+						const tokenValue = JSON.parse(memberToken.auth_value);
 
-							restClient.removeAuth();
+						switch (memberToken.type_auth) {
+						case 'oauth2':
+							if (tokenValue && tokenValue.length > 0) {
+								tokenValue.forEach((value) => {
+									if (value.keyName === 'token') {
+										restClient.changeHeader('Authorization', `Bearer ${value.value}`);
+									}
+								});
+
+								restClient.removeAuth();
+							}
+							break;
+						default:
+							break;
 						}
-						break;
-					default:
-						break;
 					}
+
+					restClient.insertBody({
+						...memberCard.toJSON(),
+						...data,
+					});
+				} else {
+					restClient.insertBody(data);
 				}
 
-				restClient.insertBody({
-					...memberCard.toJSON(),
-					...data,
-				});
-			} else {
-				restClient.insertBody(data);
-			}
+				if (this.lang != null) {
+					restClient.setLanguage(this.lang);
+				}
 
-			if (this.lang != null) {
-				restClient.setLanguage(this.lang);
+				return restClient.request();
 			}
-
-			return restClient.request();
 		} catch (err) {
+			console.trace(err);
 			return err;
 		}
 	}

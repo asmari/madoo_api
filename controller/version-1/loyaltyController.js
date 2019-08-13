@@ -633,7 +633,7 @@ exports.getDetailLoyalty = async (request) => {
 						d.has_member_card = true;
 					}
 				});
-	
+
 				delete d.loyalty_has_member_cards;
 			} else {
 				Logger.info('Not Found Loyalty has Member Cards');
