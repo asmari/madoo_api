@@ -390,7 +390,7 @@ exports.doConvertionPoint = async (request) => {
 			conversion_point_balance_after: (cardTarget.point_balance + pointWithFee),
 			status: 'pending',
 			fee,
-			feeidr: feeIdr,
+			// feeidr: feeIdr,
 			mid_rate_from: rate.mid_from_rate,
 			mid_rate_to: rate.mid_to_rate,
 		});
