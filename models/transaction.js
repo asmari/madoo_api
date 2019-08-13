@@ -70,6 +70,11 @@ const Transaction = model.define('transaction', {
 		allowNull: false,
 		maxLength: 11,
 	},
+	feeidr: {
+		type: sequelize.INTEGER,
+		allowNull: false,
+		maxLength: 11,
+	},
 	mid_rate_from: {
 		type: sequelize.INTEGER,
 		allowNull: false,

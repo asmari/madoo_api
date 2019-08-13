@@ -302,6 +302,10 @@ exports.doConvertionPoint = async (request) => {
 		const pointWoFee = rateWithoutFee * params.point_to_convert;
 		const fee = pointWoFee - pointWithFee;
 
+		const amountWithFee = (pointWithFee * rate.mid_to_rate);
+		const amountWoFee = (pointWoFee * rate.mid_to_rate);
+		const feeIdr = amountWoFee - amountWithFee;
+
 		const cardSource = memberCardSource.member_cards[0];
 		const cardTarget = memberCardTarget.member_cards[0];
 
@@ -386,6 +390,7 @@ exports.doConvertionPoint = async (request) => {
 			conversion_point_balance_after: (cardTarget.point_balance + pointWithFee),
 			status: 'pending',
 			fee,
+			feeidr: feeIdr,
 			mid_rate_from: rate.mid_from_rate,
 			mid_rate_to: rate.mid_to_rate,
 		});
