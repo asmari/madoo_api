@@ -14,6 +14,10 @@ module.exports = class Gopay extends BaseIndex {
 
 		const rules = [
 			{
+				label: 'Full Name',
+				key: 'full_name',
+				required: true,
+			}, {
 				label: 'Phone Number',
 				key: 'mobile_number',
 				required: true,
