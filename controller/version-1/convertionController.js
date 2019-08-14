@@ -296,15 +296,22 @@ exports.doConvertionPoint = async (request) => {
 			});
 		}
 
-		const rateWithFee = (rate.point_conversion / rate.point_loyalty);
-		const rateWithoutFee = (rate.mid_from_rate / rate.mid_to_rate);
-		const pointWithFee = rateWithFee * params.point_to_convert;
-		const pointWoFee = rateWithoutFee * params.point_to_convert;
-		const fee = pointWoFee - pointWithFee;
+		// logic 1
+		// const rateWithFee = (rate.point_conversion / rate.point_loyalty);
+		// const rateWithoutFee = (rate.mid_from_rate / rate.mid_to_rate);
+		// const pointWithFee = rateWithFee * params.point_to_convert;
+		// const pointWoFee = rateWithoutFee * params.point_to_convert;
+		// const fee = pointWoFee - pointWithFee;
 
-		const amountWithFee = (pointWithFee * rate.mid_to_rate);
-		const amountWoFee = (pointWoFee * rate.mid_to_rate);
-		const feeIdr = amountWoFee - amountWithFee;
+		// const amountWithFee = (pointWithFee * rate.mid_to_rate);
+		// const amountWoFee = (pointWoFee * rate.mid_to_rate);
+		// const feeIdr = amountWoFee - amountWithFee;
+
+		// logic 2
+		const MIDamount = params.point_to_convert * rate.mid_from_rate;
+		const fee = MIDamount * rate.percentage_fee;
+		const pointConvert = (MIDamount - (MIDamount * rate.percentage_fee)) / rate.mid_to_rate;
+		const feeIdr = fee;
 
 		const cardSource = memberCardSource.member_cards[0];
 		const cardTarget = memberCardTarget.member_cards[0];
@@ -383,11 +390,13 @@ exports.doConvertionPoint = async (request) => {
 			member_cards_id: cardSource.id,
 			conversion_member_cards_id: cardTarget.id,
 			point: params.point_to_convert,
-			conversion_point: pointWithFee,
+			// conversion_point: pointWithFee,
+			conversion_point: pointConvert,
 			point_balance: cardSource.point_balance,
 			point_balance_after: (cardSource.point_balance - params.point_to_convert),
 			conversion_point_balance: cardTarget.point_balance,
-			conversion_point_balance_after: (cardTarget.point_balance + pointWithFee),
+			// conversion_point_balance_after: (cardTarget.point_balance + pointWithFee),
+			conversion_point_balance_after: (cardTarget.point_balance + pointConvert),
 			status: 'pending',
 			fee,
 			feeidr: feeIdr,
@@ -440,7 +449,8 @@ exports.doConvertionPoint = async (request) => {
 				}
 
 				const resAddPoint = await targetRequest.pointAdd({
-					point: pointWithFee,
+					// point: pointWithFee,
+					point: pointConvert,
 				});
 
 				Logger.info('Response Add', resAddPoint);
@@ -452,7 +462,8 @@ exports.doConvertionPoint = async (request) => {
 					type_trx: 'point_add',
 					status: resAddPoint.status ? 1 : 0,
 					member_cards_id: cardTarget.id,
-					point_balance: pointWithFee,
+					// point_balance: pointWithFee,
+					point_balance: pointConvert,
 					response_third_party: JSON.stringify(resAddPoint),
 				});
 
@@ -503,7 +514,8 @@ exports.doConvertionPoint = async (request) => {
 							pointSource: params.point_to_convert,
 							unitSource: loyaltySource.unit,
 							loyaltyTarget: loyaltyTarget.name,
-							pointTarget: pointWithFee,
+							// pointTarget: pointWithFee,
+							pointTarget: pointConvert,
 							unitTarget: loyaltyTarget.unit,
 							currentPointSource: transaction.point_balance_after,
 							currentPointTarget: transaction.conversion_point_balance_after,
