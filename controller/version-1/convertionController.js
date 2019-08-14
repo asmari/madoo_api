@@ -310,7 +310,9 @@ exports.doConvertionPoint = async (request) => {
 		// logic 2
 		const MIDamount = params.point_to_convert * rate.mid_from_rate;
 		const fee = MIDamount * rate.percentage_fee;
-		const pointConvert = ((MIDamount - (MIDamount * rate.percentage_fee)) / rate.mid_to_rate);
+		const pointPercent = MIDamount * rate.percentage_fee;
+		const pointAmount = (MIDamount - pointPercent);
+		const pointConvert = (pointAmount / rate.mid_to_rate);
 		const feeIdr = MIDamount * rate.percentage_fee;
 
 		const cardSource = memberCardSource.member_cards[0];
