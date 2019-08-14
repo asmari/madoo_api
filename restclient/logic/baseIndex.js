@@ -16,9 +16,9 @@ module.exports = class BaseIndex {
 		return Object.keys(this.logic);
 	}
 
-	async run(logicName, parameter) {
+	async run(logicName, parameter, otherParamter) {
 		if (Object.prototype.hasOwnProperty.call(this.logic, logicName)) {
-			return this.logic[logicName](parameter);
+			return this.logic[logicName](parameter, otherParamter);
 		}
 
 		return Promise.reject(new Error(`Logic ${logicName} not found`));
