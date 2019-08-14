@@ -88,7 +88,7 @@ exports.doSaveMemberCard = async (request) => {
 			const memberCard = await MemberCards.create({
 				members_id: member.id,
 				card_number: body.card_number || '',
-				full_name: body.full_name,
+				full_name: body.full_name || member.full_name,
 				email: body.email || '',
 				mobile_number: body.mobile_number || '',
 				date_birth: body.date_birth || null,
