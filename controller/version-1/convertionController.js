@@ -385,6 +385,8 @@ exports.doConvertionPoint = async (request) => {
 
 		const orderNo = `${now.format('YYMM')}${'0'.repeat(6 - str.length)}${str}`;
 
+		console.log(cardSource);
+
 		const transaction = await Transaction.create({
 			unix_id: orderNo,
 			member_cards_id: cardSource.id,
@@ -415,7 +417,7 @@ exports.doConvertionPoint = async (request) => {
 
 				const resMinusPoint = await sourceRequest.pointMinus({
 					point: params.point_to_convert,
-				});
+				}, transaction);
 
 				Logger.info('Response Minus', resMinusPoint);
 
@@ -451,7 +453,7 @@ exports.doConvertionPoint = async (request) => {
 				const resAddPoint = await targetRequest.pointAdd({
 					// point: pointWithFee,
 					point: pointConvert,
-				});
+				}, transaction);
 
 				Logger.info('Response Add', resAddPoint);
 
