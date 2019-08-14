@@ -311,7 +311,7 @@ exports.doConvertionPoint = async (request) => {
 		const MIDamount = params.point_to_convert * rate.mid_from_rate;
 		const fee = MIDamount * rate.percentage_fee;
 		const pointConvert = ((MIDamount - (MIDamount * rate.percentage_fee)) / rate.mid_to_rate);
-		const feeIdr = fee;
+		const feeIdr = MIDamount * rate.percentage_fee;
 
 		const cardSource = memberCardSource.member_cards[0];
 		const cardTarget = memberCardTarget.member_cards[0];
