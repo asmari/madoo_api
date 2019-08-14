@@ -255,7 +255,7 @@ module.exports = class LoyaltyRequest {
 		this.memberCardId = id;
 	}
 
-	async process(type = 0, data) {
+	async process(type = 0, data, transaksi = {}) {
 		try {
 			if (type === 0) {
 				throw new Error(LoyaltyRequest.STATUS.TYPE_NO_CHOICE);
@@ -264,20 +264,18 @@ module.exports = class LoyaltyRequest {
 			const jsonString = this.getFieldFromType(type);
 			const newLogic = this.getNewLogic(type, jsonString);
 
-			console.log(jsonString);
-
 			if (newLogic) {
 				const logic = RestLogic[jsonString.replace('new-logic:', '')];
 
 				switch (type) {
 				case LoyaltyRequest.TYPE.GET_PROFILE:
-					return logic.run(LogicType.GET_USER, data);
+					return logic.run(LogicType.GET_USER, data, transaksi);
 				case LoyaltyRequest.TYPE.POINT_BALANCE:
-					return logic.run(LogicType.GET_POINT, data);
+					return logic.run(LogicType.GET_POINT, data, transaksi);
 				case LoyaltyRequest.TYPE.POINT_PLUS:
-					return logic.run(LogicType.POINT_ADD, data);
+					return logic.run(LogicType.POINT_ADD, data, transaksi);
 				case LoyaltyRequest.TYPE.POINT_MINUS:
-					return logic.run(LogicType.POINT_MINUS, data);
+					return logic.run(LogicType.POINT_MINUS, data, transaksi);
 				default:
 					return Promise.reject(new Error('Type Not Found'));
 				}
@@ -341,19 +339,19 @@ module.exports = class LoyaltyRequest {
 	}
 
 
-	getMemberProfile(data = {}) {
-		return this.process(LoyaltyRequest.TYPE.GET_PROFILE, data);
+	getMemberProfile(data = {}, transaksi = {}) {
+		return this.process(LoyaltyRequest.TYPE.GET_PROFILE, data, transaksi);
 	}
 
-	getMemberPoint(data = {}) {
-		return this.process(LoyaltyRequest.TYPE.POINT_BALANCE, data);
+	getMemberPoint(data = {}, transaksi = {}) {
+		return this.process(LoyaltyRequest.TYPE.POINT_BALANCE, data, transaksi);
 	}
 
-	pointAdd(data = {}) {
-		return this.process(LoyaltyRequest.TYPE.POINT_PLUS, data);
+	pointAdd(data = {}, transaksi = {}) {
+		return this.process(LoyaltyRequest.TYPE.POINT_PLUS, data, transaksi);
 	}
 
-	pointMinus(data = {}) {
-		return this.process(LoyaltyRequest.TYPE.POINT_MINUS, data);
+	pointMinus(data = {}, transaksi = {}) {
+		return this.process(LoyaltyRequest.TYPE.POINT_MINUS, data, transaksi);
 	}
 };
