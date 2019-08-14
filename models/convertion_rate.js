@@ -53,6 +53,10 @@ const ConvertionRate = model.define('conversion_rate', {
 		type: sequelize.INTEGER,
 		allowNull: false,
 	},
+	percentage_fee: {
+		type: sequelize.DOUBLE,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	deletedAt: 'deleted_at',
