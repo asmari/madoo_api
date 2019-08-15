@@ -297,6 +297,7 @@ exports.doGetListHistory = async (request) => {
 					unix_id: d.unix_id,
 					status: d.status,
 					point: key === 'source' ? -d.point : d.conversion_point,
+					conversion_type: key,
 					loyalty_unit: '',
 					loyalty: '',
 					loyalty_id: 0,
