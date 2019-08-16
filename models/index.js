@@ -29,3 +29,5 @@ exports.MasterUnit = require('./master_unit');
 exports.BusinessPartner = require('./business_partner');
 exports.MembersToken = require('./membersToken');
 exports.ConversionRule = require('./conversionRule');
+exports.KrisflyerBatch = require('./krisflyer_batch');
+exports.KrisflyerBatchDetail = require('./krisflyer_batch_detail');
