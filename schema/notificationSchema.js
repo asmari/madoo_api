@@ -5,6 +5,7 @@ exports.fcmTokenSchema = {
 				'skip-auth': [],
 			},
 		],
+		tags: ['Notification'],
 		description: 'Rest API for save device token member',
 		body: {
 			properties: {
@@ -35,6 +36,7 @@ exports.fcmTriggerSchema = {
 				'skip-auth': [],
 			},
 		],
+		tags: ['Notification'],
 		description: 'Rest api to send trigger notification',
 		querystring: {
 			type: 'object',
@@ -51,8 +53,30 @@ exports.fcmTriggerSchema = {
 	},
 };
 
+exports.fcmTriggerKrisflyerSchema = {
+	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest api to send trigger notification krisflyer',
+		tags: ['Notification'],
+		querystring: {
+			type: 'object',
+			properties: {
+				batch_id: {
+					type: 'integer',
+				},
+			},
+			required: ['batch_id'],
+		},
+	},
+};
+
 exports.notificationDetailSchema = {
 	schema: {
+		tags: ['Notification'],
 		description: 'Rest api get detail notification',
 		security: [
 			{
@@ -74,6 +98,7 @@ exports.notificationDetailSchema = {
 
 exports.notificationListSchema = {
 	schema: {
+		tags: ['Notification'],
 		description: 'Rest api list notification members',
 		security: [
 			{
@@ -105,6 +130,7 @@ exports.notificationListSchema = {
 
 exports.notificationSettingsSchema = {
 	schema: {
+		tags: ['Notification'],
 		security: [
 			{
 				BearerAuth: [],
@@ -117,6 +143,7 @@ exports.notificationSettingsSchema = {
 
 exports.notificationUpdateSchema = {
 	schema: {
+		tags: ['Notification'],
 		security: [
 			{
 				BearerAuth: [],
@@ -140,6 +167,7 @@ exports.notificationUpdateSchema = {
 
 exports.notificationCountSchema = {
 	schema: {
+		tags: ['Notification'],
 		security: [
 			{
 				BearerAuth: [],
@@ -152,6 +180,7 @@ exports.notificationCountSchema = {
 
 exports.notifSettingSchema = {
 	schema: {
+		tags: ['Notification'],
 		security: [
 			{
 				BearerAuth: [],

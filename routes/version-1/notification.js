@@ -20,6 +20,9 @@ async function routes(fastify) {
 	// trigger notification
 	fastify.get('/trigger', notificationSchema.fcmTriggerSchema, notificationController.doSendNotification);
 
+	// trigger notification krisflyer
+	fastify.get('/trigger/krisflyer', notificationSchema.fcmTriggerKrisflyerSchema, notificationController.doSendNotificationKrisflyer);
+
 	// get list notification member
 	fastify.get('/member/list', {
 		...notificationSchema.notificationListSchema,
