@@ -159,6 +159,22 @@ exports.doSendNotification = async (request) => {
 	return new Response(20035);
 };
 
+// send notification krisflyer
+exports.doSendNotificationKrisflyer = async (request) => {
+	const { query } = request;
+
+	const worker = new Worker(path.resolve(__dirname, '../../services/notificationKrisflyer.js'), {
+		workerData: {
+			id: query.batch_id,
+		},
+	});
+
+	// eslint-disable-next-line no-console
+	console.log(worker);
+
+	return new Response(20035);
+};
+
 // save notification token
 exports.doRegisterToken = async (request) => {
 	const params = request.body;
