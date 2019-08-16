@@ -106,4 +106,9 @@ Members.hasOne(DeviceNotification.Get, { foreignKey: 'members_id' });
 Members.hasOne(NotificationSettings.Get, { foreignKey: 'members_id' });
 Members.hasOne(NotificationMembers.Get, { foreignKey: 'members_id' });
 
+Members.hasOne(DeviceNotification.Get, {
+	foreignKey: 'members_id',
+	as: 'devices',
+});
+
 exports.Get = Members;
