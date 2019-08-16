@@ -87,11 +87,11 @@ exports.getSortListCard = async () => new Response(20017, [
 // list sort card content
 exports.getFilterListNotification = async () => new Response(20017, [
 	{
-		id: 1,
-		name: 'Promotion',
-	}, {
 		id: 2,
-		name: 'Convertion',
+		name: 'Point Convertion',
+	}, {
+		id: 1,
+		name: 'Promo/Rewards',
 	}, {
 		id: 3,
 		name: 'Other',

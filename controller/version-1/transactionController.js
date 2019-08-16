@@ -287,7 +287,7 @@ exports.doGetListHistory = async (request) => {
 
 			const time = new Date(value.created_at);
 
-			d.transaction_date = `${time.getDate()} ${monthList[time.getMonth()]} ${time.getFullYear()}`;
+			d.transaction_date = `${time.getDate()} ${monthList[time.getMonth()]} ${time.getFullYear()} ${time.getHours()}:${time.getMinutes()}`;
 
 			listField.forEach((key) => {
 				const reVal = {
