@@ -32,6 +32,7 @@ module.exports = fp(async (fastify, opts, next) => {
 			'/docs',
 			'/v1/members/email/verification',
 			'/v1/loyalty/refresh/auth',
+			'/v1/webhook/gopay',
 		])) {
 			return this;
 		}
