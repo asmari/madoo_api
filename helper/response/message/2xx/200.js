@@ -60,5 +60,6 @@ module.exports = {
 	20058: 'Transaction detail success',
 	20059: 'Remove token success',
 	20060: 'Members not login yet',
+	20061: 'Transaction update success',
 	20099: 'Success',
 };

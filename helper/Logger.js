@@ -38,6 +38,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/QUERY.log',
 		},
+		WEBHOOK: {
+			type: 'file',
+			filename: 'logs/WEBHOOK.log',
+		},
 	},
 	categories: {
 		default: {
@@ -67,6 +71,9 @@ log4js.configure({
 		QUERY: {
 			appenders: ['QUERY'], level: 'ALL',
 		},
+		WEBHOOK: {
+			appenders: ['WEBHOOK'], level: 'ALL',
+		},
 	},
 });
 
@@ -81,3 +88,4 @@ exports.RestClient = log4js.getLogger('RESTCLIENT');
 exports.Convertion = log4js.getLogger('CONVERTION');
 exports.CheckPoint = log4js.getLogger('CHECK_POINT');
 exports.Query = log4js.getLogger('QUERY');
+exports.Webhook = log4js.getLogger('WEBHOOK');

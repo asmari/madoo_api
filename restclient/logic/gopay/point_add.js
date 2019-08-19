@@ -7,6 +7,7 @@ const MemberCards = model.MembersCards.Get;
 module.exports = async (params, transaction) => {
 	const res = {
 		status: false,
+		pendingOnly: true,
 		data: [],
 	};
 
@@ -83,6 +84,12 @@ module.exports = async (params, transaction) => {
 						value: resApprove.status,
 						displayName: 'message',
 						keyName: 'message',
+					});
+
+					res.data.push({
+						value: referencePayout,
+						displayName: 'Transaction ID',
+						keyName: 'trx_id',
 					});
 				}
 			}
