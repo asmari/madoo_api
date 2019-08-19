@@ -11,7 +11,7 @@ module.exports = async (params) => {
 	});
 
 	res.data.push({
-		value: params.mobile_phone,
+		value: params.mobile_number,
 		displayName: 'Phone Number',
 		keyName: 'mobile_number',
 	});
