@@ -134,6 +134,10 @@ const run = async () => {
 
 	if (details != null && details.length > 0) {
 		details.forEach(async (detail) => {
+			if (detail['transaction.status'] === 'pending') {
+				return;
+			}
+
 			// console.log(detail);
 			// return;
 			const options = {
