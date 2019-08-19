@@ -381,6 +381,8 @@ exports.doConvertionPoint = async (request) => {
 			},
 		});
 
+		let trxId = null;
+
 		const totalTrxNumber = totalTrxToday === 0 ? 1 : totalTrxToday;
 
 		const str = totalTrxNumber.toString();
@@ -439,6 +441,10 @@ exports.doConvertionPoint = async (request) => {
 						if (val.keyName === 'point_balance') {
 							pointMinus = val.value;
 						}
+
+						if (val.keyName === 'trx_id') {
+							trxId = val.value;
+						}
 					});
 
 					if (Number.isNaN(pointMinus) || pointMinus == null) {
@@ -480,6 +486,10 @@ exports.doConvertionPoint = async (request) => {
 						if (val.keyName === 'point_balance') {
 							pointAdd = val.value;
 						}
+
+						if (val.keyName === 'trx_id') {
+							trxId = val.value;
+						}
 					});
 
 					await cardTarget.update({
@@ -491,9 +501,11 @@ exports.doConvertionPoint = async (request) => {
 					if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
 						await transaction.update({
 							status: 'pending',
+							trxid: trxId,
 						});
 					} else {
 						await transaction.update({
+							trxid: trxId,
 							status: 'success',
 						});
 					}
@@ -525,6 +537,7 @@ exports.doConvertionPoint = async (request) => {
 					}
 				} else {
 					await transaction.update({
+						trxid: trxId,
 						status: 'failed',
 					});
 				}
