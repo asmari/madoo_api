@@ -113,8 +113,14 @@ exports.doGopayIris = async (request) => {
 		const res = await req.request(url, 'GET', '', 'utf-8');
 
 		if (!Object.prototype.hasOwnProperty.call(res, 'errors')) {
+			let status = 'failed';
+
+			if (res.status === 'completed') {
+				status = 'success';
+			}
+
 			trx.update({
-				status: res.status,
+				status,
 				trxstatus: JSON.stringify(res),
 			});
 		} else {
