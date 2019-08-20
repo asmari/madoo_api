@@ -205,7 +205,7 @@ exports.doGopayIris = async (request) => {
 			break;
 
 		case 'failed':
-			options.message = `Your Point Conversion From ${trx.name} to ${loyaltyTarget.name} is failed, but keep calm & try again`;
+			options.message = `Your Point Conversion From ${loyaltySource.name} to ${loyaltyTarget.name} is failed, but keep calm & try again`;
 			options.title = 'Oh no, your point conversion is failed';
 			break;
 
