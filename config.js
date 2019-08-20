@@ -23,4 +23,9 @@ exports.get = {
 		apiKey: process.env.SENDINBLUE_APIKEY,
 	},
 	tz: process.env.TZ,
+	iris: {
+		url: process.env.IRIS_URL,
+		payouts: process.env.IRIS_PAYOUTS,
+		approval: process.env.IRIS_APPROVE,
+	},
 };

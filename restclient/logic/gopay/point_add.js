@@ -1,6 +1,8 @@
 const Request = require('../../request');
 const model = require('../../../models/index');
 
+const config = require('../../../config').get;
+
 const Members = model.Members.Get;
 const MemberCards = model.MembersCards.Get;
 
@@ -11,9 +13,9 @@ module.exports = async (params, transaction) => {
 		data: [],
 	};
 
-	const url = 'https://app.sandbox.midtrans.com/iris/';
-	const payoutUrl = `${url}api/v1/payouts`;
-	const approveUrl = `${url}api/v1/payouts/approve`;
+	const { url } = config.iris; // 'https://app.sandbox.midtrans.com/iris/';
+	const payoutUrl = `${url}/payouts`;
+	const approveUrl = `${url}/payouts/approve`;
 
 	Members.hasOne(MemberCards, {
 		foreignKey: 'members_id',
@@ -34,7 +36,7 @@ module.exports = async (params, transaction) => {
 	if (member != null) {
 		const req = new Request();
 		req.createHeaders({
-			Authorization: 'Basic SVJJUy03MDg2YmIyOC1mMzgxLTQ1NjQtYTEzOS0wNzMyMzNhMzJjOWI6',
+			Authorization: `Basic ${config.iris.payouts}`, // SVJJUy03MDg2YmIyOC1mMzgxLTQ1NjQtYTEzOS0wNzMyMzNhMzJjOWI6',
 			'Content-Type': 'application/json',
 			'X-Idempotency-Key': transaction.unix_id,
 			Accept: 'application/json',
@@ -60,7 +62,7 @@ module.exports = async (params, transaction) => {
 
 			if (status === 'queued') {
 				req.createHeaders({
-					Authorization: 'Basic SVJJUy00NzU5ZjI1ZS1iMzY5LTQ5ZDEtODRkOS1jZDk0MWFiNTE0MTY6',
+					Authorization: `Basic ${config.iris.approval}`, // SVJJUy00NzU5ZjI1ZS1iMzY5LTQ5ZDEtODRkOS1jZDk0MWFiNTE0MTY6',
 					'Content-Type': 'application/json',
 					'X-Idempotency-Key': `${transaction.unix_id}_APPROVAL`,
 					Accept: 'application/json',
