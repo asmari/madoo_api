@@ -4,8 +4,6 @@ const Request = require('../../restclient/request');
 const FcmSender = require('../../helper/FcmSender');
 const EmailSender = require('../../helper/EmailSender');
 
-const config = require('../../config').get;
-
 const OtpMembers = model.Otp.Get;
 const ForgotPassword = model.ForgotPassword.Get;
 const MemberRegisters = model.MembersRegister;
@@ -102,11 +100,11 @@ exports.doGopayIris = async (request) => {
 	});
 
 	if (trx) {
-		const url = `${config.iris.url}payouts/${body.reference_no}`; // `https://app.sandbox.midtrans.com/iris/api/v1/payouts/${body.reference_no}`;
+		const url = `https://app.sandbox.midtrans.com/iris/api/v1/payouts/${body.reference_no}`;
 		const rand = Math.floor((Math.random() * (999999 - 100000)) + 100000);
 		const req = new Request();
 		req.createHeaders({
-			Authorization: `Basic ${config.iris.payouts}`, // SVJJUy03MDg2YmIyOC1mMzgxLTQ1NjQtYTEzOS0wNzMyMzNhMzJjOWI6',
+			Authorization: 'Basic SVJJUy03MDg2YmIyOC1mMzgxLTQ1NjQtYTEzOS0wNzMyMzNhMzJjOWI6',
 			'Content-Type': 'application/json',
 			'X-Idempotency-Key': `${trx.unix_id}_${rand}`,
 			Accept: 'application/json',
