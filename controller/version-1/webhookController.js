@@ -102,7 +102,7 @@ exports.doGopayIris = async (request) => {
 	});
 
 	if (trx) {
-		const { url } = `${config.iris}payouts/${body.reference_no}`; // `https://app.sandbox.midtrans.com/iris/api/v1/payouts/${body.reference_no}`;
+		const url = `${config.iris.url}payouts/${body.reference_no}`; // `https://app.sandbox.midtrans.com/iris/api/v1/payouts/${body.reference_no}`;
 		const rand = Math.floor((Math.random() * (999999 - 100000)) + 100000);
 		const req = new Request();
 		req.createHeaders({
