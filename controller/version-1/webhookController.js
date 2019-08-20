@@ -113,7 +113,7 @@ exports.doGopayIris = async (request) => {
 		const res = await req.request(url, 'GET', '', 'utf-8');
 
 		if (!Object.prototype.hasOwnProperty.call(res, 'errors')) {
-			let status = 'failed';
+			let status = 'pending';
 
 			if (res.status === 'completed') {
 				status = 'success';
