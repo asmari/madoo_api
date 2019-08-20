@@ -154,11 +154,11 @@ const run = async () => {
 					conversionId: detail['transaction.unix_id'],
 					loyaltySource: detail['transaction.source_member_cards.loyalty_card.loyalties.name'],
 					pointSource: detail['transaction.point'],
-					unitSource: detail['transaction.source_member_cards.loyalty_card.loyalties.master_unit.title'],
+					unitSource: detail['transaction.source_member_cards.loyalty_card.loyalties.master_unit.unit'],
 					loyaltyTarget: detail['transaction.target_member_cards.loyalty_card.loyalties.name'],
 					pointTarget: detail['transaction.conversion_point'],
 					// pointTarget: pointConvert,
-					unitTarget: detail['transaction.target_member_cards.loyalty_card.loyalties.master_unit.title'],
+					unitTarget: detail['transaction.target_member_cards.loyalty_card.loyalties.master_unit.unit'],
 					currentPointSource: detail['transaction.point_balance_after'],
 					currentPointTarget: detail['transaction.point_balance_after'],
 				});
@@ -181,45 +181,47 @@ const run = async () => {
 				break;
 			}
 
-			const notification = await Notification.create({
-				loyalty_id: detail['member_card.loyalty_card.loyalties.id'],
-				type: 'conversion',
-				transaction_id: detail['transaction.id'],
-				promo_id: 0,
-				title: options.title,
-				valid_until: new Date(),
-				description: options.message,
-				recipient_type: 'member',
-				status: 'FINISH',
-				click: 'notif',
-			});
-
-			if (notification) {
-				await NotificationMember.create({
-					members_id: detail['member_card.member.id'],
-					notification_id: notification.id,
-					read: 0,
+			if (detail['transaction.status'] !== 'pending') {
+				const notification = await Notification.create({
+					loyalty_id: detail['member_card.loyalty_card.loyalties.id'],
+					type: 'conversion',
+					transaction_id: detail['transaction.id'],
+					promo_id: 0,
+					title: options.title,
+					valid_until: new Date(),
+					description: options.message,
+					recipient_type: 'member',
+					status: 'FINISH',
+					click: 'notif',
 				});
 
-				await FcmSender.sendToUser(detail['member_card.member.id'], {
-					data: {
-						param: JSON.stringify({
-							id: notification.id,
+				if (notification) {
+					await NotificationMember.create({
+						members_id: detail['member_card.member.id'],
+						notification_id: notification.id,
+						read: 0,
+					});
+
+					await FcmSender.sendToUser(detail['member_card.member.id'], {
+						data: {
+							param: JSON.stringify({
+								id: notification.id,
+								title: notification.title,
+								type: notification.type,
+								loyalty_id: notification.loyalty_id,
+								promo_id: notification.promo_id,
+								transaction_id: notification.transaction_id,
+							}),
+							image: notification.image || null,
+						},
+						priority: 'normal',
+						notification: {
 							title: notification.title,
-							type: notification.type,
-							loyalty_id: notification.loyalty_id,
-							promo_id: notification.promo_id,
-							transaction_id: notification.transaction_id,
-						}),
-						image: notification.image || null,
-					},
-					priority: 'normal',
-					notification: {
-						title: notification.title,
-						body: notification.description,
-						click_action: notification.click,
-					},
-				});
+							body: notification.description,
+							click_action: notification.click,
+						},
+					});
+				}
 			}
 		});
 	} else {
