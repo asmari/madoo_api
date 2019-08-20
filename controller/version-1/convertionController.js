@@ -521,7 +521,7 @@ exports.doConvertionPoint = async (request) => {
 
 					const date = new Date(transaction.created_at);
 
-					if (member && !newLogic.match(regex)) {
+					if (member && !regex.test(newLogic)) {
 						const emailSender = new EmailSender();
 						await emailSender.sendConversion(member.email, {
 							name: member.full_name,
@@ -567,7 +567,7 @@ exports.doConvertionPoint = async (request) => {
 					break;
 				}
 
-				if (transaction.status !== 'pending' && !newLogic.match(regex)) {
+				if (transaction.status !== 'pending' && !regex.test(newLogic)) {
 					const notification = await Notification.create({
 						loyalty_id: loyaltySource.id,
 						type: 'conversion',
