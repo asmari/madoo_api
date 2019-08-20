@@ -497,6 +497,8 @@ exports.doConvertionPoint = async (request) => {
 					});
 				}
 
+				const newLogic = loyaltyTarget.api_point_plus;
+
 				if (successResponse.add && successResponse.deduct) {
 					if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
 						await transaction.update({
@@ -518,7 +520,7 @@ exports.doConvertionPoint = async (request) => {
 
 					const date = new Date(transaction.created_at);
 
-					if (member && loyaltyTarget.api_point_plus.search('new-logic:')) {
+					if (member && newLogic.search('new-logic:')) {
 						const emailSender = new EmailSender();
 						await emailSender.sendConversion(member.email, {
 							name: member.full_name,
@@ -564,7 +566,7 @@ exports.doConvertionPoint = async (request) => {
 					break;
 				}
 
-				if (transaction.status !== 'pending' && loyaltyTarget.api_point_plus.search('new-logic:')) {
+				if (transaction.status !== 'pending' && newLogic.search('new-logic:')) {
 					const notification = await Notification.create({
 						loyalty_id: loyaltySource.id,
 						type: 'conversion',
