@@ -24,8 +24,8 @@ exports.get = {
 	},
 	tz: process.env.TZ,
 	iris: {
-		url: process.env.IRIS_URL,
-		payouts: process.env.IRIS_PAYOUTS,
-		approval: process.env.IRIS_APPROVE,
+		url: process.env.IRIS_URL || 'https://app.sandbox.midtrans.com/iris/api/v1',
+		payouts: process.env.IRIS_PAYOUTS || 'SVJJUy03MDg2YmIyOC1mMzgxLTQ1NjQtYTEzOS0wNzMyMzNhMzJjOWI6',
+		approval: process.env.IRIS_APPROVE || 'SVJJUy00NzU5ZjI1ZS1iMzY5LTQ5ZDEtODRkOS1jZDk0MWFiNTE0MTY6',
 	},
 };
