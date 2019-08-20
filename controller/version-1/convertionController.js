@@ -522,21 +522,21 @@ exports.doConvertionPoint = async (request) => {
 					const date = new Date(transaction.created_at);
 
 					if (member && !regex.test(newLogic)) {
-						const emailSender = new EmailSender();
-						await emailSender.sendConversion(member.email, {
-							name: member.full_name,
-							date: `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}`,
-							conversionId: transaction.unix_id,
-							loyaltySource: loyaltySource.name,
-							pointSource: params.point_to_convert,
-							unitSource: loyaltySource.master_unit.unit,
-							loyaltyTarget: loyaltyTarget.name,
-							pointTarget: pointConvert,
-							// pointTarget: pointConvert,
-							unitTarget: loyaltyTarget.master_unit.unit,
-							currentPointSource: transaction.point_balance_after,
-							currentPointTarget: transaction.conversion_point_balance_after,
-						});
+						// const emailSender = new EmailSender();
+						// await emailSender.sendConversion(member.email, {
+						// 	name: member.full_name,
+						// 	date: `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}`,
+						// 	conversionId: transaction.unix_id,
+						// 	loyaltySource: loyaltySource.name,
+						// 	pointSource: params.point_to_convert,
+						// 	unitSource: loyaltySource.master_unit.unit,
+						// 	loyaltyTarget: loyaltyTarget.name,
+						// 	pointTarget: pointConvert,
+						// 	// pointTarget: pointConvert,
+						// 	unitTarget: loyaltyTarget.master_unit.unit,
+						// 	currentPointSource: transaction.point_balance_after,
+						// 	currentPointTarget: transaction.conversion_point_balance_after,
+						// });
 					}
 				} else {
 					await transaction.update({
@@ -568,46 +568,46 @@ exports.doConvertionPoint = async (request) => {
 				}
 
 				if (transaction.status !== 'pending' && !regex.test(newLogic)) {
-					const notification = await Notification.create({
-						loyalty_id: loyaltySource.id,
-						type: 'conversion',
-						transaction_id: transaction.id,
-						promo_id: 0,
-						title: options.title,
-						valid_until: new Date(),
-						description: options.message,
-						recipient_type: 'member',
-						status: 'FINISH',
-						click: 'notif',
-					});
+					// const notification = await Notification.create({
+					// 	loyalty_id: loyaltySource.id,
+					// 	type: 'conversion',
+					// 	transaction_id: transaction.id,
+					// 	promo_id: 0,
+					// 	title: options.title,
+					// 	valid_until: new Date(),
+					// 	description: options.message,
+					// 	recipient_type: 'member',
+					// 	status: 'FINISH',
+					// 	click: 'notif',
+					// });
 
-					if (notification) {
-						await NotificationMember.create({
-							members_id: user.id,
-							notification_id: notification.id,
-							read: 0,
-						});
+					// if (notification) {
+					// 	await NotificationMember.create({
+					// 		members_id: user.id,
+					// 		notification_id: notification.id,
+					// 		read: 0,
+					// 	});
 
-						await FcmSender.sendToUser(user.id, {
-							data: {
-								param: JSON.stringify({
-									id: notification.id,
-									title: notification.title,
-									type: notification.type,
-									loyalty_id: notification.loyalty_id,
-									promo_id: notification.promo_id,
-									transaction_id: notification.transaction_id,
-								}),
-								image: notification.image || null,
-							},
-							priority: 'normal',
-							notification: {
-								title: notification.title,
-								body: notification.description,
-								click_action: notification.click,
-							},
-						});
-					}
+					// 	await FcmSender.sendToUser(user.id, {
+					// 		data: {
+					// 			param: JSON.stringify({
+					// 				id: notification.id,
+					// 				title: notification.title,
+					// 				type: notification.type,
+					// 				loyalty_id: notification.loyalty_id,
+					// 				promo_id: notification.promo_id,
+					// 				transaction_id: notification.transaction_id,
+					// 			}),
+					// 			image: notification.image || null,
+					// 		},
+					// 		priority: 'normal',
+					// 		notification: {
+					// 			title: notification.title,
+					// 			body: notification.description,
+					// 			click_action: notification.click,
+					// 		},
+					// 	});
+					// }
 				}
 
 				Logger.info('End Transaction', transaction);
