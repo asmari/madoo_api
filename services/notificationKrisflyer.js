@@ -145,6 +145,8 @@ const run = async () => {
 				title: '',
 			};
 
+			let isPending = false;
+
 			if (detail['transaction.status'] === 'success') {
 				const emailSender = new EmailSender();
 				const date = moment(detail['transaction.created_at']);
@@ -176,12 +178,13 @@ const run = async () => {
 				break;
 
 			default:
-				options.title = 'Conversion in progress';
-				options.message = 'Please wait, your conversion in progress';
+				isPending = true;
+				// options.title = 'Conversion in progress';
+				// options.message = 'Please wait, your conversion in progress';
 				break;
 			}
 
-			if (detail['transaction.status'] !== 'pending') {
+			if (detail['transaction.status'] !== 'pending' && options.title !== '' && !isPending) {
 				const notification = await Notification.create({
 					loyalty_id: detail['member_card.loyalty_card.loyalties.id'],
 					type: 'conversion',
