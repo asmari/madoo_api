@@ -535,6 +535,11 @@ exports.doConvertionPoint = async (request) => {
 							currentPointTarget: transaction.conversion_point_balance_after,
 						});
 					}
+				} else if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
+					await transaction.update({
+						trxid: trxId,
+						status: 'pending',
+					});
 				} else {
 					await transaction.update({
 						trxid: trxId,
