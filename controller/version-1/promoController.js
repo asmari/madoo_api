@@ -10,7 +10,7 @@ const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
 const Promo = model.Promo.Get;
 const MemberCards = model.MembersCards.Get;
 
-const Logger = require('../../helper/Logger').General;
+// const Logger = require('../../helper/Logger').General;
 
 // get autocomplete suggestion promo
 exports.getAutoCompletePromo = async (request) => {
@@ -77,7 +77,14 @@ exports.getFeaturedPromo = async (request) => {
 			status: 1,
 			isfeatured: 1,
 		},
-		include: [Loyalty],
+		include: [
+			Loyalty,
+			{
+				model: LoyaltyHasMemberCards,
+				required: false,
+				paranoid: true,
+			},
+		],
 		limit: 3,
 		// order: sequelize.literal('rand()'),
 		order: [['updated_at', 'DESC']],
