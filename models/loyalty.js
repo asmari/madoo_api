@@ -142,6 +142,10 @@ const Loyalty = model.define('loyalty', {
 		type: Sequelize.STRING,
 		allowNull: false,
 	},
+	use_balance: {
+		type: Sequelize.SMALLINT,
+		allowNull: false,
+	},
 }, {
 	timestamps: true,
 	underscored: true,
