@@ -35,6 +35,7 @@ exports.getAutoCompletePromo = async (request) => {
 // get featured random
 exports.getFeaturedPromo = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query));
+	const { user } = request;
 
 	let filterPromo = {};
 
@@ -54,16 +55,16 @@ exports.getFeaturedPromo = async (request) => {
 
 	const currentDate = moment().format('YYYY-MM-DD');
 
-	Promo.hasOne(LoyaltyHasMemberCards, {
+	Promo.hasMany(LoyaltyHasMemberCards, {
 		foreignKey: 'loyalty_id',
 		sourceKey: 'loyalty_id',
 	});
 
-	const unit = Promo.associations.loyalty_has_member_card;
-	unit.sourceIdentifier = 'loyalty_id';
-	unit.sourceKey = 'loyalty_id';
-	unit.sourceKeyAttribute = 'loyalty_id';
-	unit.sourceKeyIsPrimary = false;
+	// const unit = Promo.associations.loyalty_has_member_card;
+	// unit.sourceIdentifier = 'loyalty_id';
+	// unit.sourceKey = 'loyalty_id';
+	// unit.sourceKeyAttribute = 'loyalty_id';
+	// unit.sourceKeyIsPrimary = false;
 
 	const promos = await Promo.findAll({
 		where: {
@@ -81,6 +82,15 @@ exports.getFeaturedPromo = async (request) => {
 			Loyalty,
 			{
 				model: LoyaltyHasMemberCards,
+				include: [
+					{
+						model: MemberCards,
+						required: false,
+						where: {
+							members_id: user.id,
+						},
+					},
+				],
 				required: false,
 				paranoid: true,
 			},
@@ -93,10 +103,15 @@ exports.getFeaturedPromo = async (request) => {
 	const data = promos.map((v) => {
 		const d = v.toJSON();
 
-		if (d.loyalty_has_member_card !== null) {
-			d.has_member_card = true;
-		} else {
-			d.has_member_card = false;
+		if (Object.prototype.hasOwnProperty.call(d, 'loyalty_has_member_cards')) {
+			console.log(d.loyalty_has_member_cards.length);
+			d.loyalty_has_member_cards.forEach((val) => {
+				if (val.member_cards.length > 0) {
+					d.has_member_card = true;
+				}
+			});
+
+			delete d.loyalty_has_member_cards;
 		}
 
 		return d;
