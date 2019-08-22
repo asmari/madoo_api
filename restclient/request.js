@@ -1,10 +1,14 @@
 const https = require('https');
 const parser = require('xml2json');
 
+const Logger = require('../helper/Logger').RestClient;
+
 module.exports = class Request {
 	constructor() {
 		this.agent = null;
 		this.headers = {};
+		this.retry = 5;
+		this.alreadyTry = 1;
 	}
 
 	createAgent(agent = null) {
@@ -40,11 +44,28 @@ module.exports = class Request {
 	request(url, method, data, encoding = 'utf-8') {
 		const { agent, headers } = this;
 
+		Logger.info(`Start API ${url}`);
+
 		return new Promise((resolve, reject) => {
+			const onError = (err) => {
+				Logger.info('Error Access, try Again');
+				if (this.alreadyTry >= this.retry) {
+					Logger.info('Limit Try Again');
+					reject(err);
+				} else {
+					Logger.info(`Try Again ${this.alreadyTry}`);
+					this.alreadyTry += 1;
+					this.request(url, method, data, encoding)
+						.then(newRes => resolve(newRes))
+						.catch(error => reject(error));
+				}
+			};
+
 			const req = https.request(url, {
 				agent,
 				headers,
 				method,
+				timeout: 20000,
 			}, (res) => {
 				let contentType = '';
 
@@ -55,16 +76,27 @@ module.exports = class Request {
 
 				let chunkData = '';
 
-				res.on('error', (err) => {
-					reject(err);
-				});
+				res.on('error', onError);
 
 				res.on('data', (chunk) => {
 					chunkData += chunk;
 				});
 
+				res.on('timeout', () => {
+					Logger.info('Timeout - Error');
+					res.abort();
+					onError('timeout');
+				});
+
 				res.on('end', () => {
 					let parsedData = null;
+
+					if (res.statusCode > 299) {
+						onError(res);
+						return;
+					}
+
+					Logger.info(`Done Api ${url}`);
 
 					switch (contentType) {
 					case 'text/xml':
@@ -80,10 +112,11 @@ module.exports = class Request {
 						try {
 							parsedData = JSON.parse(chunkData);
 						} catch (e) {
-							console.log(e);
+							Logger.info(e);
 						}
 						break;
 					}
+
 
 					resolve(parsedData);
 				});

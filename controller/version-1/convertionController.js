@@ -543,7 +543,7 @@ exports.doConvertionPoint = async (request) => {
 				} else {
 					await transaction.update({
 						trxid: trxId,
-						status: 'failed',
+						status: 'pending',
 					});
 				}
 
