@@ -74,6 +74,30 @@ exports.fcmTriggerKrisflyerSchema = {
 	},
 };
 
+exports.fcmTriggerKrisflyerPostSchema = {
+	schema: {
+		security: [
+			{
+				'skip-auth': [],
+			},
+		],
+		description: 'Rest api to send trigger notification krisflyer with limit',
+		tags: ['Notification'],
+		body: {
+			type: 'object',
+			properties: {
+				batch_id: {
+					type: 'integer',
+				},
+				limits: {
+					type: ['array', 'string'],
+				},
+			},
+			required: ['batch_id'],
+		},
+	},
+};
+
 exports.notificationDetailSchema = {
 	schema: {
 		tags: ['Notification'],
