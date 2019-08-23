@@ -75,8 +75,8 @@ exports.authChangePin = {
 			properties: {
 				mobile_phone: {
 					type: 'string',
-					minLength: 11,
-					maxLength: 18,
+					minLength: 8,
+					maxLength: 15,
 				},
 				pin: {
 					type: 'string',
