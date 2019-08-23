@@ -621,7 +621,7 @@ exports.doConvertionPoint = async (request) => {
 		});
 
 		const responseTimeout = new Promise((resolve) => {
-			setTimeout(() => resolve(new Response(20200, transaction)), 30000);
+			setTimeout(() => resolve(new Response(20200, transaction)), 10000);
 		});
 
 		return Promise.race([responseDone, responseTimeout]);
