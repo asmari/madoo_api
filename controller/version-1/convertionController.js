@@ -6,6 +6,7 @@ const LoyaltyRequest = require('../../restclient/LoyaltyRequest');
 const EmailSender = require('../../helper/EmailSender');
 const FcmSender = require('../../helper/FcmSender');
 const Logger = require('../../helper/Logger').Convertion;
+const LoggerClean = require('../../helper/Logger').ConvertionClean;
 
 const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
@@ -322,6 +323,10 @@ exports.doConvertionPoint = async (request) => {
 		await sourceRequest.setLoyaltyId(loyaltySource.id);
 		sourceRequest.setMemberCardId(cardSource.id);
 
+		LoggerClean.info(`============= START CONVERTION ${loyaltySource.name} -> ${loyaltyTarget.name} ===========================`);
+		LoggerClean.info('Card Source', cardSource.toJSON());
+		LoggerClean.info('Card Target', cardTarget.toJSON());
+
 		const sourceNewPoint = await sourceRequest.getMemberPoint();
 
 		Logger.info('SOURCE POINT REFRESH', sourceNewPoint);
@@ -408,6 +413,8 @@ exports.doConvertionPoint = async (request) => {
 			mid_rate_to: rate.mid_to_rate,
 		});
 
+		LoggerClean.info('Transaction Created', transaction.toJSON());
+
 		const responseDone = new Promise(async (resolve, reject) => {
 			const successResponse = {
 				deduct: false,
@@ -417,9 +424,15 @@ exports.doConvertionPoint = async (request) => {
 			try {
 				Logger.info('Start Convertion', transaction.toJSON());
 
+				LoggerClean.info(`Deduct Point ${loyaltySource.name}`, {
+					point: params.point_to_convert,
+				});
+
 				const resMinusPoint = await sourceRequest.pointMinus({
 					point: params.point_to_convert,
 				}, transaction.toJSON());
+
+				LoggerClean.info(`Deduct Point Response ${loyaltySource.name}`, resMinusPoint);
 
 				Logger.info('Response Minus', resMinusPoint);
 
@@ -456,10 +469,16 @@ exports.doConvertionPoint = async (request) => {
 					});
 				}
 
+				LoggerClean.info(`Add Point ${loyaltyTarget.name}`, {
+					point: pointConvert,
+				});
+
 				const resAddPoint = await targetRequest.pointAdd({
 					point: pointConvert,
 					// point: pointConvert,
 				}, transaction.toJSON());
+
+				LoggerClean.info(`Add Point Response ${loyaltyTarget.name}`, resAddPoint);
 
 				Logger.info('Response Add', resAddPoint);
 
@@ -499,11 +518,13 @@ exports.doConvertionPoint = async (request) => {
 
 				if (successResponse.add && successResponse.deduct) {
 					if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
+						LoggerClean.info('Convertion Success but put in pending');
 						await transaction.update({
 							status: 'pending',
 							trxid: trxId,
 						});
 					} else {
+						LoggerClean.info('Convertion Success');
 						await transaction.update({
 							trxid: trxId,
 							status: 'success',
@@ -519,6 +540,7 @@ exports.doConvertionPoint = async (request) => {
 					const date = new Date(transaction.created_at);
 
 					if (member) {
+						LoggerClean.info(`Send Email success to ${member.email}`);
 						const emailSender = new EmailSender();
 						await emailSender.sendConversion(member.email, {
 							name: member.full_name,
@@ -536,11 +558,13 @@ exports.doConvertionPoint = async (request) => {
 						});
 					}
 				} else if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
+					LoggerClean.info('Conversion on pending state');
 					await transaction.update({
 						trxid: trxId,
 						status: 'pending',
 					});
 				} else {
+					LoggerClean.info('Conversion is failed but put in pending');
 					await transaction.update({
 						trxid: trxId,
 						status: 'pending',
@@ -612,9 +636,11 @@ exports.doConvertionPoint = async (request) => {
 					}
 				}
 
+				LoggerClean.info(`============= END CONVERTION ${loyaltySource.name} -> ${loyaltyTarget.name} ===========================`);
 				Logger.info('End Transaction', transaction);
 				resolve(new Response(20052, transaction));
 			} catch (err) {
+				LoggerClean.info(`ERROR CONVERTION ${err.message}`);
 				Logger.trace(err);
 				reject(err);
 			}
