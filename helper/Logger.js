@@ -30,6 +30,10 @@ log4js.configure({
 			type: 'file',
 			filename: 'logs/CONVERTION.LOG',
 		},
+		CONVERTION_CLEAN: {
+			type: 'file',
+			filename: 'logs/CONVERTION_CLEAN.log',
+		},
 		CHECK_POINT: {
 			type: 'file',
 			filename: 'logs/CHECK_POINT.log',
@@ -74,6 +78,9 @@ log4js.configure({
 		WEBHOOK: {
 			appenders: ['WEBHOOK'], level: 'ALL',
 		},
+		CONVERTION_CLEAN: {
+			appenders: ['CONVERTION_CLEAN'], level: 'ALL',
+		},
 	},
 });
 
@@ -89,3 +96,4 @@ exports.Convertion = log4js.getLogger('CONVERTION');
 exports.CheckPoint = log4js.getLogger('CHECK_POINT');
 exports.Query = log4js.getLogger('QUERY');
 exports.Webhook = log4js.getLogger('WEBHOOK');
+exports.ConvertionClean = log4js.getLogger('CONVERTION_CLEAN');
