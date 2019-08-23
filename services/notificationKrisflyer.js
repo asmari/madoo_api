@@ -4,6 +4,7 @@ const {
 } = require('worker_threads');
 
 const moment = require('moment');
+const { Op } = require('sequelize');
 
 const model = require('../models/index');
 const FcmSender = require('../helper/FcmSender');
@@ -20,6 +21,8 @@ const Transaction = model.Transaction.Get;
 const Notification = model.Notification.Get;
 const NotificationMember = model.NotificationMembers.Get;
 
+// const Logger = require('../helper/Logger').Notifications;
+
 const data = workerData;
 
 const run = async () => {
@@ -27,6 +30,14 @@ const run = async () => {
 		foreignKey: 'member_cards_id',
 		as: 'loyalty_card',
 	});
+
+	const where = {};
+
+	if (Object.prototype.hasOwnProperty.call(workerData, 'limit')) {
+		where.unix_id = {
+			[Op.in]: Array.isArray(workerData.limit) ? workerData.limit : [workerData.limit],
+		};
+	}
 
 	logger.info('============================== START KRISFLYER NOTIFICATION ==================================');
 	const details = await KrisflyerBatchDetail.findAll({
@@ -39,6 +50,7 @@ const run = async () => {
 				model: Transaction,
 				as: 'transaction',
 				paranoid: false,
+				where,
 				required: true,
 				attributes: ['id', 'status', 'point', 'conversion_point', 'unix_id', 'created_at', 'point_balance_after', 'conversion_point_balance_after'],
 				include: [
@@ -131,6 +143,8 @@ const run = async () => {
 			},
 		],
 	});
+
+	// Logger.info(details);
 
 	if (details != null && details.length > 0) {
 		details.forEach(async (detail) => {
