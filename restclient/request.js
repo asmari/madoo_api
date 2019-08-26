@@ -7,7 +7,7 @@ module.exports = class Request {
 	constructor() {
 		this.agent = null;
 		this.headers = {};
-		this.retry = 5;
+		this.retry = 3;
 		this.alreadyTry = 1;
 	}
 
