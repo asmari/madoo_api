@@ -88,12 +88,12 @@ exports.checkConvertionRate = async (request) => {
 			model: Loyalty,
 			as: 'Source',
 			required: true,
-			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
+			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id', 'use_balance'],
 		}, {
 			model: Loyalty,
 			as: 'Target',
 			required: true,
-			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id'],
+			attributes: ['id', 'name', 'unit', 'type_loyalty_id', 'business_partner_id', 'unit_id', 'use_balance'],
 		}],
 	});
 
