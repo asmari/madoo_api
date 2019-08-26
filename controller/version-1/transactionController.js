@@ -283,7 +283,7 @@ exports.doGetListHistory = async (request) => {
 			delete d.source_member_cards;
 			delete d.target_member_cards;
 
-			const listField = ['source', 'target'];
+			const listField = ['target'];
 
 			const time = new Date(value.created_at);
 
