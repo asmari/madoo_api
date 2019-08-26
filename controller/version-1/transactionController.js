@@ -1,4 +1,6 @@
 const { Op } = require('sequelize');
+const moment = require('moment');
+moment.locale('id');
 
 const model = require('../../models/index');
 const { ErrorResponse, ResponsePaginate, Response } = require('../../helper/response');
@@ -285,9 +287,8 @@ exports.doGetListHistory = async (request) => {
 
 			const listField = ['target'];
 
-			const time = new Date(value.created_at);
-
-			d.transaction_date = `${time.getDate()} ${monthList[time.getMonth()]} ${time.getFullYear()} ${time.getHours()}:${time.getMinutes()}`;
+			// const time = new Date(value.created_at);
+			d.transaction_date = moment(value.created_at).format('DD MMMM YY hh:mm');
 
 			listField.forEach((key) => {
 				const reVal = {
