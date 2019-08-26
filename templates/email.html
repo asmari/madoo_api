@@ -1,701 +1,242 @@
-<html lang="en"><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-        <meta http-equiv="x-ua-compatible" content="IE=edge">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-                <style type="text/css">
-      p {
-        margin:10px 0;
-        padding:0;
-      }
-
-      table {
-        border-collapse:collapse;
-      }
-
-      h1,h2,h3,h4,h5,h6 {
-        display:block;
-        margin:0;
-        padding:0;
-      }
-
-      img,a img {
-        border:0;
-        height:auto;
-        outline:none;
-        text-decoration:none;
-      }
-
-      body,#bodyTable,#bodyCell {
-        height:100%;
-        margin:0;
-        padding:0;
-        width:100%;
-      }
-
-      .mcnPreviewText {
-        display:none !important;
-      }
-
-      #outlook a {
-        padding:0;
-      }
-
-      img {
-        -ms-interpolation-mode:bicubic;
-      }
-
-      table {
-        mso-table-lspace:0;
-        mso-table-rspace:0;
-      }
-
-      .ReadMsgBody {
-        width:100%;
-      }
-
-      .ExternalClass {
-        width:100%;
-      }
-
-      p,a,li,td,blockquote {
-        mso-line-height-rule:exactly;
-      }
-
-      a[href^=tel],a[href^=sms] {
-        color:inherit;
-        cursor:default;
-        text-decoration:none;
-      }
-
-      p,a,li,td,body,table,blockquote {
-        -ms-text-size-adjust:100%;
-        -webkit-text-size-adjust:100%;
-      }
-
-      .ExternalClass,.ExternalClass p,.ExternalClass td,.ExternalClass div,.ExternalClass span,.ExternalClass font {
-        line-height:100%;
-      }
-
-      a[x-apple-data-detectors] {
-        color:inherit !important;
-        text-decoration:none !important;
-        font-size:inherit !important;
-        font-family:inherit !important;
-        font-weight:inherit !important;
-        line-height:inherit !important;
-      }
-
-      a.mcnButton {
-        border: 0 solid #00b140;
-        border-radius: 4px;
-        color: #fefefe!important;
-        display: inline-block;
-        font-family: "Open Sans",Helvetica,Arial,sans-serif;
-        font-size: 16px;
-        font-weight: 700!important;
-        line-height: 1.2;
-        margin: 0;
-        padding: 15px 60px 15px 60px;
-        text-align: center;
-        text-decoration: none!important;
-        background: #f6992e;
-      }
-
-      .mcnImage,.mcnRetinaImage {
-        vertical-align:bottom;
-      }
-
-      .mcnTextContent {
-        word-break:break-word;
-      }
-
-      .mcnTextContent img {
-        height:auto !important;
-      }
-
-      .mcnDividerBlock {
-        table-layout:fixed !important;
-      }
-
-      body,#bodyTable {
-        background-color:#FAFAFA;
-      }
-
-      #bodyCell {
-        border-top:0;
-      }
-
-
-
-      h1 {
-        color:#606060 !important;
-        font-family:Helvetica;
-        font-size:40px;
-        font-style:normal;
-        font-weight:bold;
-        line-height:125%;
-        letter-spacing:-1px;
-      }
-
-      h2 {
-        color:#404040 !important;
-        font-family:Helvetica;
-        font-size:26px;
-        font-style:normal;
-        font-weight:bold;
-        line-height:125%;
-        letter-spacing:-.75px;
-      }
-
-      h3 {
-        color:#f6992e !important;
-        font-family:Helvetica;
-        font-size:18px;
-        font-style:normal;
-        font-weight:bold;
-        line-height:125%;
-        letter-spacing:-.5px;
-      }
-
-      h4 {
-        color:#808080 !important;
-        font-family:Helvetica;
-        font-size:16px;
-        font-style:normal;
-        font-weight:bold;
-        line-height:125%;
-        letter-spacing:normal;
-      }
-
-      #templatePreheader {
-        background-color:#FFFFFF;
-        border-top:0;
-        border-bottom:0;
-      }
-
-      .preheaderContainer .mcnTextContent,.preheaderContainer .mcnTextContent p {
-        color:#AAAAAA;
-        font-family:Helvetica;
-        font-size:11px;
-        line-height:125%;
-        text-align:left;
-      }
-
-      .preheaderContainer .mcnTextContent a {
-        color:#606060;
-        font-weight:normal;
-        text-decoration:underline;
-      }
-      .headerContainer .mcnTextContent,.headerContainer .mcnTextContent p {
-        color:#606060;
-        font-family:Helvetica;
-        font-size:18px;
-        line-height:150%;
-        text-align:center;
-      }
-
-      .headerContainer .mcnTextContent a {
-        color:#6DC6DD;
-        font-weight:normal;
-        text-decoration:underline;
-      }
-
-      #templateUpperBody {
-        background-color:#FFFFFF;
-        border-top:0;
-      }
-
-      .upperBodyContainer .mcnTextContent,.upperBodyContainer .mcnTextContent p {
-        color:#606060;
-        font-family:Helvetica;
-        font-size:16px;
-        line-height:150%;
-        text-align:center;
-      }
-
-      .upperBodyContainer .mcnTextContent a {
-        color:#f6992e;
-        font-weight:400;
-        text-decoration:none;
-      }
-
-      #templateColumns {
-        background-color:#FFFFFF;
-      }
-
-      .leftColumnContainer .mcnTextContent,.leftColumnContainer .mcnTextContent p {
-        color:#606060;
-        font-family:Helvetica;
-        font-size:16px;
-        line-height:150%;
-        text-align:left;
-      }
-
-      .leftColumnContainer .mcnTextContent a {
-        color:#f6992e;
-        font-weight:normal;
-        text-decoration:underline;
-      }
-
-      .rightColumnContainer .mcnTextContent,.rightColumnContainer .mcnTextContent p {
-        color:#606060;
-        font-family:Helvetica;
-        font-size:16px;
-        line-height:150%;
-        text-align:left;
-      }
-
-      .rightColumnContainer .mcnTextContent a {
-        color:#f6992e;
-        font-weight:normal;
-        text-decoration:underline;
-      }
-
-      #templateLowerBody {
-        background-color:#FFFFFF;
-      }
-
-      .lowerBodyContainer .mcnTextContent,.lowerBodyContainer .mcnTextContent p {
-        color:#606060;
-        font-family:Helvetica;
-        font-size:18px;
-        line-height:150%;
-        text-align:center;
-      }
-
-      .lowerBodyContainer .mcnTextContent a {
-        color:#f6992e;
-        font-weight:normal;
-        text-decoration:underline;
-      }
-
-      #templateFooter {
-        background-color:#FFFFFF;
-        border-top:0;
-        border-bottom:0;
-      }
-
-      .footerContainer .mcnTextContent,.footerContainer .mcnTextContent p {
-        color:#AAAAAA;
-        font-family:Helvetica;
-        font-size:11px;
-        line-height:125%;
-        text-align:center;
-      }
-
-      .footerContainer .mcnTextContent a {
-        color:#606060;
-        font-weight:normal;
-        text-decoration:underline;
-      }
-
-      .pc-padding{padding:0px 10% !important;}
-
-      @media only screen and (max-width: 480px) {
-        body,table,td,p,a,li,blockquote {
-          -webkit-text-size-adjust:none !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open Sans" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:300,400,600,700' rel='stylesheet' type='text/css'>
+    <title>Email Verification</title>
+    <style>
         body {
-          width:100% !important;
-          min-width:100% !important;
+            height: 100% !important;
+            width: 100% !important;
         }
-      }
-
-      @media only screen and (max-width: 480px) {
-        #templateContainer,#templatePreheader,#templateHeader,#templateUpperBody,#templateColumns,#templateLowerBody,#templateFooter {
-          max-width:600px !important;
-          width:100% !important;
+        p, span {
+            font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+            font-size: 16px;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .columnsContainer {
-          display:block !important;
-          max-width:600px !important;
-          padding-bottom:18px !important;
-          padding-left:0 !important;
-          width:100% !important;
+        p {
+            color: #333333;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .mcnRetinaImage {
-          max-width:100% !important;
+        h1,h2, a, tr, td {
+            font-family: 'Montserrat', Arial, Helvetica, sans-serif;
+            color: #000000;
         }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImage {
-          height:auto !important;
-          width:100% !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnCartContainer,.mcnCaptionTopContent,.mcnRecContentContainer,.mcnCaptionBottomContent,.mcnTextContentContainer,.mcnBoxedTextContentContainer,.mcnImageGroupContentContainer,.mcnCaptionLeftTextContentContainer,.mcnCaptionRightTextContentContainer,.mcnCaptionLeftImageContentContainer,.mcnCaptionRightImageContentContainer,.mcnImageCardLeftTextContentContainer,.mcnImageCardRightTextContentContainer,.mcnImageCardLeftImageContentContainer,.mcnImageCardRightImageContentContainer {
-          max-width:100% !important;
-          width:100% !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnBoxedTextContentContainer {
-          min-width:100% !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImageGroupContent {
-          padding:9px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnCaptionLeftContentOuter .mcnTextContent,.mcnCaptionRightContentOuter .mcnTextContent {
-          padding-top:9px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImageCardTopImageContent,.mcnCaptionBottomContent:last-child .mcnCaptionBottomImageContent,.mcnCaptionBlockInner .mcnCaptionTopContent:last-child .mcnTextContent {
-          padding-top:18px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImageCardBottomImageContent {
-          padding-bottom:9px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImageGroupBlockInner {
-          padding-top:0 !important;
-          padding-bottom:0 !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImageGroupBlockOuter {
-          padding-top:9px !important;
-          padding-bottom:9px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnTextContent,.mcnBoxedTextContentColumn {
-          padding-right:18px !important;
-          padding-left:18px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcnImageCardLeftImageContent,.mcnImageCardRightImageContent {
-          padding-right:18px !important;
-          padding-bottom:0 !important;
-          padding-left:18px !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
-        .mcpreview-image-uploader {
-          display:none !important;
-          width:100% !important;
-        }
-      }
-
-      @media only screen and (max-width: 480px) {
         h1 {
-          font-size:24px !important;
-          line-height:125% !important;
+            font-size: 30px;
+            color: #000000;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        h2 {
-          font-size:20px !important;
-          line-height:125% !important;
+        a {
+            font-weight: bold;
+            font-size: 14px;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        h3 {
-          font-size:18px !important;
-          line-height:125% !important;
+        @media (max-width: 450px) {
+            h1 {
+                font-size: 18px;
+            }
+            p, span {
+                font-size: 11px;
+            }
+            a {
+                font-size: 11px;
+            }
         }
-      }
+        body {
+            margin: 0;
+            background: #ffffff;
+            position: relative;
+        }
+        table {
+            width: 700px;
+            /* background: #fafafa; */
+        }
 
-      @media only screen and (max-width: 480px) {
-        h4 {
-          font-size:16px !important;
-          line-height:125% !important;
+        @media (max-width: 450px) {
+            h1 {
+                font-size: 20px;
+            }
+            table tr td .footer .terms {
+                padding-top: 20px;
+            }
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .mcnBoxedTextContentContainer .mcnTextContent,.mcnBoxedTextContentContainer .mcnTextContent p {
-          font-size:18px !important;
-          line-height:125% !important;
+        @media (min-width: 768px) {
+            table tr td .footer .social-media {
+                padding: 5px 4.375rem;
+            }
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        #templatePreheader {
-          display:block !important;
+        table tr .content-container {
+            background-image: url('https://res.cloudinary.com/dvwnomp76/image/upload/v1566793350/Madoo%20Email/bg_verify.png');
+            height: 700px;
+            min-height: 700px;
+            max-height: 700px;
+            background-size: contain;
+            width: 100%;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .preheaderContainer .mcnTextContent,.preheaderContainer .mcnTextContent p {
-          font-size:14px !important;
-          line-height:115% !important;
-          text-align:left !important;
+        table tr .download-container {
+            background-image: url('https://swaps.antikode.com/source/img/drawable-hdpi/bg_download.png');
+            height: 300px;
+            background-size: cover;
+            width: 100%;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .headerContainer .mcnTextContent,.headerContainer .mcnTextContent p {
-          font-size:18px !important;
-          line-height:125% !important;
-          text-align:center !important;
+        @media (max-width: 450px) {
+            table tr .content-container {
+                background-image: none;
+                height: 0;
+            }
+            table tr .download-container {
+                background-image: none;
+                padding-top: 30px;
+            }
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .upperBodyContainer .mcnTextContent,.upperBodyContainer .mcnTextContent p {
-          font-size:16px !important;
-          line-height:125% !important;
-          text-align:left;
-        }
-        .upperBodyContainer h2{text-align:center!important;}
-        .mcnTextContent.button{text-align:center!important;}
-      }
 
-      @media only screen and (max-width: 480px) {
-        .leftColumnContainer .mcnTextContent,.leftColumnContainer .mcnTextContent p {
-          font-size:18px !important;
-          line-height:125% !important;
-          text-align:left !important;
+        table tr td .footer .social-media a {
+            text-decoration: none;
+            font-size: 10px !important;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .rightColumnContainer .mcnTextContent,.rightColumnContainer .mcnTextContent p {
-          font-size:18px !important;
-          line-height:125% !important;
-          text-align:left !important;
+        table tr td .text-link a {
+            text-decoration: none;
+            font-size: 8px;
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .lowerBodyContainer .mcnTextContent,.lowerBodyContainer .mcnTextContent p {
-          font-size:18px !important;
-          line-height:125% !important;
-          text-align:left !important;
+        @media (min-width: 768px) {
+            table tr td .text-link a {
+                text-decoration: none;
+                font-size: 14px;
+            }
         }
-      }
 
-      @media only screen and (max-width: 480px) {
-        .footerContainer .mcnTextContent,.footerContainer .mcnTextContent p {
-          font-size:14px !important;
-          line-height:115% !important;
-          text-align:center !important;
+        table tr td .footer .terms a {
+            color: #F6932C;
+            text-decoration: none;
+            padding: 0 10px;
         }
-      }
+
+        @media (min-width: 768px) {
+            .content {
+                padding: 5px 70px;
+            }
+        }
+
+        @media  (max-width: 450px) {
+            .content {
+                padding: 3px 30px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            table {
+                width: 100% !important;
+            }
+        }
     </style>
-                <style type="text/css">
-            /* Facebook/Google+ Modals */
-            #social-proxy { background:#fff; -webkit-box-shadow: 4px 4px 8px 2px rgba(0,0,0,.2); box-shadow: 4px 4px 8px 2px rgba(0,0,0,.2); padding-bottom:35px; z-index:1000; }
-            #social-proxy_close { display:block; position:absolute; top:0; right:0; height:30px; width:32px; background:transparent url(//cdn-images.mailchimp.com/awesomebar-sprite.png) 0 -200px; text-indent:-9999px; outline:none; font-size:1px; }
-            #social-proxy_close:hover { background-position:0 -240px; }
-            body { padding-bottom:50px !important; }
-        </style>
-            </head>
-            <body id="archivebody" leftmargin="0" marginwidth="0" topmargin="0" marginheight="0" offset="0" style="height: 100%;margin: 0;padding: 0;width: 100%;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;background-color: #FAFAFA;">
+</head>
+<body>
+    <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin: auto; overflow: hidden;">
+        <tr>
+            <td align="center" class="header-container" style="position: relative; width: 100%; background-size: cover;">
+                <img src="https://res.cloudinary.com/dvwnomp76/image/upload/v1566793556/Madoo%20Email/header-madoo.jpg" style="width: 100%;" alt="header">
+            </td>
+        </tr>
+    </table>
+    <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin: auto; overflow: hidden;">
+        <tr>
+            <td class="content-container">
+                <table class="content">
+                    <tr>
+                        <td style="font-family: 'Montserrat', Arial, Helvetica, sans-serif; font-weight: bold; font-size: 20px;">
+                            <div class="header">
+                                <h1 style="font-weight: 700;">Verify your email address</h1>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text">
+                                <p>Dear Andre, To make your madoo account more secure and enable you to recieve important messages such as conversion history & promotion.</p>
+                                <p style="opacity: 0.5; color: #333333; line-height: 21px; letter-spacing: 0;">use the button below to verify your email addres</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" width="180" height="40" style="border-radius: 30px; color: #ffffff; display: block; margin: auto; position: relative; padding-top: 30px; padding-bottom: 30px;">
+                            <a href="${url}">
+                                <img src="https://res.cloudinary.com/dvwnomp76/image/upload/v1566795030/Madoo%20Email/bg_button_verify_email.png" alt="" style="width: 180px;">
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text-link">
+                                <p style="opacity: 0.5; color: #333333; line-height: 21px; letter-spacing: 0;">If the above button doesn’t work for you, please click on below link or copy paste it on to your browser</p>
+                                <a href="#" style="color: #F6932C; text-decoration: none;">${url}</a>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="text" style="text-align: center; margin-top: 60px;">
+                                <p style="color: #333333; opacity: 0.5; line-height: 21px;"">If you think you received this email by mistake, report this to us</p>
+                                <div class="link">
+                                    <a href= "mailto:support@madoo.io?subject= Email Verification" style="color: #F6932C; text-decoration: none;">support@madoo.io</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <table align="center"  cellpadding="0" cellspacing="0" border="0" style="margin: auto; overflow: hidden;">
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td align="center">
+                            <div class="footer" style="position: relative; padding-bottom: 50px;">
+                                <div class="social-media" style="list-style-type: none;">
+                                  <a href="https://www.facebook.com/Madoo-102119624499778/">
+                                      <img src="https://res.cloudinary.com/dvwnomp76/image/upload/v1566792066/Madoo%20Email/icon_social_facebook.png" alt="">
+                                  </a>
+                                  <a href="https://www.instagram.com/madoo.io/?hl=en">
+                                      <img src="https://res.cloudinary.com/dvwnomp76/image/upload/v1566792066/Madoo%20Email/icon_social_instagram.png" alt="">
+                                  </a>
+                                  <a href=" https://wa.me/6281244241310">
+                                      <img src="https://res.cloudinary.com/dvwnomp76/image/upload/v1566792066/Madoo%20Email/icon_social_whatsapp.png" alt="">
+                                  </a>
+                                </div>
+                                <div class="terms" style="list-style-type: none;">
+                                    <a href="#" style="border-right: 1px solid #F6932C;">
+                                        Terms & Conditions
+                                    </a>
+                                    <a href="#" style="border-right: 1px solid #F6932C;">
+                                        Privacy & Policy
+                                    </a>
+                                    <a href="#">
+                                        FAQ
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-                <center>
-                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" id="bodyTable" style="height:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;margin:0;padding:0;width:100%;background-color:#FAFAFA;">
-                        <tbody>
-                            <tr>
-                                <td align="center" valign="top" id="bodyCell" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;height:100%;margin:0;padding:0;width:100%;border-top:0;">
-                                    <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateContainer" style="border-top:0 !important;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                        <tbody>
-                                            <tr>
-                                                <td align="center" valign="top" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                    <table bgcolor="#161440" border="0" cellpadding="0" cellspacing="0" width="600" id="templatePreheader" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color: #161440;border-top:0;border-bottom:0;">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td valign="top" class="preheaderContainer" style="padding-top:9px;padding-bottom:9px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;"><a href="https://swapz.io" target="_blank" data-saferedirecturl="#"><img src="https://gallery.mailchimp.com/56cc5ac77ea41c9bc97fbea97/images/e2280a3e-a221-461b-b5d1-64b67d80062e.png" style="width:109px;padding: 6px;">
-                                                    </a></td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-
-
-<tr>
-                                                    <td align="center" valign="top" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateUpperBody" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#FFFFFF;border-top:0;">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td valign="top" class="upperBodyContainer" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                                        <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%;min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;" width="100%" class="mcnTextContentContainer">
-                                                                                            <tbody>
-                                                                                                <tr>
-                                                                                                    <td style="padding:10px;text-align:center"><a href="https://swapz.io" target="_blank" data-saferedirecturl="#"><img src="https://gallery.mailchimp.com/455cb7aece665a9584ceb28d8/images/fcfb9d2d-81e8-4ad0-87b4-9f2553141412.jpg" style=" margin-top: 38px;"></a>
-</td>
-                                                                                                                    </tr>
-                                                                                                                </tbody>
-                                                                                                            </table>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-<tr>
-                                                    <td align="center" valign="top" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateUpperBody" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#FFFFFF;border-top:0;border-bottom:1px solid #E6E6E6;">
-                                                            <tbody>
-
-<tr>
-                                                                    <td valign="top" class="upperBodyContainer" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                                        <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%;min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;" width="100%" class="mcnTextContentContainer">
-                                                                                            <tbody>
-                                                                                                <tr><td valign="top" class="mcnTextContent" style="padding-top:0;padding-right:18px;padding-bottom:9px;padding-left:18px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;color:#606060;font-family:Helvetica;font-size:18px;line-height:150%;text-align:center;"><h2>Verify Your Email Address</h2></td>			</tr>
-<tr><td valign="top" class="mcnTextContent pc-padding" style="padding-top:0;padding-right:18px;padding-bottom:9px;padding-left:18px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;color:#606060;font-family:Helvetica;font-size:18px;line-height:150%;text-align:center;"><p>To make your Swapz account more secure and enable you to receive important messages such as conversion history & promotion.
-</p>
-<p><em>use the button below to verify your email address.</em>
-</p></td>			</tr>
-                                                                                                                </tbody>
-                                                                                                            </table>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </td>
-                                                                                    </tr><tr>
-                                                                    <td valign="top" class="upperBodyContainer" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock" style="min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                                        <table align="left" border="0" cellpadding="0" cellspacing="0" style="max-width:100%;min-width:100%;border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;" width="100%" class="mcnTextContentContainer">
-                                                                                            <tbody>
-
-<tr><td valign="top" class="mcnTextContent button pc-padding">
-<a href="${url}" class="mcnButton">Verify Email Address</a></td>			</tr>
-                                                                                                                </tbody>
-                                                                                                            </table>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </td>
-                                                                                    </tr>
-
-<tr>
-                                                                    <td valign="top" class="upperBodyContainer" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;padding-bottom: 10%;">
-                                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextBlock">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td valign="top" class="mcnTextBlockInner" style="padding-top:9px;mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                                                        <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" class="mcnTextContentContainer">
-                                                                                            <tbody>
-
-<tr><td valign="top" class="mcnTextContent pc-padding">
-<p><em>If the above button doesn't work for you, please click on the below link or copy paste it on to your browse</em>
-</p>
-
-<a href="${url}">${url}</a></td>			</tr>
-                                                                                                                </tbody>
-                                                                                                            </table>
-                                                                                                        </td>
-                                                                                                    </tr>
-                                                                                                </tbody>
-                                                                                            </table>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr><tr>
-                                                    <td align="center" valign="top" style="mso-line-height-rule:exactly;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;">
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="600" id="templateUpperBody" style="border-collapse:collapse;mso-table-lspace:0pt;mso-table-rspace:0pt;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#FFFFFF;border-top:0;border-bottom:1px solid #E6E6E6;">
-                                                            <tbody>
-
-
-
-<tr>
-                                                                    <td>
-                                        <table cellspacing="0" cellpadding="0" border="0" style="table-layout:auto;border-spacing:0px;border-collapse:collapse;margin: 0px auto;">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="text-align:center;width: 268px;height: 42px;font-family: &quot;Open Sans&quot;;font-size: 10px;font-weight: normal;font-style: normal;font-stretch: normal;line-height: 2.1;letter-spacing: normal;text-align: center;color: #333333;">
-                                                        <p>If you think you recieved this email by mistake, report this to us
-                                                            <a href="mailto:support@swapz.co" style=" text-decoration: none; color: #f6992e;">support@swapz.co</a>
-                                                        </p>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;text-align: center;margin: 15px auto;" width="100%">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td>
-                                                                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse:collapse;text-align: center;" width="100%">
-                                                                            <tbody>
-                                                                                <tr>
-                                                                                    <td>
-                                                                                        <a href="" class="social_1">
-                                                                                            <img alt="Instagram" src="https://gallery.mailchimp.com/455cb7aece665a9584ceb28d8/images/498c81f3-f8d2-4552-a76c-ec2be0917b76.png">
-                                                                                            </a>
-                                                                                            <a href="" class="social_2">
-                                                                                                <img alt="Instagram" src="https://gallery.mailchimp.com/455cb7aece665a9584ceb28d8/images/ed21ff7d-1742-4e8f-a3d9-b39b905fc7dd.png">
-                                                                                                </a>
-                                                                                            </td>
-                                                                                        </tr>
-                                                                                    </tbody>
-                                                                                </table>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </td>
-                                                                                    </tr>
-                                                                                </tbody>
-                                                                            </table>
-                                                                        </td>
-                                                                    </tr>
-
-
-
-                                                                                                        </tbody>
-                                                                                                    </table>
-                                                                                                </td>
-                                                                                            </tr>
-                                                                                        </tbody>
-                                                                                    </table>
-                                                                                </center>
-
-                                                                        </body></html>
+</body>
+</html>

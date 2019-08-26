@@ -24,7 +24,7 @@ module.exports = class EmailSender {
 				subject: 'Conversion Success',
 				sender: {
 					email: 'swapz@member.id',
-					name: 'From Swapz',
+					name: 'From Madoo',
 				},
 				to: [
 					{
@@ -34,7 +34,7 @@ module.exports = class EmailSender {
 				],
 				replyTo: {
 					email: 'swapz@member.id',
-					name: 'From Swapz',
+					name: 'From Madoo',
 				},
 				tags: ['conversion_success'],
 			},
@@ -58,7 +58,7 @@ module.exports = class EmailSender {
 				subject: 'Email Verification',
 				sender: {
 					email: 'swapz@member.id',
-					name: 'From Swapz',
+					name: 'From Madoo',
 				},
 				to: [
 					{
@@ -68,7 +68,7 @@ module.exports = class EmailSender {
 				],
 				replyTo: {
 					email: 'swapz@member.id',
-					name: 'From Swapz',
+					name: 'From Madoo',
 				},
 				tags: ['email_verification'],
 			},
