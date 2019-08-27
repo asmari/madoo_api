@@ -331,7 +331,7 @@ exports.doSaveMember = async (request, reply) => {
 
 			const emailer = new EmailSender();
 
-			await emailer.send(params.email, member.id);
+			await emailer.send(params.email, member.id, member.full_name);
 		}
 
 		return new Response(20005, accessToken);
@@ -500,7 +500,7 @@ exports.doUpdateMember = async (request) => {
 
 				const emailer = new EmailSender();
 
-				await emailer.send(body.email, member.id);
+				await emailer.send(body.email, member.id, member.full_name);
 
 				// await member.update({
 				// 	email: body.email,

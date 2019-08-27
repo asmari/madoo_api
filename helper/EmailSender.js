@@ -41,7 +41,7 @@ module.exports = class EmailSender {
 		});
 	}
 
-	async send(to, memberId) {
+	async send(to, memberId, name) {
 		const token = jwt.sign({
 			email: to,
 			id: memberId,
@@ -51,6 +51,7 @@ module.exports = class EmailSender {
 			to,
 			data: {
 				url: `${this.filterUrl(token)}`,
+				nama: name,
 			},
 			template: `${__dirname}/../templates/email.html`,
 			body: {
