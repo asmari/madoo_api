@@ -638,7 +638,13 @@ exports.doConvertionPoint = async (request) => {
 
 				LoggerClean.info(`============= END CONVERTION ${loyaltySource.name} -> ${loyaltyTarget.name} ===========================`);
 				Logger.info('End Transaction', transaction);
-				resolve(new Response(20052, transaction));
+				if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
+					setTimeout(() => {
+						resolve(new Response(20052, transaction));
+					}, 10000);
+				} else {
+					resolve(new Response(20052, transaction));
+				}
 			} catch (err) {
 				LoggerClean.info(`ERROR CONVERTION ${err.message}`);
 				Logger.trace(err);
@@ -647,7 +653,15 @@ exports.doConvertionPoint = async (request) => {
 		});
 
 		const responseTimeout = new Promise((resolve) => {
-			setTimeout(() => resolve(new Response(20200, transaction)), 10000);
+			setTimeout(async () => {
+				const checkTransaction = await Transaction.findOne({
+					where: {
+						id: transaction.id,
+					},
+				});
+
+				resolve(new Response(20200, checkTransaction));
+			}, 10000);
 		});
 
 		return Promise.race([responseDone, responseTimeout]);
