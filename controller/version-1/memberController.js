@@ -451,13 +451,17 @@ exports.doUpdateMember = async (request) => {
 		});
 	}
 
-	const countryCode = CountryCode.detectCountry(body.mobile_phone, body.country_code || null);
+	let countryCode = null;
 
-	if (countryCode == null) {
-		// Error: Required field :field
-		throw new ErrorResponse(42200, {
-			field: 'country_code',
-		});
+	if (Object.prototype.hasOwnProperty.call(body, 'mobile_phone')) {
+		countryCode = CountryCode.detectCountry(body.mobile_phone, body.country_code || null);
+
+		if (countryCode == null) {
+			// Error: Required field :field
+			throw new ErrorResponse(42200, {
+				field: 'country_code',
+			});
+		}
 	}
 
 	const wherePhone = {};
@@ -522,7 +526,18 @@ exports.doUpdateMember = async (request) => {
 				body.phone_exists = true;
 			}
 		}
-		return new Response(20047, body);
+
+		let code = 20064;
+
+		if (Object.prototype.hasOwnProperty.call(body, 'email_exists') && !body.email_exists && Object.prototype.hasOwnProperty.call(body, 'phone_exists') && !body.phone_exists) {
+			code = 20064;
+		} else if (Object.prototype.hasOwnProperty.call(body, 'email_exists') && !body.email_exists) {
+			code = 20063;
+		} else if (Object.prototype.hasOwnProperty.call(body, 'phone_exists') && !body.phone_exists) {
+			code = 20062;
+		}
+
+		return new Response(code, body);
 	}
 
 	// Error: Member not found

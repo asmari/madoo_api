@@ -61,5 +61,8 @@ module.exports = {
 	20059: 'Remove token success',
 	20060: 'Members not login yet',
 	20061: 'Transaction update success',
+	20062: 'Your mobile number has been changed',
+	20063: 'Your e-mail has been changed',
+	20064: 'Your profile has been changed',
 	20099: 'Success',
 };
