@@ -1,5 +1,8 @@
 const sequelize = require('sequelize');
 const sequelizePaginate = require('sequelize-paginate');
+const moment = require('moment');
+
+moment.locale('id');
 
 const model = require('./conn/sequelize').sequelize;
 
@@ -84,6 +87,13 @@ const Transaction = model.define('transaction', {
 		type: sequelize.INTEGER,
 		allowNull: false,
 		maxLength: 11,
+	},
+	conversion_date: {
+		type: sequelize.VIRTUAL(sequelize.DATE),
+		allowNull: false,
+		get() {
+			return moment(this.created_at).format('DD MMMM YY hh:mm');
+		},
 	},
 }, {
 	timestamps: true,
