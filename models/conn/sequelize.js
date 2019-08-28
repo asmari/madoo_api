@@ -15,7 +15,7 @@ exports.sequelize = new Sequelize(config.db.database, config.db.username, config
 		acquire: 30000,
 		idle: 10000,
 	},
-	timezone: config.tz,
+	timezone: '+07:00',
 	dialectOptions: {
 		// useUTC: false,
 		// dateStrings: true,
