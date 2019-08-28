@@ -539,7 +539,7 @@ exports.doConvertionPoint = async (request) => {
 
 					const date = new Date(transaction.created_at);
 
-					if (member) {
+					if (member && transaction.status === 'success') {
 						LoggerClean.info(`Send Email success to ${member.email}`);
 						const emailSender = new EmailSender();
 						await emailSender.sendConversion(member.email, {
