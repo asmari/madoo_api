@@ -123,6 +123,7 @@ const run = async () => {
 				},
 				{
 					model: NotificationSettings,
+					required: true,
 					where: whereNotificationSettings,
 				},
 			],
