@@ -90,7 +90,7 @@ const Transaction = model.define('transaction', {
 	},
 	conversion_date: {
 		type: sequelize.VIRTUAL(sequelize.DATE),
-		allowNull: false,
+		allowNull: true,
 		get() {
 			return moment(this.created_at).format('DD MMMM YY hh:mm');
 		},
