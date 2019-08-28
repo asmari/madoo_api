@@ -42,7 +42,7 @@ const run = async () => {
 		let whereNotificationSettings = {};
 
 		switch (notification.type) {
-		case 'promotion':
+		case 'promo':
 			whereNotificationSettings = {
 				promotion: 1,
 			};
