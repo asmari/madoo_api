@@ -17,6 +17,7 @@ const MemberCards = model.MembersCards.Get;
 const Loyalty = model.Loyalty.Get;
 const NotificationMember = model.NotificationMembers.Get;
 const LoyaltyHasMemberCards = model.LoyaltyMemberCards.Get;
+const NotificationSettings = model.NotificationSettings.Get;
 // const TransactionLog = model.TransactionLog.Get;
 
 // const Logger = require('../../helper/Logger').Webhook;
@@ -238,25 +239,33 @@ exports.doGopayIris = async (request) => {
 					read: 0,
 				});
 
-				await FcmSender.sendToUser(card.members_id, {
-					data: {
-						param: JSON.stringify({
-							id: notification.id,
-							title: notification.title,
-							type: notification.type,
-							loyalty_id: notification.loyalty_id,
-							promo_id: notification.promo_id,
-							transaction_id: notification.transaction_id,
-						}),
-						image: notification.image || null,
-					},
-					priority: 'normal',
-					notification: {
-						title: notification.title,
-						body: notification.description,
-						click_action: notification.click,
+				const settings = NotificationSettings.findOne({
+					where: {
+						members_id: card.members_id,
 					},
 				});
+
+				if (settings && settings.conversion === 1) {
+					await FcmSender.sendToUser(card.members_id, {
+						data: {
+							param: JSON.stringify({
+								id: notification.id,
+								title: notification.title,
+								type: notification.type,
+								loyalty_id: notification.loyalty_id,
+								promo_id: notification.promo_id,
+								transaction_id: notification.transaction_id,
+							}),
+							image: notification.image || null,
+						},
+						priority: 'normal',
+						notification: {
+							title: notification.title,
+							body: notification.description,
+							click_action: notification.click,
+						},
+					});
+				}
 			}
 		}
 
