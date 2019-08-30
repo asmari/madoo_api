@@ -21,6 +21,7 @@ const Transaction = model.Transaction.Get;
 const TransactionLog = model.TransactionLog.Get;
 const MasterUnit = model.MasterUnit.Get;
 const ConversionRule = model.ConversionRule.Get;
+const NotificationSettings = model.NotificationSettings.Get;
 
 exports.checkConvertionRate = async (request) => {
 	const whereCondition = {};
@@ -614,25 +615,33 @@ exports.doConvertionPoint = async (request) => {
 							read: 0,
 						});
 
-						await FcmSender.sendToUser(user.id, {
-							data: {
-								param: JSON.stringify({
-									id: notification.id,
-									title: notification.title,
-									type: notification.type,
-									loyalty_id: notification.loyalty_id,
-									promo_id: notification.promo_id,
-									transaction_id: notification.transaction_id,
-								}),
-								image: notification.image || null,
-							},
-							priority: 'normal',
-							notification: {
-								title: notification.title,
-								body: notification.description,
-								click_action: notification.click,
+						const settings = await NotificationSettings.findOne({
+							where: {
+								members_id: user.id,
 							},
 						});
+
+						if (settings != null && parseInt(settings.conversion, 10) === 1) {
+							await FcmSender.sendToUser(user.id, {
+								data: {
+									param: JSON.stringify({
+										id: notification.id,
+										title: notification.title,
+										type: notification.type,
+										loyalty_id: notification.loyalty_id,
+										promo_id: notification.promo_id,
+										transaction_id: notification.transaction_id,
+									}),
+									image: notification.image || null,
+								},
+								priority: 'normal',
+								notification: {
+									title: notification.title,
+									body: notification.description,
+									click_action: notification.click,
+								},
+							});
+						}
 					}
 				}
 
