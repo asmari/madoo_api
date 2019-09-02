@@ -6,6 +6,8 @@ const config = require('../../../config').get;
 const Members = model.Members.Get;
 const MemberCards = model.MembersCards.Get;
 
+const Logger = require('../../../helper/Logger').ConvertionClean;
+
 module.exports = async (params, transaction) => {
 	const res = {
 		status: false,
@@ -13,7 +15,7 @@ module.exports = async (params, transaction) => {
 		data: [],
 	};
 
-	const url = 'https://app.sandbox.midtrans.com/iris/';
+	// const url = 'https://app.sandbox.midtrans.com/iris/';
 	const payoutUrl = `${config.iris.url}/payouts`;
 	const approveUrl = `${config.iris.url}/payouts/approve`;
 
@@ -56,6 +58,8 @@ module.exports = async (params, transaction) => {
 
 		const resPayout = await req.request(payoutUrl, 'POST', JSON.stringify(payoutModels));
 
+		Logger.info('Gopay Payout', req.getLog());
+
 		if (resPayout.payouts.length > 0) {
 			const { status } = resPayout.payouts[0];
 			const referencePayout = resPayout.payouts[0].reference_no;
@@ -73,6 +77,8 @@ module.exports = async (params, transaction) => {
 						referencePayout,
 					],
 				}));
+
+				Logger.info('Gopay Approve', req.getLog());
 
 				if (resApprove.status === 'ok') {
 					res.status = true;
