@@ -2,6 +2,15 @@ module.exports = class BaseIndex {
 	constructor() {
 		this.logic = {};
 		this.validation = {};
+		this.log = {};
+	}
+
+	getLog() {
+		return this.log;
+	}
+
+	setLog(log = {}) {
+		this.log = log;
 	}
 
 	setupLogic(logicName, callback) {
