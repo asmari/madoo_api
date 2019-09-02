@@ -39,28 +39,28 @@ const run = async () => {
 			doneMember = notification.notification_members.map(value => value.members_id);
 		}
 
-		let whereNotificationSettings = {};
+		const whereNotificationSettings = {};
 
-		switch (notification.type) {
-		case 'promo':
-			whereNotificationSettings = {
-				promotion: 1,
-			};
-			break;
-		case 'conversion':
-			whereNotificationSettings = {
-				conversion: 1,
-			};
-			break;
-		case 'other':
-			whereNotificationSettings = {
-				other: 1,
-			};
-			break;
+		// switch (notification.type) {
+		// case 'promo':
+		// 	whereNotificationSettings = {
+		// 		promotion: 1,
+		// 	};
+		// 	break;
+		// case 'conversion':
+		// 	whereNotificationSettings = {
+		// 		conversion: 1,
+		// 	};
+		// 	break;
+		// case 'other':
+		// 	whereNotificationSettings = {
+		// 		other: 1,
+		// 	};
+		// 	break;
 
-		default:
-			break;
-		}
+		// default:
+		// 	break;
+		// }
 
 		whereNotificationSettings.id = {
 			[Op.not]: null,
@@ -123,32 +123,31 @@ const run = async () => {
 				},
 				{
 					model: NotificationSettings,
-					required: true,
 					where: whereNotificationSettings,
 				},
 			],
 		});
 
 		if (members.length > 0) {
-			const membersSend = members.map(value => value.device_notification.fcm_token);
-			const memberId = members.map(value => value.id);
+			const membersSend = [];
+			members.forEach((value) => {
+				const setting = value.notification_setting.toJSON();
 
-			// let deviceNonUser = await DeviceNotification.find({
-			// 	where: {
-			// 		members_id: {
-			// 			[Op.eq]: null,
-			// 		},
-			// 	},
-			// });
+				if (notification.type === 'promo' && setting.promotion === 1) {
+					membersSend.push(value.device_notification.fcm_token);
+				} else if (notification.type === 'conversion' && setting.conversion === 1) {
+					membersSend.push(value.device_notification.fcm_token);
+				} else if (notification.type === 'other' && setting.other === 1) {
+					membersSend.push(value.device_notification.fcm_token);
+				}
+			});
+			const memberId = members.map(value => ({
+				members_id: value.id,
+				notification_id: notification.id,
+				read: 0,
+			}));
 
-			// deviceNonUser = deviceNonUser.map(value => value.fcm_token);
-
-			// membersSend = {
-			// 	...membersSend,
-			// 	...deviceNonUser,
-			// };
-
-			const fcmRes = await FcmSender.send({
+			await FcmSender.send({
 				registration_ids: membersSend,
 				data: {
 					param: JSON.stringify({
@@ -169,22 +168,11 @@ const run = async () => {
 				},
 			});
 
-			const resFcm = JSON.parse(fcmRes);
+			await notification.update({
+				status: 'FINISH',
+			});
 
-			if (resFcm.success > 0) {
-				const bulkCreate = memberId.map(value => ({
-					members_id: value,
-					notification_id: notification.id,
-					read: 0,
-				}));
-				await notification.update({
-					status: 'FINISH',
-				});
-				return NotificationMember.bulkCreate(bulkCreate);
-			}
-
-			logger.warn(fcmRes);
-			return Promise.reject(new Error('FCM Failed'));
+			return NotificationMember.bulkCreate(memberId);
 		}
 
 		return Promise.reject(new Error('No Member Found!'));
