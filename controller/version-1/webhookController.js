@@ -120,6 +120,8 @@ exports.doGopayIris = async (request) => {
 
 			if (res.status === 'completed') {
 				status = 'success';
+			} else if (res.status === 'failed') {
+				status = 'failed';
 			}
 
 			trx.update({
@@ -239,7 +241,7 @@ exports.doGopayIris = async (request) => {
 					read: 0,
 				});
 
-				const settings = NotificationSettings.findOne({
+				const settings = await NotificationSettings.findOne({
 					where: {
 						members_id: card.members_id,
 					},
