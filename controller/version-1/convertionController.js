@@ -433,9 +433,10 @@ exports.doConvertionPoint = async (request) => {
 					point: params.point_to_convert,
 				}, transaction.toJSON());
 
-				LoggerClean.info(`Deduct Point Response ${loyaltySource.name}`, resMinusPoint);
+				LoggerClean.info('Deduct Point request response', sourceRequest.getLog());
+				// LoggerClean.info(`Deduct Point Response ${loyaltySource.name}`, resMinusPoint);
 
-				Logger.info('Response Minus', resMinusPoint);
+				// Logger.info('Response Minus', resMinusPoint);
 
 				successResponse.deduct = resMinusPoint.status;
 
@@ -479,9 +480,10 @@ exports.doConvertionPoint = async (request) => {
 					// point: pointConvert,
 				}, transaction.toJSON());
 
-				LoggerClean.info(`Add Point Response ${loyaltyTarget.name}`, resAddPoint);
+				LoggerClean.info('Add Point request response', targetRequest.getLog());
+				// LoggerClean.info(`Add Point Response ${loyaltyTarget.name}`, resAddPoint);
 
-				Logger.info('Response Add', resAddPoint);
+				// Logger.info('Response Add', resAddPoint);
 
 				successResponse.add = resAddPoint.status;
 
