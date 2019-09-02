@@ -9,10 +9,12 @@ module.exports = class Request {
 		this.headers = {};
 		this.retry = 3;
 		this.alreadyTry = 1;
+		this.log = {};
 	}
 
 	createAgent(agent = null) {
 		if (agent != null) {
+			this.log.agent = agent;
 			this.agent = new https.Agent(agent);
 		}
 	}
@@ -30,6 +32,7 @@ module.exports = class Request {
 	}
 
 	createHeaders(headers) {
+		this.log.headers = headers;
 		this.headers = headers;
 	}
 
@@ -41,8 +44,16 @@ module.exports = class Request {
 		return this.request(url, 'GET', data, encoding);
 	}
 
+	getLog() {
+		return JSON.stringify(this.log);
+	}
+
 	request(url, method, data, encoding = 'utf-8') {
 		const { agent, headers } = this;
+
+		this.log.url = url;
+		this.log.data = data;
+		this.log.encoding = encoding;
 
 		Logger.info(`Start API ${url}`);
 
@@ -95,6 +106,8 @@ module.exports = class Request {
 						onError(res);
 						return;
 					}
+
+					this.log.response = chunkData;
 
 					Logger.info(`Done Api ${url}`);
 

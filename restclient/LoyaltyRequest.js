@@ -9,6 +9,10 @@ const MemberCards = model.MembersCards.Get;
 const MemberCardsToken = model.MemberCardsAuthToken.Get;
 
 module.exports = class LoyaltyRequest {
+	constructor() {
+		this.log = {};
+	}
+
 	static get STATUS() {
 		return {
 			NO_LOYALTY: 'Loyalty not found',
@@ -27,6 +31,10 @@ module.exports = class LoyaltyRequest {
 			POINT_MINUS: 3,
 			POINT_BALANCE: 4,
 		};
+	}
+
+	getLog() {
+		return this.log;
 	}
 
 	async setLoyaltyId(loyaltyId = 0) {
@@ -269,13 +277,25 @@ module.exports = class LoyaltyRequest {
 
 				switch (type) {
 				case LoyaltyRequest.TYPE.GET_PROFILE:
-					return logic.run(LogicType.GET_USER, data, transaksi);
+					// eslint-disable-next-line no-case-declarations
+					const res1 = logic.run(LogicType.GET_USER, data, transaksi);
+					this.log = logic.getLog();
+					return res1;
 				case LoyaltyRequest.TYPE.POINT_BALANCE:
-					return logic.run(LogicType.GET_POINT, data, transaksi);
+					// eslint-disable-next-line no-case-declarations
+					const res2 = logic.run(LogicType.GET_POINT, data, transaksi);
+					this.log = logic.getLog();
+					return res2;
 				case LoyaltyRequest.TYPE.POINT_PLUS:
-					return logic.run(LogicType.POINT_ADD, data, transaksi);
+					// eslint-disable-next-line no-case-declarations
+					const res3 = logic.run(LogicType.POINT_ADD, data, transaksi);
+					this.log = logic.getLog();
+					return res3;
 				case LoyaltyRequest.TYPE.POINT_MINUS:
-					return logic.run(LogicType.POINT_MINUS, data, transaksi);
+					// eslint-disable-next-line no-case-declarations
+					const res4 = logic.run(LogicType.POINT_MINUS, data, transaksi);
+					this.log = logic.getLog();
+					return res4;
 				default:
 					return Promise.reject(new Error('Type Not Found'));
 				}
@@ -330,7 +350,9 @@ module.exports = class LoyaltyRequest {
 					restClient.setLanguage(this.lang);
 				}
 
-				return restClient.request();
+				const res = await restClient.request();
+				this.log = restClient.getLog();
+				return res;
 			}
 		} catch (err) {
 			console.trace(err);
