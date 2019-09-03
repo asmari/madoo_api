@@ -107,7 +107,6 @@ module.exports = class Request {
 						return;
 					}
 
-					this.log.response = chunkData;
 
 					Logger.info(`Done Api ${url}`);
 
@@ -132,6 +131,8 @@ module.exports = class Request {
 
 
 					resolve(parsedData);
+
+					this.log.response = parsedData;
 				});
 			});
 
