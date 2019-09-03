@@ -251,6 +251,7 @@ exports.getPromo = async (request) => {
 
 // get detail promo
 exports.getDetailPromo = async (request) => {
+	const { user } = request;
 	const query = JSON.parse(JSON.stringify(request.query));
 	// const currentDate = moment().format('YYYY-MM-DD');
 	const whereCondition = {};
@@ -280,6 +281,9 @@ exports.getDetailPromo = async (request) => {
 						include: [
 							{
 								model: MemberCards,
+								where: {
+									members_id: user.id,
+								},
 							},
 						],
 					},
@@ -296,6 +300,7 @@ exports.getDetailPromo = async (request) => {
 		const res = promo.toJSON();
 
 		if (Object.prototype.hasOwnProperty.call(res.loyalty, 'loyalty_has_member_cards')) {
+			console.log(res.loyalty.loyalty_has_member_cards);
 			res.loyalty.loyalty_has_member_cards.forEach((val) => {
 				if (val.member_cards.length > 0) {
 					res.has_member_card = true;
