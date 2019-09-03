@@ -95,10 +95,6 @@ const Transaction = model.define('transaction', {
 			return moment(this.created_at).format('DD MMMM YY hh:mm');
 		},
 	},
-	use_balance: {
-		type: sequelize.TINYINT,
-		allowNull: true,
-	},
 }, {
 	timestamps: true,
 	underscored: true,
