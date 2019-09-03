@@ -1,6 +1,10 @@
 const sequelize = require('sequelize');
 const sequelizePaginate = require('sequelize-paginate');
+const moment = require('moment');
+
+moment.locale('id');
 const model = require('./conn/sequelize').sequelize;
+
 
 const Loyalty = require('./loyalty').Get;
 const Promo = require('./promo').Get;
@@ -94,6 +98,12 @@ const Notification = model.define('notification', {
 	status: {
 		type: sequelize.STRING,
 		allowNull: false,
+	},
+	receive_date: {
+		type: sequelize.VIRTUAL(sequelize.DATE),
+		get() {
+			return moment(this.created_at).format('DD MMMM YY hh:mm');
+		},
 	},
 }, {
 	timestamps: true,
