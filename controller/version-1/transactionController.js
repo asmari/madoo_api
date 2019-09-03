@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const moment = require('moment');
+
 moment.locale('id');
 
 const model = require('../../models/index');
@@ -78,7 +79,7 @@ exports.doGetDetailTransaction = async (request) => {
 							{
 								paranoid: false,
 								model: Loyalty,
-								attributes: ['name', 'unit'],
+								attributes: ['name', 'unit', 'use_balance'],
 								nested: true,
 							},
 						],
@@ -109,7 +110,7 @@ exports.doGetDetailTransaction = async (request) => {
 							{
 								model: Loyalty,
 								paranoid: false,
-								attributes: ['name', 'unit'],
+								attributes: ['name', 'unit', 'use_balance'],
 								nested: true,
 							},
 						],
