@@ -261,20 +261,9 @@ exports.getDetailPromo = async (request) => {
 	// whereCondition.status = 1;
 	whereCondition.id = query.promo_id;
 
-	Loyalty.hasOne(LoyaltyHasMemberCards, {
+	Loyalty.hasMany(LoyaltyHasMemberCards, {
 		foreignKey: 'loyalty_id',
 	});
-
-	Promo.hasOne(LoyaltyHasMemberCards, {
-		foreignKey: 'loyalty_id',
-		sourceKey: 'loyalty_id',
-	});
-
-	const unit = Promo.associations.loyalty_has_member_card;
-	unit.sourceIdentifier = 'loyalty_id';
-	unit.sourceKey = 'loyalty_id';
-	unit.sourceKeyAttribute = 'loyalty_id';
-	unit.sourceKeyIsPrimary = false;
 
 	const promo = await Promo.findOne({
 		paranoid: false,
@@ -283,9 +272,11 @@ exports.getDetailPromo = async (request) => {
 			{
 				paranoid: false,
 				model: Loyalty,
+				required: true,
 				include: [
 					{
 						model: LoyaltyHasMemberCards,
+						required: false,
 						include: [
 							{
 								model: MemberCards,
@@ -304,14 +295,14 @@ exports.getDetailPromo = async (request) => {
 
 		const res = promo.toJSON();
 
-		if (Object.prototype.hasOwnProperty.call(res.loyalty, 'loyalty_has_member_card')) {
-			if (Object.prototype.hasOwnProperty.call(res.loyalty.loyalty_has_member_card, 'member_cards')) {
-				if (res.loyalty.loyalty_has_member_card.member_cards.length > 0) {
+		if (Object.prototype.hasOwnProperty.call(res.loyalty, 'loyalty_has_member_cards')) {
+			res.loyalty.loyalty_has_member_cards.forEach((val) => {
+				if (val.member_cards.length > 0) {
 					res.has_member_card = true;
 				}
-			}
+			});
 
-			delete res.loyalty.loyalty_has_member_card;
+			delete res.loyalty.loyalty_has_member_cards;
 		}
 
 		return new Response(20024, res);
