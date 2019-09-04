@@ -12,6 +12,10 @@ module.exports = class Request {
 		this.log = {};
 	}
 
+	setLogData(data) {
+		this.log.data = data;
+	}
+
 	createAgent(agent = null) {
 		if (agent != null) {
 			this.log.agent = agent;
@@ -52,7 +56,6 @@ module.exports = class Request {
 		const { agent, headers } = this;
 
 		this.log.url = url;
-		this.log.data = data;
 		this.log.encoding = encoding;
 
 		Logger.info(`Start API ${url}`);
