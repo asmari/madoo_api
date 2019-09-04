@@ -205,6 +205,7 @@ module.exports = class RestClient extends Request {
 
 		parsedBody = RestClient.unflatten(parsedBody);
 
+		this.setLogData(parsedBody);
 
 		switch (contentType.toLocaleLowerCase()) {
 		case 'application/xml':
