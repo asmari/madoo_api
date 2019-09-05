@@ -558,7 +558,7 @@ exports.doConvertionPoint = async (request) => {
 							unitTarget: loyaltyTarget.master_unit.unit,
 							currentPointSource: transaction.point_balance_after,
 							currentPointTarget: transaction.conversion_point_balance_after,
-						});
+						}, member.full_name);
 					}
 				} else if (Object.prototype.hasOwnProperty.call(resAddPoint, 'pendingOnly') || Object.prototype.hasOwnProperty.call(resMinusPoint, 'pendingOnly')) {
 					LoggerClean.info('Conversion on pending state');
