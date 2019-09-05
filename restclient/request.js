@@ -49,7 +49,11 @@ module.exports = class Request {
 	}
 
 	getLog() {
-		return JSON.stringify(this.log);
+		try {
+			return JSON.stringify(this.log);
+		} catch (err) {
+			return this.log;
+		}
 	}
 
 	request(url, method, data, encoding = 'utf-8') {
