@@ -14,7 +14,7 @@ module.exports = class EmailSender {
 		this.url = 'https://api.sendinblue.com/v3/smtp/email';
 	}
 
-	async sendConversion(to, data) {
+	async sendConversion(to, data, name) {
 		return this.process({
 			to,
 			data,
@@ -23,18 +23,18 @@ module.exports = class EmailSender {
 				name: 'Conversion Success',
 				subject: 'Conversion Success',
 				sender: {
-					email: 'swapz@member.id',
-					name: 'From Madoo',
+					email: config.email.sender,
+					name: config.email.name,
 				},
 				to: [
 					{
 						email: to,
-						name: 'test',
+						name,
 					},
 				],
 				replyTo: {
-					email: 'swapz@member.id',
-					name: 'From Madoo',
+					email: config.email.sender,
+					name: config.email.name,
 				},
 				tags: ['conversion_success'],
 			},
@@ -58,18 +58,18 @@ module.exports = class EmailSender {
 				name: 'Email Verification Sent',
 				subject: 'Email Verification',
 				sender: {
-					email: 'swapz@member.id',
-					name: 'From Madoo',
+					email: config.email.sender,
+					name: config.email.name,
 				},
 				to: [
 					{
 						email: to,
-						name: 'test',
+						name,
 					},
 				],
 				replyTo: {
-					email: 'swapz@member.id',
-					name: 'From Madoo',
+					email: config.email.sender,
+					name: config.email.name,
 				},
 				tags: ['email_verification'],
 			},
