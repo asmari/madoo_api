@@ -1,5 +1,6 @@
 const WaveCellSender = require('./WaveCellSender');
 const model = require('../models');
+const config = require('../config').get;
 
 const OtpMembers = model.Otp.Get;
 const OtpRequests = model.OtpRequests.Get;
@@ -7,6 +8,12 @@ const OtpRequests = model.OtpRequests.Get;
 module.exports = class OtpNewHelper {
 	constructor() {
 		this.instance = new WaveCellSender();
+		this.source = config.sms.source;
+		this.sourceMessage = config.sms.message;
+	}
+
+	getMessage(obj) {
+		return this.sourceMessage.replace(/\${([^}]*)}/g, (r, k) => obj[k]);
 	}
 
 	static get STATUS() {
@@ -122,13 +129,17 @@ module.exports = class OtpNewHelper {
 
 		const currentTime = new Date().getTime();
 
-		let message = '';
-
 		const randNumb = OtpNewHelper.randNumb();
+
+		const message = this.getMessage({
+			code: randNumb,
+			source: this.source,
+		});
 
 		switch (type) {
 		case 'otp':
-			message = `Your SWAPZ code is ${randNumb}`;
+			// message = `Your SWAPZ code is ${randNumb}`;
+			// message
 
 			if (Object.prototype.hasOwnProperty.call(data, 'memberId')) {
 				const member = await OtpMembers.findOne({
@@ -170,7 +181,7 @@ module.exports = class OtpNewHelper {
 
 		case 'forgot':
 		case 'update_member':
-			message = `Your SWAPZ code is ${randNumb}`;
+			// message = `Your SWAPZ code is ${randNumb}`;
 
 			if (Object.prototype.hasOwnProperty.call(data, 'memberId')) {
 				const member = await OtpRequests.findOne({

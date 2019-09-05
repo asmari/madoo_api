@@ -131,7 +131,7 @@ module.exports = class WaveCellSender {
 		return new Promise((resolve, reject) => {
 			try {
 				const data = JSON.stringify({
-					source: 'Husky',
+					source: config.sms.source,
 					destination: phone,
 					text: message,
 					clientMessageId: clientId,

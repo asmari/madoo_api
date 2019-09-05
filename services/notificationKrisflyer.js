@@ -177,7 +177,7 @@ const run = async () => {
 					unitTarget: detail['transaction.target_member_cards.loyalty_card.loyalties.master_unit.unit'],
 					currentPointSource: detail['transaction.point_balance_after'],
 					currentPointTarget: detail['transaction.point_balance_after'],
-				});
+				}, detail['member_card.member.full_name']);
 			}
 
 			switch (detail['transaction.status']) {

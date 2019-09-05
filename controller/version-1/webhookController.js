@@ -206,7 +206,7 @@ exports.doGopayIris = async (request) => {
 				unitTarget: loyaltyTarget.master_unit.unit,
 				currentPointSource: trx.point_balance_after,
 				currentPointTarget: trx.conversion_point_balance_after,
-			});
+			}, member.full_name);
 			break;
 
 		case 'failed':
