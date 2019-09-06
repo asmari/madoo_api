@@ -13,7 +13,7 @@ module.exports = class Request {
 	}
 
 	setLogData(data) {
-		this.log.data = data;
+		this.log.request = data;
 	}
 
 	createAgent(agent = null) {
@@ -94,7 +94,11 @@ module.exports = class Request {
 
 				let chunkData = '';
 
-				res.on('error', onError);
+				res.on('error', (err) => {
+					console.log('Error from request');
+					console.error(err);
+					onError(err);
+				});
 
 				res.on('data', (chunk) => {
 					chunkData += chunk;
@@ -110,10 +114,11 @@ module.exports = class Request {
 					let parsedData = null;
 
 					if (res.statusCode > 299) {
-						onError(res);
+						console.log('Error from exception');
+						console.log(res);
+						onError(chunkData);
 						return;
 					}
-
 
 					Logger.info(`Done Api ${url}`);
 
