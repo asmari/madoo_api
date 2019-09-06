@@ -389,7 +389,7 @@ exports.doConvertionPoint = async (request) => {
 
 		let trxId = null;
 
-		const totalTrxNumber = totalTrxToday === 0 ? 1 : totalTrxToday;
+		const totalTrxNumber = parseInt(totalTrxToday, 10) + 1;
 
 		const str = totalTrxNumber.toString();
 
