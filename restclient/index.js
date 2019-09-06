@@ -326,15 +326,20 @@ module.exports = class RestClient extends Request {
 			const responseFiltered = this.getFilterValue(data);
 			Object.assign(responseAll, responseFiltered);
 		} else {
-			const response = await super.request(this.api, this.method, this.parsedBody);
+			try {
+				const response = await super.request(this.api, this.method, this.parsedBody);
 
-			Logger.info('GET RESPONSE', response);
+				Logger.info('GET RESPONSE', response);
 
-			const responseFiltered = this.getFilterValue(response);
+				const responseFiltered = this.getFilterValue(response);
 
-			Logger.info('RESPONSE FILTERED', responseFiltered);
+				Logger.info('RESPONSE FILTERED', responseFiltered);
 
-			Object.assign(responseAll, responseFiltered);
+				Object.assign(responseAll, responseFiltered);
+			} catch (err) {
+				responseAll.status = false;
+				responseAll.message = err.message;
+			}
 		}
 
 		Logger.info('BODY', this.parsedBody);
