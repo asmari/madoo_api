@@ -121,11 +121,13 @@ exports.checkConvertionRate = async (request) => {
 			});
 		}
 
-		const newPoint = (rate.point_conversion / rate.point_loyalty) * point;
+		const pointConvert = point * (rate.point_conversion / rate.point_loyalty);
+
+		// const newPoint = (rate.point_conversion / rate.point_loyalty) * point;
 
 		return new Response(20003, {
 			...params,
-			point_converted: newPoint,
+			point_converted: pointConvert,
 			from: rate.Source || {},
 			to: rate.Target || {},
 		});
@@ -310,12 +312,22 @@ exports.doConvertionPoint = async (request) => {
 		// const feeIdr = amountWoFee - amountWithFee;
 
 		// logic 2
-		const MIDamount = params.point_to_convert * rate.mid_from_rate;
-		const fee = parseInt(MIDamount, 10) * rate.percentage_fee;
-		const pointPercent = MIDamount * rate.percentage_fee;
-		const pointAmount = (MIDamount - pointPercent);
-		const pointConvert = (pointAmount / rate.mid_to_rate);
-		const feeIdr = MIDamount * rate.percentage_fee;
+		// const MIDamount = params.point_to_convert * rate.mid_from_rate;
+		// const fee = parseInt(MIDamount, 10) * rate.percentage_fee;
+		// const pointPercent = MIDamount * rate.percentage_fee;
+		// const pointAmount = (MIDamount - pointPercent);
+		// const pointConvert = (pointAmount / rate.mid_to_rate);
+		// const feeIdr = MIDamount * rate.percentage_fee;
+
+
+		/**
+		 * Logic 3
+		 */
+		const pointConvert = params.point_to_convert * (rate.point_conversion / rate.point_loyalty);
+		const midAmount = params.point_to_convert * rate.mid_from_rate;
+		const pointAmount = pointConvert * rate.mid_to_rate;
+		const fee = midAmount - pointAmount;
+		const feeIdr = fee;
 
 		const cardSource = memberCardSource.member_cards[0];
 		const cardTarget = memberCardTarget.member_cards[0];

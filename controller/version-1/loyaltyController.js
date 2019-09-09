@@ -288,9 +288,15 @@ exports.doDeleteLoyaltyMemberCard = async (request) => {
 	const memberCard = await MemberCards.findOne({
 		where: {
 			members_id: user.id,
-			id: params.member_cards_id,
 		},
-		include: [LoyaltyMemberCards],
+		paranoid: false,
+		include: [{
+			model: LoyaltyMemberCards,
+			required: true,
+			where: {
+				id: params.member_cards_id,
+			},
+		}],
 	});
 
 	if (memberCard != null) {
