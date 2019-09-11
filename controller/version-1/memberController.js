@@ -274,7 +274,8 @@ exports.doSaveMember = async (request, reply) => {
 			fb_email: '-',
 		});
 		const pin = await Pins.create({ pin: params.pin, members_id: member.id, expired });
-		await memberRegister.update({ status: 'registered' });
+		// await memberRegister.update({ status: 'registered' });
+		await memberRegister.destroy();
 		const payload = {
 			id: member.id,
 			oauth: false,

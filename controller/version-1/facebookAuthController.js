@@ -241,9 +241,11 @@ exports.doSaveMember = async (request, reply) => {
 			expired: date,
 		});
 
-		await memberRegister.update({
-			status: 'registered',
-		});
+		// await memberRegister.update({
+		// 	status: 'registered',
+		// });
+
+		await memberRegister.destroy();
 
 		await NotificationSettings.create({
 			members_id: member.id,

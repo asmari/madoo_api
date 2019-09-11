@@ -240,9 +240,11 @@ exports.doSaveMember = async (request, reply) => {
 			expired: date,
 		});
 
-		await memberRegister.update({
-			status: 'registered',
-		});
+		// await memberRegister.update({
+		// 	status: 'registered',
+		// });
+
+		await memberRegister.destroy();
 
 		const payload = {
 			id: member.id,
