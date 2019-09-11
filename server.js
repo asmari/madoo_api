@@ -57,7 +57,7 @@ if (!fs.existsSync('./upload')) {
 }
 
 // Run the server!
-fastify.listen(config.serverPort, (err) => {
+fastify.listen(config.serverPort, '0.0.0.0', (err) => {
 	if (err) {
 		logger.trace(err);
 		// fastify.log.error(err);
