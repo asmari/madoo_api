@@ -330,7 +330,7 @@ exports.doLoginGoogle = async (request, reply) => {
 
 	const member = await Members.findOne({
 		where: {
-			email: params.email,
+			// email: params.email,
 			g_id: params.g_id,
 		},
 		paranoid: false,

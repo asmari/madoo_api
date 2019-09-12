@@ -331,7 +331,7 @@ exports.doLoginFacebook = async (request, reply) => {
 
 	const member = await Members.findOne({
 		where: {
-			email: params.email,
+			// email: params.email,
 			fb_id: params.fb_id,
 		},
 		paranoid: false,
