@@ -31,4 +31,9 @@ module.exports = async (fastify) => {
 		...convertionSchema.getConvertionKeyboard,
 		beforeHandler: [fastify.authenticate],
 	}, convertionController.getKeyboardFieldConversion);
+
+	fastify.post('/trigger/status', {
+		...convertionSchema.doTriggerStatus,
+		beforeHandler: [fastify.authenticate],
+	}, convertionController.doChangeStatus);
 };
