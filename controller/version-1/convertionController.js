@@ -48,7 +48,7 @@ exports.doChangeStatus = async (request) => {
 		],
 		where: {
 			unix_id: body.unix_id,
-			// status: 'pending',
+			status: 'pending',
 		},
 	});
 
