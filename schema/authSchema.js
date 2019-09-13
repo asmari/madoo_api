@@ -156,6 +156,9 @@ exports.authLinkSocialSchema = {
 				name: {
 					type: 'string',
 				},
+				email: {
+					type: 'string',
+				},
 			},
 			required: ['type', 'id', 'token'],
 		},

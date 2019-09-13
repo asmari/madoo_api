@@ -494,6 +494,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 				fb_id: null,
 				fb_token: null,
 				fb_name: null,
+				fb_email: null,
 			});
 			break;
 
@@ -502,6 +503,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 				g_id: null,
 				g_token: null,
 				g_name: null,
+				g_email: null,
 			});
 			break;
 
@@ -529,6 +531,10 @@ exports.doLinkSocialMedia = async (request) => {
 		body.name = '';
 	}
 
+	if (!Object.prototype.hasOwnProperty.call(body, 'email')) {
+		body.email = '';
+	}
+
 	if (members) {
 		switch (body.type) {
 		case 1:
@@ -536,6 +542,7 @@ exports.doLinkSocialMedia = async (request) => {
 				fb_id: body.id,
 				fb_token: body.token,
 				fb_name: body.name,
+				fb_email: body.email,
 			});
 			break;
 
@@ -544,6 +551,7 @@ exports.doLinkSocialMedia = async (request) => {
 				g_id: body.id,
 				g_token: body.token,
 				g_name: body.name,
+				g_email: body.email,
 			});
 			break;
 
