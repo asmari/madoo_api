@@ -23,6 +23,175 @@ const MasterUnit = model.MasterUnit.Get;
 const ConversionRule = model.ConversionRule.Get;
 const NotificationSettings = model.NotificationSettings.Get;
 
+exports.doChangeStatus = async (request) => {
+	const { body } = request;
+
+	const trx = await Transaction.findOne({
+		include: [
+			{
+				model: MemberCards,
+				as: 'source_member_cards',
+				where: {
+					members_id: body.user_id,
+				},
+				paranoid: false,
+				required: true,
+			}, {
+				model: MemberCards,
+				as: 'target_member_cards',
+				where: {
+					members_id: body.user_id,
+				},
+				paranoid: false,
+				required: true,
+			},
+		],
+		where: {
+			unix_id: body.unix_id,
+			// status: 'pending',
+		},
+	});
+
+	if (trx) {
+		const options = {
+			message: '',
+			title: '',
+		};
+
+		trx.update({
+			status: body.status,
+		});
+
+		Loyalty.hasMany(LoyaltyMemberCards, {
+			foreignKey: 'loyalty_id',
+		});
+
+		const loyaltySource = await Loyalty.findOne({
+			include: [
+				{
+					model: LoyaltyMemberCards,
+					required: true,
+					paranoid: false,
+					where: {
+						member_cards_id: trx.member_cards_id,
+					},
+				},
+			],
+		});
+
+		const loyaltyTarget = await Loyalty.findOne({
+			include: [
+				{
+					model: LoyaltyMemberCards,
+					required: true,
+					paranoid: false,
+					where: {
+						member_cards_id: trx.conversion_member_cards_id,
+					},
+				},
+			],
+		});
+
+		const member = await Member.findOne({
+			paranoid: false,
+			where: {
+				id: body.user_id,
+			},
+		});
+
+		switch (trx.status) {
+		case 'success':
+			options.message = `You've successfully converted ${trx.point} ${loyaltySource.name} ${loyaltySource.master_unit.title} to ${trx.conversion_point} ${loyaltyTarget.name} ${loyaltyTarget.master_unit.title}`;
+			options.title = 'Your point conversion is now complete!';
+
+			// eslint-disable-next-line no-case-declarations
+			const date = new Date(trx.created_at);
+
+			// eslint-disable-next-line no-case-declarations
+			const emailSender = new EmailSender();
+			await emailSender.sendConversion(member.email, {
+				name: member.full_name,
+				date: `${date.getDate()} ${date.getMonth() + 1} ${date.getFullYear()}`,
+				conversionId: trx.unix_id,
+				loyaltySource: loyaltySource.name,
+				pointSource: trx.point,
+				unitSource: loyaltySource.master_unit.unit,
+				loyaltyTarget: loyaltyTarget.name,
+				pointTarget: trx.conversion_point,
+				unitTarget: loyaltyTarget.master_unit.unit,
+				currentPointSource: trx.point_balance_after,
+				currentPointTarget: trx.conversion_point_balance_after,
+			}, member.full_name);
+			break;
+
+		case 'failed':
+			options.message = `Your Point Conversion From ${loyaltySource.name} to ${loyaltyTarget.name} is failed, but keep calm & try again`;
+			options.title = 'Oh no, your point conversion is failed';
+			break;
+
+		default:
+			options.title = 'Conversion in progress';
+			options.message = 'Please wait, your conversion in progress';
+			break;
+		}
+
+		if (trx.status !== 'pending') {
+			const notification = await Notification.create({
+				loyalty_id: loyaltySource.id,
+				type: 'conversion',
+				transaction_id: trx.id,
+				promo_id: 0,
+				title: options.title,
+				valid_until: new Date(),
+				description: options.message,
+				recipient_type: 'member',
+				status: 'FINISH',
+				click: 'notif',
+			});
+
+			if (notification) {
+				await NotificationMember.create({
+					members_id: body.user_id,
+					notification_id: notification.id,
+					read: 0,
+				});
+
+				const settings = await NotificationSettings.findOne({
+					where: {
+						members_id: body.user_id,
+					},
+				});
+
+				if (settings && settings.conversion === 1) {
+					await FcmSender.sendToUser(body.user_id, {
+						data: {
+							param: JSON.stringify({
+								id: notification.id,
+								title: notification.title,
+								type: notification.type,
+								loyalty_id: notification.loyalty_id,
+								promo_id: notification.promo_id,
+								transaction_id: notification.transaction_id,
+							}),
+							image: notification.image || null,
+						},
+						priority: 'normal',
+						notification: {
+							title: notification.title,
+							body: notification.description,
+							click_action: notification.click,
+						},
+					});
+				}
+			}
+
+			return new Response(20058, trx);
+		}
+	}
+
+	return new ErrorResponse(41727);
+};
+
 exports.checkConvertionRate = async (request) => {
 	const whereCondition = {};
 	// const whereSource = {};
@@ -32,7 +201,7 @@ exports.checkConvertionRate = async (request) => {
 
 	const params = JSON.parse(JSON.stringify(request.query));
 
-
+	// need to comment
 	if (params.loyalty_id != null) {
 		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
 		const conversionData = JSON.parse(conversionRule.data_conversion);
@@ -147,6 +316,7 @@ exports.doConvertionPoint = async (request) => {
 
 	const params = request.body;
 
+	// need to comment
 	if (params.loyalty_id != null) {
 		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
 		const conversionData = JSON.parse(conversionRule.data_conversion);
