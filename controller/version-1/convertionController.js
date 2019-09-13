@@ -10,7 +10,6 @@ const LoggerClean = require('../../helper/Logger').ConvertionClean;
 
 const { Op } = sequelize;
 const ConvertionRate = model.ConvertionRate.Get;
-const Conversion = model.Conversion.Get;
 const Loyalty = model.Loyalty.Get;
 const LoyaltyMemberCards = model.LoyaltyMemberCards.Get;
 const Member = model.Members.Get;
@@ -193,66 +192,25 @@ exports.doChangeStatus = async (request) => {
 };
 
 exports.checkConvertionRate = async (request) => {
-	const whereCondition = {};
-	// const whereSource = {};
-	const whereTarget = {};
-	const allowedTo = [];
-	const allowedFrom = [];
-
 	const params = JSON.parse(JSON.stringify(request.query));
 
 	// need to comment
-	if (params.loyalty_id != null) {
-		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
-		const conversionData = JSON.parse(conversionRule.data_conversion);
+	const rules = await ConversionRule.findOne({
+		where: {
+			loyalty_from: params.loyalty_id_source,
+			loyalty_to: params.loyalty_id_target,
+		},
+	});
 
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
-			conversionData.loyalty_from.forEach((id) => {
-				allowedFrom.push(id);
-			});
-		}
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
-			conversionData.loyalty_to.forEach((id) => {
-				allowedTo.push(id);
-			});
-		}
-		if (params.conversion_type === 'from') {
-			whereCondition.loyalty_id = params.loyalty_id;
-			if (params.search != null && typeof (params.search) === 'string') {
-				whereTarget.name = {
-					[Op.like]: `%${params.search}%`,
-				};
-			}
-		} else {
-			// whereCondition.conversion_loyalty = params.loyalty_id;
-			// if (params.search != null && typeof (params.search) === 'string') {
-			// 	whereSource.name = {
-			// 		[Op.like]: `%${params.search}%`,
-			// 	};
-			// }
-		}
-	}
-
-	if (allowedFrom.length !== 0) {
-		whereCondition[Op.and] = {
-			loyalty_id: {
-				[Op.in]: allowedFrom,
-			},
-		};
-	}
-	if (allowedTo.length !== 0) {
-		whereCondition[Op.and] = {
-			conversion_loyalty: {
-				[Op.in]: allowedTo,
-			},
-		};
+	if (!rules) {
+		throw new ErrorResponse(41702);
 	}
 
 	const rate = await ConvertionRate.findOne({
 		where: {
 			loyalty_id: params.loyalty_id_source,
 			conversion_loyalty: params.loyalty_id_target,
-			...whereCondition,
+			enable_trx: 1,
 		},
 		include: [{
 			model: Loyalty,
@@ -318,20 +276,17 @@ exports.doConvertionPoint = async (request) => {
 
 	// need to comment
 	if (params.loyalty_id != null) {
-		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
-		const conversionData = JSON.parse(conversionRule.data_conversion);
-
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
-			conversionData.loyalty_from.forEach((id) => {
-				allowedFrom.push(id);
-			});
-		}
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
-			conversionData.loyalty_to.forEach((id) => {
-				allowedTo.push(id);
-			});
-		}
 		if (params.conversion_type === 'from') {
+			const ruleFrom = await ConversionRule.findAll({
+				where: {
+					loyalty_from: params.loyalty_id,
+				},
+			});
+
+			ruleFrom.forEach((v) => {
+				allowedTo.push(v.loyalty_to);
+			});
+
 			whereCondition.loyalty_id = params.loyalty_id;
 			if (params.search != null && typeof (params.search) === 'string') {
 				whereTarget.name = {
@@ -339,6 +294,16 @@ exports.doConvertionPoint = async (request) => {
 				};
 			}
 		} else {
+			const ruleTo = await ConversionRule.findAll({
+				where: {
+					loyalty_from: params.loyalty_id,
+				},
+			});
+
+			ruleTo.forEach((v) => {
+				allowedTo.push(v.loyalty_from);
+			});
+
 			// whereCondition.conversion_loyalty = params.loyalty_id;
 			// if (params.search != null && typeof (params.search) === 'string') {
 			// 	whereSource.name = {
@@ -883,35 +848,39 @@ exports.getConvertionRate = async (request) => {
 
 
 	if (params.loyalty_id != null) {
-		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
+		if (params.conversion_type === 'from') {
+			const ruleFrom = await ConversionRule.findAll({
+				where: {
+					loyalty_from: params.loyalty_id,
+				},
+			});
 
-		if (conversionRule) {
-			const conversionData = JSON.parse(conversionRule.data_conversion);
+			ruleFrom.forEach((v) => {
+				allowedTo.push(v.loyalty_to);
+			});
 
-			if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
-				conversionData.loyalty_from.forEach((id) => {
-					allowedFrom.push(id);
-				});
+			whereCondition.loyalty_id = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereTarget.name = {
+					[Op.like]: `%${params.search}%`,
+				};
 			}
-			if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
-				conversionData.loyalty_to.forEach((id) => {
-					allowedTo.push(id);
-				});
-			}
-			if (params.conversion_type === 'from') {
-				whereCondition.loyalty_id = params.loyalty_id;
-				if (params.search != null && typeof (params.search) === 'string') {
-					whereTarget.name = {
-						[Op.like]: `%${params.search}%`,
-					};
-				}
-			} else {
-				whereCondition.conversion_loyalty = params.loyalty_id;
-				if (params.search != null && typeof (params.search) === 'string') {
-					whereSource.name = {
-						[Op.like]: `%${params.search}%`,
-					};
-				}
+		} else {
+			const ruleTo = await ConversionRule.findAll({
+				where: {
+					loyalty_from: params.loyalty_id,
+				},
+			});
+
+			ruleTo.forEach((v) => {
+				allowedTo.push(v.loyalty_from);
+			});
+
+			whereCondition.conversion_loyalty = params.loyalty_id;
+			if (params.search != null && typeof (params.search) === 'string') {
+				whereSource.name = {
+					[Op.like]: `%${params.search}%`,
+				};
 			}
 		}
 	}
@@ -976,20 +945,17 @@ exports.getKeyboardFieldConversion = async (request) => {
 	const params = JSON.parse(JSON.stringify(request.query));
 
 	if (params.loyalty_id != null) {
-		const conversionRule = await Conversion.findOne({ where: { loyalty_id: params.loyalty_id } });
-		const conversionData = JSON.parse(conversionRule.data_conversion);
-
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_from') && conversionData.loyalty_from != null) {
-			conversionData.loyalty_from.forEach((id) => {
-				allowedFrom.push(id);
-			});
-		}
-		if (Object.prototype.hasOwnProperty.call(conversionData, 'loyalty_to') && conversionData.loyalty_to != null) {
-			conversionData.loyalty_to.forEach((id) => {
-				allowedTo.push(id);
-			});
-		}
 		if (params.conversion_type === 'from') {
+			const ruleFrom = await ConversionRule.findAll({
+				where: {
+					loyalty_from: params.loyalty_id,
+				},
+			});
+
+			ruleFrom.forEach((v) => {
+				allowedTo.push(v.loyalty_to);
+			});
+
 			whereCondition.loyalty_id = params.loyalty_id;
 			if (params.search != null && typeof (params.search) === 'string') {
 				whereTarget.name = {
@@ -997,6 +963,16 @@ exports.getKeyboardFieldConversion = async (request) => {
 				};
 			}
 		} else {
+			const ruleTo = await ConversionRule.findAll({
+				where: {
+					loyalty_from: params.loyalty_id,
+				},
+			});
+
+			ruleTo.forEach((v) => {
+				allowedTo.push(v.loyalty_from);
+			});
+
 			// whereCondition.conversion_loyalty = params.loyalty_id;
 			// if (params.search != null && typeof (params.search) === 'string') {
 			// 	whereSource.name = {
