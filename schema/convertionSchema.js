@@ -162,3 +162,26 @@ exports.getConvertionKeyboard = {
 		},
 	},
 };
+
+exports.doTriggerStatus = {
+	schema: {
+		description: 'Rest API to trigger status',
+		security: [
+			{
+				BearerAuth: [],
+				'skip-auth': [],
+			},
+		],
+		body: {
+			required: ['user_id', 'unix_id'],
+			properties: {
+				user_id: {
+					type: 'integer',
+				},
+				unix_id: {
+					type: 'string',
+				},
+			},
+		},
+	},
+};
