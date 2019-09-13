@@ -521,6 +521,30 @@ exports.doUnlinkSocialMedia = async (request) => {
 // link social media
 exports.doLinkSocialMedia = async (request) => {
 	const { user, body } = request;
+
+	if (body.type === 1) {
+		const findFbId = await Members.findOne({
+			where: {
+				fb_id: body.id,
+			},
+		});
+
+		if (findFbId) {
+			return new ErrorResponse(41731);
+		}
+	} else if (body.type === 2) {
+		const findFbId = await Members.findOne({
+			where: {
+				g_id: body.id,
+			},
+		});
+
+		if (findFbId) {
+			return new ErrorResponse(41732);
+		}
+	}
+
+
 	const members = await Members.findOne({
 		where: {
 			id: user.id,
@@ -542,7 +566,7 @@ exports.doLinkSocialMedia = async (request) => {
 				fb_id: body.id,
 				fb_token: body.token,
 				fb_name: body.name,
-				fb_email: body.email,
+				// fb_email: body.email,
 			});
 			break;
 

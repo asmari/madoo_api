@@ -51,4 +51,6 @@ module.exports = {
 	41728: 'Promo not found',
 	41729: 'Promo is deleted',
 	41730: 'Loyalty is destination only',
+	41731: 'Facebook user already registered',
+	41732: 'Google user already registered',
 };
