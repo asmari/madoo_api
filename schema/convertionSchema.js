@@ -168,17 +168,19 @@ exports.doTriggerStatus = {
 		description: 'Rest API to trigger status',
 		security: [
 			{
-				BearerAuth: [],
 				'skip-auth': [],
 			},
 		],
 		body: {
-			required: ['user_id', 'unix_id'],
+			required: ['user_id', 'unix_id', 'status'],
 			properties: {
 				user_id: {
 					type: 'integer',
 				},
 				unix_id: {
+					type: 'string',
+				},
+				status: {
 					type: 'string',
 				},
 			},
