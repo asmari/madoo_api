@@ -34,6 +34,5 @@ module.exports = async (fastify) => {
 
 	fastify.post('/trigger/status', {
 		...convertionSchema.doTriggerStatus,
-		beforeHandler: [fastify.authenticate],
 	}, convertionController.doChangeStatus);
 };
