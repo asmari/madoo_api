@@ -221,25 +221,56 @@ exports.doGopayIris = async (request) => {
 		}
 
 		if (trx.status !== 'pending') {
-			const notification = await Notification.create({
-				loyalty_id: loyaltySource.id,
-				type: 'conversion',
-				transaction_id: trx.id,
-				promo_id: 0,
-				title: options.title,
-				valid_until: new Date(),
-				description: options.message,
-				recipient_type: 'member',
-				status: 'FINISH',
-				click: 'notif',
+			let notification = await Notification.findOne({
+				where: {
+					transaction_id: trx.id,
+					loyalty_id: loyaltySource.id,
+				},
 			});
 
-			if (notification) {
-				await NotificationMember.create({
-					members_id: card.members_id,
-					notification_id: notification.id,
-					read: 0,
+			if (notification == null) {
+				notification = await Notification.create({
+					loyalty_id: loyaltySource.id,
+					type: 'conversion',
+					transaction_id: trx.id,
+					promo_id: 0,
+					title: options.title,
+					valid_until: new Date(),
+					description: options.message,
+					recipient_type: 'member',
+					status: 'FINISH',
+					click: 'notif',
 				});
+			}
+
+			if (notification) {
+				await notification.update({
+					loyalty_id: loyaltySource.id,
+					type: 'conversion',
+					transaction_id: trx.id,
+					promo_id: 0,
+					title: options.title,
+					valid_until: new Date(),
+					description: options.message,
+					recipient_type: 'member',
+					status: 'FINISH',
+					click: 'notif',
+				});
+
+				const notificationMember = await NotificationMember.findOne({
+					where: {
+						notification_id: notification.id,
+						members_id: card.members_id,
+					},
+				});
+
+				if (notificationMember == null) {
+					await NotificationMember.create({
+						members_id: card.members_id,
+						notification_id: notification.id,
+						read: 0,
+					});
+				}
 
 				const settings = await NotificationSettings.findOne({
 					where: {
