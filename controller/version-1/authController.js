@@ -494,7 +494,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 				fb_id: null,
 				fb_token: null,
 				fb_name: null,
-				fb_email: null,
+				fb_email: '',
 			});
 			break;
 
@@ -503,7 +503,7 @@ exports.doUnlinkSocialMedia = async (request) => {
 				g_id: null,
 				g_token: null,
 				g_name: null,
-				g_email: null,
+				g_email: '',
 			});
 			break;
 
