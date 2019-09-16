@@ -856,7 +856,7 @@ exports.getConvertionRate = async (request) => {
 			});
 
 			ruleFrom.forEach((v) => {
-				allowedTo.push(v.loyalty_to);
+				allowedFrom.push(v.loyalty_to);
 			});
 
 			whereCondition.loyalty_id = params.loyalty_id;
