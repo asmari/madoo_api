@@ -833,7 +833,7 @@ exports.doConvertionPoint = async (request) => {
 
 
 exports.getConvertionRate = async (request) => {
-	const whereCondition = {};
+	let whereCondition = {};
 	const whereSource = {};
 	const whereTarget = {};
 	const allowedTo = [];
@@ -868,7 +868,7 @@ exports.getConvertionRate = async (request) => {
 		} else {
 			const ruleTo = await ConversionRule.findAll({
 				where: {
-					loyalty_from: params.loyalty_id,
+					loyalty_to: params.loyalty_id,
 				},
 			});
 
@@ -887,15 +887,17 @@ exports.getConvertionRate = async (request) => {
 
 	if (allowedFrom.length > 0 || allowedTo.length > 0) {
 		if (allowedFrom.length !== 0) {
-			whereCondition[Op.and] = {
-				loyalty_id: {
+			whereCondition = {
+				conversion_loyalty: {
 					[Op.in]: allowedFrom,
 				},
+				loyalty_id: params.loyalty_id,
 			};
 		}
 		if (allowedTo.length !== 0) {
-			whereCondition[Op.and] = {
-				conversion_loyalty: {
+			whereCondition = {
+				conversion_loyalty: params.loyalty_id,
+				loyalty_id: {
 					[Op.in]: allowedTo,
 				},
 			};
