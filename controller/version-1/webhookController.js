@@ -99,6 +99,7 @@ exports.doGopayIris = async (request) => {
 	const trx = await Transaction.findOne({
 		where: {
 			trxid: body.reference_no,
+			status: 'pending',
 		},
 	});
 
