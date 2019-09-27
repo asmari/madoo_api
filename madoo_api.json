@@ -1,0 +1,9 @@
+{
+ "apps": [
+ {
+  "name": "madoo_api",
+  "script": "npm",
+  "args": "start"
+ }
+ ]
+}
